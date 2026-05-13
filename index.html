@@ -17,10 +17,15 @@
    ════════════════════════════════════ */
 const CONFIG = {
   title:      '有聲電子書',   // 書名
-  totalPages: 21,            // 總頁數（含封面，不含封底）
+  totalPages: 21,            // 總頁數（含封面）
                               // 偶數 → 最後一頁自動當封底
                               // 奇數 → 最後兩頁正常展開
-  audioMode:  'page',        // 'none' | 'bg' | 'page'
+  audioMode:  'both',        // 'none' | 'bg' | 'page' | 'both'
+                              //   none → 無音訊
+                              //   bg   → 只有背景音樂
+                              //   page → 只有逐頁音訊
+                              //   both → 背景音樂 + 逐頁音訊同時
+  bgFile:     'bg.mp3',      // 背景音樂檔名（audioMode 為 'bg' 或 'both' 時使用）
   imgExt:     'png',         // 圖片副檔名 jpg / png / webp
   audExt:     'mp3',         // 音訊副檔名 mp3 / wav / ogg / m4a
   imgPrefix:  'p',           // 圖片前綴：p1.jpg, p2.jpg ...
@@ -184,10 +189,13 @@ body::before {
 .ctrl-panel {
   margin-top: 14px; background: rgba(30,26,22,0.88);
   border: 1px solid var(--border); border-radius: 14px; padding: 12px 18px;
-  display: none; align-items: center; gap: 0;
+  display: none; flex-direction: column; gap: 10px;
   min-width: 300px; max-width: 680px; width: 100%;
   backdrop-filter: blur(8px);
 }
+.ctrl-row { display: flex; align-items: center; gap: 0; width: 100%; }
+.ctrl-row + .ctrl-row { border-top: 1px solid #2a2016; padding-top: 10px; }
+.ctrl-row-label { font-size: 0.68rem; color: var(--dim); white-space: nowrap; margin-right: 10px; flex-shrink: 0; letter-spacing: 0.5px; }
 .ctrl-divider {
   width: 1px; height: 36px; background: var(--border);
   flex-shrink: 0; margin: 0 16px;
@@ -315,40 +323,57 @@ body.fs-mode .fs-exit-btn { display:flex; }
     <button class="nav-btn" id="bnext">▶</button>
     <button class="nav-btn" id="blast">⏭</button>
   </div>
-  <!-- 合併控制列：音訊 + 自動播放 -->
+  <!-- 合併控制列 -->
   <div class="ctrl-panel" id="ctrl-panel">
-    <!-- 音訊播放區 -->
-    <button class="aud-play" id="aplay">▶</button>
-    <div class="aud-info" style="flex:1;min-width:0;margin-left:12px">
-      <div class="aud-name" id="aname">音訊</div>
-      <div class="aud-bar-wrap" id="abar"><div class="aud-bar-fill" id="afill"></div></div>
-      <div class="aud-time"><span id="acur">0:00</span><span id="adur">0:00</span></div>
-    </div>
-    <div class="aud-vol">🔊<input type="range" id="avol" min="0" max="1" step="0.05" value="0.8"></div>
-    <!-- 分隔線 -->
-    <div class="ctrl-divider"></div>
-    <!-- 自動播放區 -->
-    <div class="auto-side">
-      <button class="auto-play-btn stopped" id="auto-btn">
-        <span id="auto-icon">▶▶</span>
-        <svg class="ring" viewBox="0 0 52 52">
-          <circle class="ring-track" cx="26" cy="26" r="22"/>
-          <circle class="ring-fill" cx="26" cy="26" r="22" id="ring-fill" stroke-dasharray="138.2" stroke-dashoffset="138.2"/>
-        </svg>
-      </button>
-      <div class="auto-right">
-        <div class="auto-label">⏱ 自動翻頁</div>
-        <div class="auto-speed-row" id="speed-row">
-          <button class="speed-chip" data-sec="3">3秒</button>
-          <button class="speed-chip active" data-sec="5">5秒</button>
-          <button class="speed-chip" data-sec="8">8秒</button>
-          <button class="speed-chip" data-sec="10">10秒</button>
-          <button class="speed-chip" data-sec="15">15秒</button>
-          <button class="speed-chip" data-sec="30">30秒</button>
-        </div>
+
+    <!-- 第一列：逐頁音訊 + 分隔 + 自動播放 -->
+    <div class="ctrl-row" id="page-aud-row">
+      <div class="ctrl-row-label" id="page-aud-label">📄 逐頁</div>
+      <button class="aud-play" id="aplay">▶</button>
+      <div class="aud-info" style="flex:1;min-width:0;margin-left:12px">
+        <div class="aud-name" id="aname">音訊</div>
+        <div class="aud-bar-wrap" id="abar"><div class="aud-bar-fill" id="afill"></div></div>
+        <div class="aud-time"><span id="acur">0:00</span><span id="adur">0:00</span></div>
       </div>
-      <div class="auto-countdown" id="auto-cd">—</div>
+      <div class="aud-vol">🔊<input type="range" id="avol" min="0" max="1" step="0.05" value="0.8"></div>
+      <!-- 分隔線 -->
+      <div class="ctrl-divider" id="ctrl-div"></div>
+      <!-- 自動播放區 -->
+      <div class="auto-side">
+        <button class="auto-play-btn stopped" id="auto-btn">
+          <span id="auto-icon">▶▶</span>
+          <svg class="ring" viewBox="0 0 52 52">
+            <circle class="ring-track" cx="26" cy="26" r="22"/>
+            <circle class="ring-fill" cx="26" cy="26" r="22" id="ring-fill" stroke-dasharray="138.2" stroke-dashoffset="138.2"/>
+          </svg>
+        </button>
+        <div class="auto-right">
+          <div class="auto-label">⏱ 自動翻頁</div>
+          <div class="auto-speed-row" id="speed-row">
+            <button class="speed-chip" data-sec="3">3秒</button>
+            <button class="speed-chip active" data-sec="5">5秒</button>
+            <button class="speed-chip" data-sec="8">8秒</button>
+            <button class="speed-chip" data-sec="10">10秒</button>
+            <button class="speed-chip" data-sec="15">15秒</button>
+            <button class="speed-chip" data-sec="30">30秒</button>
+          </div>
+        </div>
+        <div class="auto-countdown" id="auto-cd">—</div>
+      </div>
     </div>
+
+    <!-- 第二列：背景音樂（'bg' 或 'both' 模式時顯示）-->
+    <div class="ctrl-row" id="bg-aud-row" style="display:none">
+      <div class="ctrl-row-label">🎶 背景樂</div>
+      <button class="aud-play" id="bgplay">▶</button>
+      <div class="aud-info" style="flex:1;min-width:0;margin-left:12px">
+        <div class="aud-name" id="bgname">背景音樂</div>
+        <div class="aud-bar-wrap" id="bgbar"><div class="aud-bar-fill" id="bgfill"></div></div>
+        <div class="aud-time"><span id="bgcur">0:00</span><span id="bgdur">0:00</span></div>
+      </div>
+      <div class="aud-vol">🔊<input type="range" id="bgvol" min="0" max="1" step="0.05" value="0.5"></div>
+    </div>
+
   </div>
   <div class="thumb-strip" id="thumbs"></div>
 </div>
@@ -374,11 +399,16 @@ body.fs-mode .fs-exit-btn { display:flex; }
 </div>
 
 <audio id="aud"></audio>
+<audio id="audBg" loop></audio>
 
 <script>
 const $ = id => document.getElementById(id);
-const aud = $('aud');
+const aud   = $('aud');    // 逐頁音訊
+const audBg = $('audBg'); // 背景音樂
 const RING_C = 2 * Math.PI * 22;
+
+const hasPageAudio = CONFIG.audioMode === 'page' || CONFIG.audioMode === 'both';
+const hasBgAudio   = CONFIG.audioMode === 'bg'   || CONFIG.audioMode === 'both';
 
 // ── 狀態 ──
 let si=0, flipping=false, PW=0, PH=0;
@@ -539,7 +569,7 @@ function showAt(idx, trigAudio=true) {
   document.querySelector('.thumb.active')?.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
 
   // 音訊
-  if (trigAudio && CONFIG.audioMode==='page') {
+  if (trigAudio && hasPageAudio) {
     const aidx = isCover ? 1 : si*2;
     if (aidx >= 1 && aidx <= N) loadAud(aidx);
   }
@@ -587,7 +617,7 @@ function go(dir) {
   setTimeout(() => {
     flipping = false;
     if (fsMode) resizeBookFs();
-    if (CONFIG.audioMode==='page') {
+    if (hasPageAudio) {
       const aidx = si===0 ? 1 : si*2;
       if (aidx>=1 && aidx<=N) loadAud(aidx);
     }
@@ -620,28 +650,54 @@ function buildThumbs() {
 function setupAudio() {
   if (CONFIG.audioMode === 'none') return;
   $('ctrl-panel').style.display = 'flex';
-  aud.volume = 0.8;
-  if (CONFIG.audioMode === 'bg') { aud.src = audSrc(1); aud.loop = true; }
-  if (CONFIG.audioMode === 'page') loadAud(1);
 
-  $('aplay').onclick = () => aud.paused ? aud.play() : aud.pause();
-  aud.addEventListener('timeupdate', updAud);
-  aud.addEventListener('loadedmetadata', updAud);
-  aud.addEventListener('play',  () => { $('aplay').textContent='⏸'; syncFsAutoBtn(); });
-  aud.addEventListener('pause', () => $('aplay').textContent='▶');
-  $('abar').onclick = e => {
-    const r = e.currentTarget.getBoundingClientRect();
-    if (aud.duration) aud.currentTime = ((e.clientX-r.left)/r.width)*aud.duration;
-  };
-  $('avol').oninput = e => aud.volume = parseFloat(e.target.value);
+  // ── 逐頁音訊區 ──
+  if (hasPageAudio) {
+    $('page-aud-row').style.display = 'flex';
+    $('page-aud-label').style.display = CONFIG.audioMode === 'both' ? 'block' : 'none';
+    aud.volume = 0.8;
+    loadAud(1);
+    $('aplay').onclick = () => aud.paused ? aud.play() : aud.pause();
+    aud.addEventListener('timeupdate', updAud);
+    aud.addEventListener('loadedmetadata', updAud);
+    aud.addEventListener('play',  () => { $('aplay').textContent='⏸'; syncFsAutoBtn(); });
+    aud.addEventListener('pause', () => $('aplay').textContent='▶');
+    $('abar').onclick = e => { const r=e.currentTarget.getBoundingClientRect(); if(aud.duration) aud.currentTime=((e.clientX-r.left)/r.width)*aud.duration; };
+    $('avol').oninput = e => aud.volume = parseFloat(e.target.value);
+  } else {
+    // 純 bg 模式：隱藏逐頁音訊區，隱藏分隔線（自動播放移到同列）
+    $('page-aud-row').querySelector('.aud-play').style.display = 'none';
+    $('page-aud-row').querySelector('.aud-info').style.display = 'none';
+    $('page-aud-row').querySelector('.aud-vol').style.display = 'none';
+    $('ctrl-div').style.display = 'none';
+    $('page-aud-label').style.display = 'none';
+  }
+
+  // ── 背景音樂區 ──
+  if (hasBgAudio) {
+    $('bg-aud-row').style.display = 'flex';
+    audBg.src = CONFIG.bgFile;
+    audBg.loop = true;
+    audBg.volume = 0.5;
+    $('bgname').textContent = CONFIG.bgFile;
+    audBg.play().catch(()=>{});
+    $('bgplay').onclick = () => audBg.paused ? audBg.play() : audBg.pause();
+    audBg.addEventListener('timeupdate', updBgAud);
+    audBg.addEventListener('loadedmetadata', updBgAud);
+    audBg.addEventListener('play',  () => $('bgplay').textContent='⏸');
+    audBg.addEventListener('pause', () => $('bgplay').textContent='▶');
+    $('bgbar').onclick = e => { const r=e.currentTarget.getBoundingClientRect(); if(audBg.duration) audBg.currentTime=((e.clientX-r.left)/r.width)*audBg.duration; };
+    $('bgvol').oninput = e => audBg.volume = parseFloat(e.target.value);
+  }
 }
 
 function loadAud(pageNum) {
-  if (CONFIG.audioMode !== 'page') return;
+  if (!hasPageAudio) return;
   const src = audSrc(pageNum);
   if (aud.src.endsWith(src) && !aud.paused) return;
   aud.src = src; aud.loop = false;
   $('aname').textContent = src;
+  $('fs-aname').textContent = src;
   aud.play().catch(()=>{});
 }
 
@@ -650,20 +706,18 @@ function updAud() {
   $('afill').style.width = d ? `${c/d*100}%` : '0%';
   $('acur').textContent = fmt(c); $('adur').textContent = fmt(d);
   $('fs-afill').style.width = $('afill').style.width;
-  $('fs-aname').textContent = $('aname').textContent;
+}
+
+function updBgAud() {
+  const c=audBg.currentTime||0, d=audBg.duration||0;
+  $('bgfill').style.width = d ? `${c/d*100}%` : '0%';
+  $('bgcur').textContent = fmt(c); $('bgdur').textContent = fmt(d);
 }
 function fmt(s) { if(!isFinite(s))return'0:00'; return`${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,'0')}`; }
 
 // ── Auto Play ──
 function setupAutoPlay() {
   $('ctrl-panel').style.display = 'flex';
-  // 無音訊時隱藏音訊區，只保留自動播放區
-  if (CONFIG.audioMode === 'none') {
-    $('aplay').closest('.aud-info') && ($('aplay').style.display = 'none');
-    $('ctrl-panel').querySelector('.aud-info').style.display = 'none';
-    $('ctrl-panel').querySelector('.aud-vol').style.display = 'none';
-    $('ctrl-panel').querySelector('.ctrl-divider').style.display = 'none';
-  }
   $('speed-row').querySelectorAll('.speed-chip').forEach(c => {
     c.addEventListener('click', () => {
       $('speed-row').querySelectorAll('.speed-chip').forEach(x => x.classList.remove('active'));
@@ -679,7 +733,9 @@ function startAuto() {
   if (si >= maxSheet) showAt(0, false);
   $('auto-btn').className = 'auto-play-btn playing';
   $('auto-icon').textContent = '⏸';
-  if (CONFIG.audioMode !== 'none' && aud.paused) aud.play().catch(()=>{});
+  // 用按鈕點擊（用戶手勢）觸發音訊
+  if (hasPageAudio && aud.paused) aud.play().catch(()=>{});
+  if (hasBgAudio && audBg.paused) audBg.play().catch(()=>{});
   scheduleNext();
 }
 function stopAuto() {
@@ -691,19 +747,25 @@ function stopAuto() {
   setRing(0); syncFsAutoBtn();
 }
 function scheduleNext() {
+  // 僅逐頁音訊才等 metadata；bg 模式直接用預設秒數
+  if (hasPageAudio && (!aud.duration || isNaN(aud.duration))) {
+    aud.addEventListener('loadedmetadata', scheduleNext, { once: true });
+    return;
+  }
   let waitMs = autoSec * 1000;
-  if (CONFIG.audioMode==='page' && aud.duration>0) {
-    const rem = (aud.duration - aud.currentTime) * 1000;
-    if (rem > 0) waitMs = Math.max(waitMs, rem);
+  // 逐頁音訊：取預設秒數與音訊長度的較大值
+  if (hasPageAudio && aud.duration > 0) {
+    waitMs = Math.max(waitMs, aud.duration * 1000);
   }
   tickCountdown(waitMs);
   autoTimer = setTimeout(flipNext, waitMs + 150);
 }
+
 function flipNext() {
   cancelAnimationFrame(autoRafId);
   if (si >= maxSheet) { stopAuto(); return; }
   go(+1);
-  setTimeout(() => { if (autoTimer!==null) scheduleNext(); }, 700);
+  setTimeout(() => { if (autoTimer !== null) scheduleNext(); }, 700);
 }
 function tickCountdown(totalMs) {
   cancelAnimationFrame(autoRafId);
@@ -758,7 +820,7 @@ function setupFs() {
 function enterFs() {
   fsMode = true;
   document.body.classList.add('fs-mode');
-  $('fs-audio-row').style.display = CONFIG.audioMode!=='none' ? 'flex' : 'none';
+  $('fs-audio-row').style.display = hasPageAudio ? 'flex' : 'none';
   const el = document.documentElement;
   if (el.requestFullscreen) el.requestFullscreen().catch(()=>{});
   else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
