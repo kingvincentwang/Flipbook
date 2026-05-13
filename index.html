@@ -3,33 +3,50 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>有聲翻頁電子書</title>
+<title>電子書書庫</title>
 <style>
-
 /* ════════════════════════════════════
-   ★ 設定區：修改這裡換書
+   ★ 書庫設定（修改這裡）
    ════════════════════════════════════ */
-
 </style>
 <script>
 /* ════════════════════════════════════
-   ★ 書本設定（每次換書只需改這裡）
+   ★ 書庫設定
    ════════════════════════════════════ */
-const CONFIG = {
-  title:      '有聲電子書',   // 書名
-  totalPages: 21,            // 總頁數（含封面）
-                              // 偶數 → 最後一頁自動當封底
-                              // 奇數 → 最後兩頁正常展開
-  audioMode:  'both',        // 'none' | 'bg' | 'page' | 'both'
-                              //   none → 無音訊
-                              //   bg   → 只有背景音樂
-                              //   page → 只有逐頁音訊
-                              //   both → 背景音樂 + 逐頁音訊同時
-  bgFile:     'bg.mp3',      // 背景音樂檔名（audioMode 為 'bg' 或 'both' 時使用）
-  imgExt:     'png',         // 圖片副檔名 jpg / png / webp
-  audExt:     'mp3',         // 音訊副檔名 mp3 / wav / ogg / m4a
-  imgPrefix:  'p',           // 圖片前綴：p1.jpg, p2.jpg ...
-  audPrefix:  'a',           // 音訊前綴：a1.mp3, a2.mp3 ...
+const LIBRARY = {
+  title:    '關西國小電子書庫',   // 書庫名稱
+  subtitle: '點擊書本開始閱讀',   // 副標題
+  imgExt:   'png',               // 封面圖片副檔名
+
+  books: [
+    // 每本書一筆，folder = 存放 flipbook.html 和圖片的資料夾名稱
+    // cover 留空會自動使用 folder/p1.jpg 當封面
+    {
+      title:  '關西仙草小學堂',
+      folder: 'book01',
+      file:   'flipbook.html',   // 資料夾內的 HTML 檔名
+      cover:  '',                // 留空 = 自動用 p1.jpg；或填指定路徑
+      desc:   '認識關西在地植物仙草的故事',
+      tags:   ['自然', '在地文化'],
+    },
+    {
+      title:  '羅屋書院',
+      folder: 'book02',
+      file:   'flipbook.html',
+      cover:  '',
+      desc:   '探索傳統建築裡的吉祥符號',
+      tags:   ['文化', '藝術'],
+    },
+    {
+      title:  '番茄新花樣',
+      folder: 'book03',
+      file:   'flipbook.html',
+      cover:  '',
+      desc:   '從一顆番茄看見世界',
+      tags:   ['飲食', '探索'],
+    },
+    // 複製上方格式新增更多書本 ↑
+  ]
 };
 /* ════════════════════════════════════ */
 </script>
@@ -37,837 +54,351 @@ const CONFIG = {
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --bg: #12100e; --border: #3a2e22; --page-bg: #fef8ed;
-  --spine: linear-gradient(to right,#5a3d1e,#9a6424,#d4943a,#e8b05a,#d4943a,#9a6424,#5a3d1e);
-  --accent: #c4872a; --glow: rgba(196,135,42,0.35); --muted: #9a7d60; --dim: #6a5040;
+  --bg: #0e0c0a; --surface: #1a1510; --border: #3a2e22;
+  --accent: #c4872a; --glow: rgba(196,135,42,0.3);
+  --muted: #9a7d60; --dim: #6a5040; --text: #e0c8a8;
+  --card-bg: #1e1a14; --card-hover: #26201a;
+  --shelf: linear-gradient(to bottom, #2a1e0e, #1a1208);
+  --spine: linear-gradient(to right, #5a3d1e, #9a6424, #d4943a, #9a6424, #5a3d1e);
 }
 
+html, body { height: 100%; }
 body {
-  background: var(--bg); min-height: 100vh;
-  font-family: 'Georgia','Noto Serif TC',serif; color: #e0c8a8;
-  display: flex; flex-direction: column; align-items: center;
-  overflow-x: hidden; padding: 0 0 24px;
+  background: var(--bg);
+  font-family: 'Georgia', 'Noto Serif TC', serif;
+  color: var(--text); min-height: 100vh;
+  overflow-x: hidden;
 }
+
+/* ── 背景紋理 ── */
 body::before {
-  content: ''; position: fixed; inset: 0;
+  content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
   background-image:
-    radial-gradient(ellipse 120% 80% at 50% 0%, rgba(196,135,42,0.06) 0%, transparent 60%),
-    url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23c4872a' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-  pointer-events: none; z-index: 0;
+    radial-gradient(ellipse 100% 60% at 50% 0%, rgba(196,135,42,0.07) 0%, transparent 60%),
+    url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23c4872a' fill-opacity='0.025'%3E%3Cpath d='M0 0h40v40H0zm40 40h40v40H40z'/%3E%3C/g%3E%3C/svg%3E");
 }
 
-/* ── Loading ── */
-#loading {
+/* ── Header ── */
+header {
   position: relative; z-index: 1;
-  display: flex; flex-direction: column; align-items: center;
-  justify-content: center; min-height: 100vh; gap: 16px; text-align: center;
-  animation: fadeIn 0.5s ease;
+  text-align: center; padding: 52px 24px 36px;
+  border-bottom: 1px solid rgba(196,135,42,0.15);
 }
-@keyframes fadeIn { from{opacity:0} to{opacity:1} }
-.ld-logo { font-size: 3rem; filter: drop-shadow(0 0 20px var(--glow)); }
-.ld-title { font-size: 1.8rem; color: var(--accent); letter-spacing: 3px; }
-.ld-spin { font-size: 2rem; animation: spin 2.5s linear infinite; display:inline-block; }
-@keyframes spin { to{transform:rotate(360deg)} }
+.lib-icon { font-size: 3rem; margin-bottom: 10px; filter: drop-shadow(0 0 24px var(--glow)); }
+.lib-title {
+  font-size: clamp(1.6rem, 4vw, 2.4rem);
+  color: var(--accent); letter-spacing: 4px;
+  text-shadow: 0 2px 20px var(--glow);
+  margin-bottom: 8px;
+}
+.lib-sub { color: var(--muted); font-size: 0.9rem; letter-spacing: 2px; }
+.lib-count { margin-top: 10px; font-size: 0.78rem; color: var(--dim); letter-spacing: 1px; }
 
-/* ── Book Wrapper ── */
-#app {
+/* ── Search ── */
+.search-wrap {
   position: relative; z-index: 1;
-  display: none; flex-direction: column; align-items: center;
-  width: 100%; padding: 20px 12px 0;
-  animation: fadeIn 0.5s ease;
+  max-width: 400px; margin: 28px auto 0;
+  padding: 0 24px;
 }
+.search-box {
+  width: 100%; padding: 10px 16px 10px 40px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: 24px; color: var(--text);
+  font-size: 0.88rem; font-family: inherit;
+  outline: none; transition: all 0.2s;
+}
+.search-box:focus { border-color: var(--accent); background: rgba(196,135,42,0.05); box-shadow: 0 0 0 3px rgba(196,135,42,0.1); }
+.search-box::placeholder { color: var(--dim); }
+.search-icon { position: absolute; left: 37px; top: 50%; transform: translateY(-50%); color: var(--dim); font-size: 0.9rem; pointer-events: none; }
 
-/* ── Top Bar ── */
-.topbar {
-  display: flex; align-items: center; gap: 10px;
-  margin-bottom: 16px; max-width: 800px; width: 100%;
+/* ── Tag Filter ── */
+.tag-filter {
+  position: relative; z-index: 1;
+  display: flex; gap: 8px; flex-wrap: wrap; justify-content: center;
+  padding: 16px 24px 0; max-width: 700px; margin: 0 auto;
 }
-.book-title { font-size: 0.88rem; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.icon-btn {
-  width: 34px; height: 34px; border-radius: 50%;
+.tag-pill {
+  padding: 4px 14px; border-radius: 20px; font-size: 0.78rem;
   border: 1px solid var(--border); background: transparent;
-  color: var(--muted); cursor: pointer; font-size: 0.95rem;
-  display: flex; align-items: center; justify-content: center;
-  transition: all 0.2s; flex-shrink: 0;
+  color: var(--muted); cursor: pointer; font-family: inherit;
+  transition: all 0.2s; letter-spacing: 0.5px;
 }
-.icon-btn:hover { border-color: var(--accent); color: var(--accent); }
+.tag-pill:hover { border-color: var(--accent); color: var(--accent); }
+.tag-pill.active { background: var(--accent); border-color: var(--accent); color: #1a1008; font-weight: bold; }
 
-/* ── Book Stage ── */
-.book-stage { perspective: 2800px; }
-
-.book {
-  position: relative; transform-style: preserve-3d;
-  transition: width 0.5s cubic-bezier(0.25,1,0.5,1), box-shadow 0.4s ease;
-  box-shadow: -18px 12px 50px rgba(0,0,0,0.85), 18px 12px 40px rgba(0,0,0,0.55);
+/* ── Main grid ── */
+main {
+  position: relative; z-index: 1;
+  max-width: 1200px; margin: 0 auto;
+  padding: 36px 24px 60px;
 }
 
-/* 底板 */
-.book-bg { position: absolute; top: 0; height: 100%; background: var(--page-bg); pointer-events: none; }
-.book-bg-L { left: 0; width: 50%; border-radius: 4px 0 0 4px; box-shadow: inset -4px 0 14px rgba(0,0,0,0.18); }
-.book-bg-R { right: 0; width: 50%; border-radius: 0 4px 4px 0; box-shadow: inset 3px 0 8px rgba(0,0,0,0.08); }
+/* ── 空狀態 ── */
+.empty-state { text-align: center; padding: 60px 24px; color: var(--dim); font-size: 0.9rem; }
+
+/* ── 書架格線 ── */
+.shelf-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 32px 24px;
+}
+
+/* ── 書本卡片 ── */
+.book-card {
+  cursor: pointer; text-decoration: none; color: inherit;
+  display: flex; flex-direction: column;
+  animation: fadeUp 0.5s ease both;
+}
+@keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+.book-card:nth-child(1){ animation-delay: 0.05s }
+.book-card:nth-child(2){ animation-delay: 0.1s }
+.book-card:nth-child(3){ animation-delay: 0.15s }
+.book-card:nth-child(4){ animation-delay: 0.2s }
+.book-card:nth-child(5){ animation-delay: 0.25s }
+.book-card:nth-child(6){ animation-delay: 0.3s }
+
+/* 書本立體外形 */
+.book-3d {
+  position: relative;
+  width: 100%; aspect-ratio: 3/4;
+  transform-style: preserve-3d;
+  perspective: 800px;
+  transition: transform 0.35s cubic-bezier(0.25,1,0.5,1), filter 0.35s;
+  filter: drop-shadow(8px 12px 20px rgba(0,0,0,0.7));
+  margin-bottom: 14px;
+}
+.book-card:hover .book-3d {
+  transform: translateY(-8px) rotateY(-12deg) rotateX(2deg);
+  filter: drop-shadow(14px 20px 30px rgba(0,0,0,0.8)) drop-shadow(0 0 20px var(--glow));
+}
+
+/* 封面 */
+.book-cover {
+  position: absolute; inset: 0;
+  border-radius: 2px 6px 6px 2px;
+  overflow: hidden; background: #2a1e10;
+}
+.book-cover img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+  transition: transform 0.4s ease;
+}
+.book-card:hover .book-cover img { transform: scale(1.04); }
+
+/* 封面光澤 */
+.book-cover::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.08) 0%, transparent 50%, rgba(0,0,0,0.1) 100%);
+  pointer-events: none;
+  border-radius: 2px 6px 6px 2px;
+}
 
 /* 書脊 */
 .book-spine {
-  position: absolute; left: 50%; transform: translateX(-50%);
-  top: 0; height: 100%; width: 16px;
-  background: var(--spine); z-index: 500;
-  box-shadow: -3px 0 10px rgba(0,0,0,0.5), 3px 0 10px rgba(0,0,0,0.3);
-  pointer-events: none; transition: opacity 0.3s;
+  position: absolute; left: -10px; top: 4px; bottom: 4px;
+  width: 10px; background: var(--spine);
+  border-radius: 2px 0 0 2px;
+  box-shadow: -2px 0 6px rgba(0,0,0,0.5);
 }
 
-/* Sheet */
-.sheet {
-  position: absolute; top: 0; right: 0;
-  width: 50%; height: 100%;
-  transform-origin: left center;
-  transform-style: preserve-3d;
-  transition: transform 0.6s cubic-bezier(0.25,1,0.5,1);
+/* 書底陰影 */
+.book-shadow {
+  position: absolute; bottom: -8px; left: 0; right: 0;
+  height: 16px;
+  background: radial-gradient(ellipse at 50% 0%, rgba(0,0,0,0.5) 0%, transparent 70%);
+  filter: blur(4px);
 }
-.sheet.flipped { transform: rotateY(-180deg); }
-.sheet.cover-full { left: 0; right: auto; width: 100%; transform-origin: right center; }
 
-.page {
+/* 封面佔位（載入前）*/
+.book-placeholder {
   position: absolute; inset: 0;
-  background: var(--page-bg);
-  backface-visibility: hidden; -webkit-backface-visibility: hidden;
-  overflow: hidden;
-}
-.page.front { transform: rotateY(0deg); }
-.page.back  { transform: rotateY(180deg); }
-.page img   { width: 100%; height: 100%; object-fit: contain; display: block; }
-.page-num   { position: absolute; bottom: 8px; right: 10px; font-size: 0.68rem; color: rgba(100,70,40,0.45); font-style: italic; pointer-events: none; user-select: none; }
-.page.back .page-num { right: auto; left: 10px; }
-
-/* 封面/封底 */
-.book.at-cover    { box-shadow: 6px 8px 32px rgba(0,0,0,0.75), -2px 0 10px rgba(0,0,0,0.4); }
-.book.at-backcover{ box-shadow: -6px 8px 32px rgba(0,0,0,0.75), 2px 0 10px rgba(0,0,0,0.4); }
-.book.at-cover     .book-bg-L,
-.book.at-cover     .book-spine,
-.book.at-backcover .book-bg-R,
-.book.at-backcover .book-spine { opacity: 0; }
-
-/* 封面提示 */
-.cover-hint {
-  position: absolute; bottom: 18px; left: 50%; transform: translateX(-50%);
-  font-size: 0.74rem; color: rgba(196,135,42,0.75);
-  letter-spacing: 1.5px; text-transform: uppercase;
-  animation: pulse 2s ease-in-out infinite;
-  white-space: nowrap; pointer-events: none; z-index: 30;
-}
-@keyframes pulse { 0%,100%{opacity:.35} 50%{opacity:1} }
-
-/* 翻頁熱區 */
-.tap-zone {
-  position: absolute; top: 0; height: 100%; width: 38%;
-  cursor: pointer; z-index: 600;
-  display: flex; align-items: center;
-  opacity: 0; transition: opacity 0.2s;
-}
-.tap-zone:hover { opacity: 1; }
-.tap-L { left: 0; justify-content: flex-start; padding-left: 10px; }
-.tap-R { right: 0; justify-content: flex-end;  padding-right: 10px; }
-.tap-arrow {
-  width: 38px; height: 38px; border-radius: 50%;
-  background: rgba(196,135,42,0.18); border: 1px solid rgba(196,135,42,0.4);
+  background: linear-gradient(135deg, #2a1e10, #1a1008);
   display: flex; align-items: center; justify-content: center;
-  color: var(--accent); font-size: 1rem; backdrop-filter: blur(4px);
+  border-radius: 2px 6px 6px 2px;
+}
+.book-placeholder span { font-size: 2.5rem; opacity: 0.3; }
+
+/* ── 卡片資訊 ── */
+.book-info { padding: 0 4px; }
+.book-name {
+  font-size: 0.95rem; color: #d4a870;
+  margin-bottom: 4px; line-height: 1.4;
+  overflow: hidden; display: -webkit-box;
+  -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+}
+.book-desc {
+  font-size: 0.76rem; color: var(--dim); line-height: 1.5;
+  overflow: hidden; display: -webkit-box;
+  -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+  margin-bottom: 6px;
+}
+.book-tags { display: flex; gap: 4px; flex-wrap: wrap; }
+.book-tag {
+  font-size: 0.68rem; color: var(--muted);
+  border: 1px solid #3a2e22; border-radius: 10px;
+  padding: 1px 7px; letter-spacing: 0.3px;
 }
 
-/* ── Nav Row ── */
-.nav-row { display: flex; align-items: center; gap: 16px; margin-top: 18px; }
-.nav-btn {
-  width: 44px; height: 44px; border-radius: 50%;
-  border: 1px solid var(--border); background: rgba(196,135,42,0.08);
-  color: var(--accent); font-size: 1.1rem; cursor: pointer;
-  display: flex; align-items: center; justify-content: center; transition: all 0.2s;
-}
-.nav-btn:hover:not(:disabled) { background: var(--accent); color: #1a1008; box-shadow: 0 0 16px var(--glow); }
-.nav-btn:disabled { opacity: 0.22; cursor: default; }
-.page-info { color: var(--muted); font-size: 0.83rem; min-width: 160px; text-align: center; }
-
-/* ── Combined Control Panel ── */
-.ctrl-panel {
-  margin-top: 14px; background: rgba(30,26,22,0.88);
-  border: 1px solid var(--border); border-radius: 14px; padding: 12px 18px;
-  display: none; flex-direction: column; gap: 10px;
-  min-width: 300px; max-width: 680px; width: 100%;
-  backdrop-filter: blur(8px);
-}
-.ctrl-row { display: flex; align-items: center; gap: 0; width: 100%; }
-.ctrl-row + .ctrl-row { border-top: 1px solid #2a2016; padding-top: 10px; }
-.ctrl-row-label { font-size: 0.68rem; color: var(--dim); white-space: nowrap; margin-right: 10px; flex-shrink: 0; letter-spacing: 0.5px; }
-.ctrl-divider {
-  width: 1px; height: 36px; background: var(--border);
-  flex-shrink: 0; margin: 0 16px;
-}
-/* 音訊區（左）*/
-.aud-play {
-  width: 38px; height: 38px; border-radius: 50%;
-  background: linear-gradient(135deg,#c4872a,#e8a83c);
-  border: none; color: #1a1008; font-size: 1rem; cursor: pointer;
-  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-  box-shadow: 0 2px 10px var(--glow); transition: transform 0.2s;
-}
-.aud-play:hover { transform: scale(1.1); }
-.aud-info { flex: 1; min-width: 0; }
-.aud-name { font-size: 0.77rem; color: #b08a60; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 6px; }
-.aud-bar-wrap { height: 3px; background: #3a2e22; border-radius: 2px; cursor: pointer; }
-.aud-bar-fill { height: 100%; background: linear-gradient(90deg,#c4872a,#e8a83c); border-radius: 2px; width: 0%; transition: width 0.1s; }
-.aud-time { display: flex; justify-content: space-between; font-size: 0.67rem; color: var(--dim); margin-top: 4px; }
-.aud-vol { display: flex; align-items: center; gap: 6px; color: var(--dim); font-size: 0.9rem; flex-shrink: 0; margin-left: 10px; }
-.aud-vol input[type=range] { width: 54px; accent-color: var(--accent); cursor: pointer; }
-/* 自動播放區（右）*/
-.auto-side { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
-.auto-play-btn {
-  width: 44px; height: 44px; border-radius: 50%; flex-shrink: 0;
-  border: none; cursor: pointer; font-size: 1rem;
+/* 懸停開啟提示 */
+.book-open-hint {
+  position: absolute; inset: 0;
+  background: rgba(0,0,0,0.5);
   display: flex; align-items: center; justify-content: center;
-  transition: all 0.2s; position: relative;
+  opacity: 0; transition: opacity 0.25s;
+  border-radius: 2px 6px 6px 2px;
+  backdrop-filter: blur(2px);
 }
-.auto-play-btn.stopped { background: rgba(196,135,42,0.1); border: 1.5px solid var(--border); color: var(--accent); }
-.auto-play-btn.playing { background: linear-gradient(135deg,#c4872a,#e8a83c); color:#1a1008; box-shadow:0 2px 14px var(--glow); }
-.auto-play-btn:hover { transform: scale(1.08); }
-.auto-play-btn svg.ring { position:absolute; inset:-4px; width:calc(100% + 8px); height:calc(100% + 8px); transform:rotate(-90deg); pointer-events:none; }
-.ring-track { fill:none; stroke:rgba(196,135,42,0.15); stroke-width:3; }
-.ring-fill  { fill:none; stroke:#e8a83c; stroke-width:3; stroke-linecap:round; transition:stroke-dashoffset 0.25s linear; }
-.auto-right { display: flex; flex-direction: column; gap: 6px; }
-.auto-label { font-size: 0.72rem; color: var(--muted); white-space: nowrap; }
-.auto-speed-row { display: flex; gap: 4px; flex-wrap: wrap; }
-.speed-chip { padding:2px 8px; border-radius:12px; font-size:0.72rem; border:1px solid var(--border); background:transparent; color:var(--dim); cursor:pointer; font-family:inherit; transition:all 0.18s; }
-.speed-chip:hover { border-color:var(--accent); color:var(--accent); }
-.speed-chip.active { background:var(--accent); border-color:var(--accent); color:#1a1008; font-weight:bold; }
-.auto-countdown { font-size:0.8rem; color:var(--accent); min-width:26px; text-align:right; flex-shrink:0; font-variant-numeric:tabular-nums; }
-
-/* ── Thumbnails ── */
-.thumb-strip {
-  display: flex; gap: 6px; margin-top: 14px;
-  overflow-x: auto; max-width: min(720px,96vw);
-  padding: 6px 4px 10px;
-  scrollbar-width: thin; scrollbar-color: #4a3828 transparent;
+.book-open-hint span {
+  background: var(--accent); color: #1a1008;
+  padding: 8px 18px; border-radius: 20px;
+  font-size: 0.82rem; font-weight: bold; letter-spacing: 1px;
+  box-shadow: 0 4px 16px rgba(196,135,42,0.4);
 }
-.thumb { flex-shrink:0; width:50px; height:68px; border-radius:3px; overflow:hidden; cursor:pointer; border:2px solid transparent; opacity:.45; transition:all 0.2s; position:relative; background:#1a1410; }
-.thumb:hover { opacity:.82; }
-.thumb.active { opacity:1; border-color:var(--accent); box-shadow:0 0 10px var(--glow); }
-.thumb img { width:100%; height:100%; object-fit:cover; display:block; }
-.thumb-num { position:absolute; bottom:0; left:0; right:0; text-align:center; font-size:0.58rem; color:rgba(0,0,0,.55); background:rgba(255,255,255,.72); padding:1px 0; }
-.thumb-cover::after,.thumb-back::after { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg,#c4872a,#e8a83c); }
+.book-card:hover .book-open-hint { opacity: 1; }
 
-/* ── Fullscreen ── */
-.fs-btn { margin-left: auto; }
-body.fs-mode { overflow: hidden; }
-body.fs-mode #app { position:fixed; inset:0; z-index:100; background:var(--bg); padding:0; justify-content:center; overflow:hidden; }
-body.fs-mode .topbar,
-body.fs-mode .thumb-strip,
-body.fs-mode .nav-row,
-body.fs-mode .ctrl-panel { display:none !important; }
-body.fs-mode .book-stage { flex:1; display:flex; align-items:center; justify-content:center; width:100%; min-height:0; }
-
-.fs-controls {
-  position:fixed; bottom:0; left:0; right:0; z-index:200;
-  padding:16px 24px 20px;
-  background:linear-gradient(to top,rgba(0,0,0,0.85) 0%,transparent 100%);
-  display:none; flex-direction:column; align-items:center; gap:10px;
-  opacity:0; transition:opacity 0.3s; pointer-events:none;
+/* ── Footer ── */
+footer {
+  position: relative; z-index: 1;
+  text-align: center; padding: 20px 24px 32px;
+  border-top: 1px solid rgba(196,135,42,0.1);
+  color: var(--dim); font-size: 0.78rem; letter-spacing: 1px;
 }
-.fs-controls.visible { opacity:1; pointer-events:auto; }
-body.fs-mode .fs-controls { display:flex; }
-.fs-nav-row { display:flex; align-items:center; gap:16px; }
-.fs-nav-btn { width:42px; height:42px; border-radius:50%; border:1px solid rgba(196,135,42,0.4); background:rgba(196,135,42,0.12); color:var(--accent); font-size:1.1rem; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.2s; }
-.fs-nav-btn:hover:not(:disabled) { background:var(--accent); color:#1a1008; }
-.fs-nav-btn:disabled { opacity:.2; cursor:default; }
-.fs-page-info { color:rgba(196,135,42,0.85); font-size:0.85rem; min-width:160px; text-align:center; }
-.fs-audio-row { display:flex; align-items:center; gap:12px; max-width:480px; width:100%; }
-.fs-aud-play { width:34px; height:34px; border-radius:50%; background:linear-gradient(135deg,#c4872a,#e8a83c); border:none; color:#1a1008; cursor:pointer; font-size:.9rem; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
-.fs-aud-info { flex:1; min-width:0; }
-.fs-aud-name { font-size:.72rem; color:rgba(196,135,42,.8); margin-bottom:5px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-.fs-aud-bar  { height:3px; background:rgba(255,255,255,.2); border-radius:2px; cursor:pointer; }
-.fs-aud-fill { height:100%; background:linear-gradient(90deg,#c4872a,#e8a83c); border-radius:2px; width:0%; transition:width 0.1s; }
-.fs-auto-btn { width:36px; height:36px; border-radius:50%; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:.85rem; transition:all .2s; }
-.fs-auto-btn.stopped { background:rgba(196,135,42,.15); border:1.5px solid rgba(196,135,42,.3); color:var(--accent); }
-.fs-auto-btn.playing { background:linear-gradient(135deg,#c4872a,#e8a83c); color:#1a1008; }
-.fs-exit-btn { position:fixed; top:16px; right:16px; z-index:201; width:38px; height:38px; border-radius:50%; border:1px solid rgba(255,255,255,.2); background:rgba(0,0,0,.5); color:rgba(255,255,255,.7); cursor:pointer; font-size:1rem; display:none; align-items:center; justify-content:center; transition:all .2s; backdrop-filter:blur(4px); }
-.fs-exit-btn:hover { border-color:#fff; color:#fff; }
-body.fs-mode .fs-exit-btn { display:flex; }
+
+/* ── 響應式 ── */
+@media (max-width: 480px) {
+  .shelf-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 24px 16px; }
+  header { padding: 36px 16px 24px; }
+  main { padding: 24px 16px 48px; }
+}
+@media (min-width: 900px) {
+  .shelf-grid { grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); }
+}
 </style>
 </head>
 <body>
 
-<!-- Loading -->
-<div id="loading">
-  <div class="ld-logo">📖</div>
-  <div class="ld-title" id="ld-title">載入中…</div>
-  <span class="ld-spin">⟳</span>
-</div>
+<header>
+  <div class="lib-icon">📚</div>
+  <h1 class="lib-title" id="lib-title"></h1>
+  <p class="lib-sub" id="lib-sub"></p>
+  <p class="lib-count" id="lib-count"></p>
 
-<!-- App -->
-<div id="app">
-  <div class="topbar">
-    <div class="book-title" id="btitle"></div>
-    <button class="icon-btn fs-btn" id="fs-btn">⛶</button>
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input type="search" class="search-box" id="search-box" placeholder="搜尋書名或標籤…">
   </div>
-  <div class="book-stage">
-    <div class="book" id="book">
-      <div class="book-bg book-bg-L"></div>
-      <div class="book-bg book-bg-R"></div>
-      <div class="book-spine"></div>
-      <!-- sheets by JS -->
-      <div class="tap-zone tap-L" id="tap-L"><div class="tap-arrow">◀</div></div>
-      <div class="tap-zone tap-R" id="tap-R"><div class="tap-arrow">▶</div></div>
-      <div class="cover-hint" id="chint">點擊翻開 ▶</div>
-    </div>
-  </div>
-  <div class="nav-row">
-    <button class="nav-btn" id="bfirst">⏮</button>
-    <button class="nav-btn" id="bprev">◀</button>
-    <span class="page-info" id="pinfo">—</span>
-    <button class="nav-btn" id="bnext">▶</button>
-    <button class="nav-btn" id="blast">⏭</button>
-  </div>
-  <!-- 合併控制列 -->
-  <div class="ctrl-panel" id="ctrl-panel">
 
-    <!-- 第一列：逐頁音訊 + 分隔 + 自動播放 -->
-    <div class="ctrl-row" id="page-aud-row">
-      <div class="ctrl-row-label" id="page-aud-label">📄 逐頁</div>
-      <button class="aud-play" id="aplay">▶</button>
-      <div class="aud-info" style="flex:1;min-width:0;margin-left:12px">
-        <div class="aud-name" id="aname">音訊</div>
-        <div class="aud-bar-wrap" id="abar"><div class="aud-bar-fill" id="afill"></div></div>
-        <div class="aud-time"><span id="acur">0:00</span><span id="adur">0:00</span></div>
-      </div>
-      <div class="aud-vol">🔊<input type="range" id="avol" min="0" max="1" step="0.05" value="0.8"></div>
-      <!-- 分隔線 -->
-      <div class="ctrl-divider" id="ctrl-div"></div>
-      <!-- 自動播放區 -->
-      <div class="auto-side">
-        <button class="auto-play-btn stopped" id="auto-btn">
-          <span id="auto-icon">▶▶</span>
-          <svg class="ring" viewBox="0 0 52 52">
-            <circle class="ring-track" cx="26" cy="26" r="22"/>
-            <circle class="ring-fill" cx="26" cy="26" r="22" id="ring-fill" stroke-dasharray="138.2" stroke-dashoffset="138.2"/>
-          </svg>
-        </button>
-        <div class="auto-right">
-          <div class="auto-label">⏱ 自動翻頁</div>
-          <div class="auto-speed-row" id="speed-row">
-            <button class="speed-chip" data-sec="3">3秒</button>
-            <button class="speed-chip active" data-sec="5">5秒</button>
-            <button class="speed-chip" data-sec="8">8秒</button>
-            <button class="speed-chip" data-sec="10">10秒</button>
-            <button class="speed-chip" data-sec="15">15秒</button>
-            <button class="speed-chip" data-sec="30">30秒</button>
-          </div>
-        </div>
-        <div class="auto-countdown" id="auto-cd">—</div>
-      </div>
-    </div>
+  <div class="tag-filter" id="tag-filter"></div>
+</header>
 
-    <!-- 第二列：背景音樂（'bg' 或 'both' 模式時顯示）-->
-    <div class="ctrl-row" id="bg-aud-row" style="display:none">
-      <div class="ctrl-row-label">🎶 背景樂</div>
-      <button class="aud-play" id="bgplay">▶</button>
-      <div class="aud-info" style="flex:1;min-width:0;margin-left:12px">
-        <div class="aud-name" id="bgname">背景音樂</div>
-        <div class="aud-bar-wrap" id="bgbar"><div class="aud-bar-fill" id="bgfill"></div></div>
-        <div class="aud-time"><span id="bgcur">0:00</span><span id="bgdur">0:00</span></div>
-      </div>
-      <div class="aud-vol">🔊<input type="range" id="bgvol" min="0" max="1" step="0.05" value="0.5"></div>
-    </div>
+<main>
+  <div class="shelf-grid" id="shelf-grid"></div>
+  <div class="empty-state" id="empty-state" style="display:none">找不到符合的電子書</div>
+</main>
 
-  </div>
-  <div class="thumb-strip" id="thumbs"></div>
-</div>
-
-<!-- 全螢幕浮動控制 -->
-<button class="fs-exit-btn" id="fs-exit-btn">✕</button>
-<div class="fs-controls" id="fs-controls">
-  <div class="fs-nav-row">
-    <button class="fs-nav-btn" id="fs-first">⏮</button>
-    <button class="fs-nav-btn" id="fs-prev">◀</button>
-    <span class="fs-page-info" id="fs-pinfo">—</span>
-    <button class="fs-nav-btn" id="fs-next">▶</button>
-    <button class="fs-nav-btn" id="fs-last">⏭</button>
-    <button class="fs-auto-btn stopped" id="fs-auto-btn">▶▶</button>
-  </div>
-  <div class="fs-audio-row" id="fs-audio-row" style="display:none">
-    <button class="fs-aud-play" id="fs-aplay">▶</button>
-    <div class="fs-aud-info">
-      <div class="fs-aud-name" id="fs-aname">音訊</div>
-      <div class="fs-aud-bar" id="fs-abar"><div class="fs-aud-fill" id="fs-afill"></div></div>
-    </div>
-  </div>
-</div>
-
-<audio id="aud"></audio>
-<audio id="audBg" loop></audio>
+<footer>
+  <span id="footer-title"></span> &nbsp;·&nbsp; 翻頁電子書書庫
+</footer>
 
 <script>
-const $ = id => document.getElementById(id);
-const aud   = $('aud');    // 逐頁音訊
-const audBg = $('audBg'); // 背景音樂
-const RING_C = 2 * Math.PI * 22;
+// ── 初始化 ──
+document.getElementById('lib-title').textContent  = LIBRARY.title;
+document.getElementById('lib-sub').textContent    = LIBRARY.subtitle;
+document.getElementById('footer-title').textContent = LIBRARY.title;
 
-const hasPageAudio = CONFIG.audioMode === 'page' || CONFIG.audioMode === 'both';
-const hasBgAudio   = CONFIG.audioMode === 'bg'   || CONFIG.audioMode === 'both';
+// 收集所有 tag
+const allTags = [...new Set(LIBRARY.books.flatMap(b => b.tags || []))];
+let activeTag = '';
+let searchQuery = '';
 
-// ── 狀態 ──
-let si=0, flipping=false, PW=0, PH=0;
-let sheets=[], totalSheets=0, maxSheet=0;
-let fsMode=false, fsHideTimer=null;
-let autoTimer=null, autoSec=5, autoRafId=null;
+// ── Tag Filter ──
+const tagFilter = document.getElementById('tag-filter');
+if (allTags.length) {
+  const allBtn = document.createElement('button');
+  allBtn.className = 'tag-pill active';
+  allBtn.textContent = '全部';
+  allBtn.onclick = () => { activeTag = ''; updateFilter(); setActiveTag(allBtn); };
+  tagFilter.appendChild(allBtn);
 
-// ── 計算書本結構 ──
-const N = CONFIG.totalPages;
-const hasBack = (N % 2 === 0);
-totalSheets = Math.ceil(N / 2);
-maxSheet    = hasBack ? totalSheets : totalSheets - 1;
-
-// ── 圖片 / 音訊路徑 ──
-function imgSrc(i) { return `${CONFIG.imgPrefix}${i}.${CONFIG.imgExt}`; }
-function audSrc(i) { return `${CONFIG.audPrefix}${i}.${CONFIG.audExt}`; }
-
-// ── 建立 Sheets ──
-function buildSheets() {
-  const bookEl = $('book');
-  bookEl.querySelectorAll('.sheet').forEach(s => s.remove());
-  sheets = [];
-
-  for (let i = 0; i < totalSheets; i++) {
-    const fIdx = i * 2 + 1;   // 圖片序號（1-based）
-    const bIdx = i * 2 + 2;
-
-    const sheet = document.createElement('div');
-    sheet.className = 'sheet';
-    sheet.style.zIndex = totalSheets - i;
-
-    // 正面
-    const front = document.createElement('div');
-    front.className = 'page front';
-    if (fIdx <= N) {
-      const img = document.createElement('img');
-      img.src = imgSrc(fIdx); img.draggable = false; img.loading = 'lazy';
-      front.appendChild(img);
-      if (fIdx > 1 && !(hasBack && fIdx === N)) {
-        const num = document.createElement('div');
-        num.className = 'page-num'; num.textContent = fIdx - 1;
-        front.appendChild(num);
-      }
-    }
-
-    // 反面
-    const back = document.createElement('div');
-    back.className = 'page back';
-    if (bIdx <= N) {
-      const img = document.createElement('img');
-      img.src = imgSrc(bIdx); img.draggable = false; img.loading = 'lazy';
-      back.appendChild(img);
-      if (!(hasBack && bIdx === N)) {
-        const num = document.createElement('div');
-        num.className = 'page-num'; num.textContent = bIdx - 1;
-        back.appendChild(num);
-      }
-    }
-
-    sheet.appendChild(front);
-    sheet.appendChild(back);
-    bookEl.insertBefore(sheet, $('tap-L'));
-    sheets.push(sheet);
-  }
-}
-
-// ── Init ──
-function init() {
-  $('ld-title').textContent = CONFIG.title;
-  $('btitle').textContent   = CONFIG.title;
-  document.title = CONFIG.title;
-
-  buildSheets();
-
-  // 等第一張圖載入以決定尺寸
-  const probe = new Image();
-  probe.onload = () => {
-    PH = Math.min(window.innerHeight - 290, 570);
-    PW = Math.round(PH * (probe.naturalWidth / probe.naturalHeight));
-    $('book').style.height = PH + 'px';
-    $('book').style.width  = PW + 'px';
-    buildThumbs();
-    showAt(0, false);
-    setupAudio();
-    setupAutoPlay();
-    setupNav();
-    setupFs();
-    $('loading').style.display = 'none';
-    $('app').style.display = 'flex';
-  };
-  probe.onerror = () => {
-    // 圖片載入失敗時用預設尺寸
-    PH = 520; PW = 390;
-    $('book').style.height = PH + 'px';
-    $('book').style.width  = PW + 'px';
-    buildThumbs();
-    showAt(0, false);
-    setupAudio();
-    setupAutoPlay();
-    setupNav();
-    setupFs();
-    $('loading').style.display = 'none';
-    $('app').style.display = 'flex';
-  };
-  probe.src = imgSrc(1);
-}
-
-// ── showAt ──
-function showAt(idx, trigAudio=true) {
-  si = Math.max(0, Math.min(idx, maxSheet));
-
-  sheets.forEach((s, i) => {
-    if (i < si) { s.classList.add('flipped'); s.style.zIndex = i; }
-    else        { s.classList.remove('flipped'); s.style.zIndex = totalSheets - i; }
-  });
-
-  const isCover    = si === 0;
-  const isBackCover = hasBack && si === totalSheets;
-
-  if (isCover) {
-    $('book').className = 'book at-cover';
-    if (!fsMode) $('book').style.width = PW + 'px';
-    sheets[0].classList.add('cover-full');
-  } else if (isBackCover) {
-    $('book').className = 'book at-backcover';
-    if (!fsMode) $('book').style.width = PW + 'px';
-    const ls = sheets[totalSheets-1];
-    ls.style.cssText += 'left:0;right:auto;width:100%;transform-origin:right center;';
-  } else {
-    $('book').className = 'book';
-    if (!fsMode) $('book').style.width = (PW*2+16) + 'px';
-    if (sheets[0]) sheets[0].classList.remove('cover-full');
-    const ls = sheets[totalSheets-1];
-    if (ls && hasBack) { ls.style.left=''; ls.style.right=''; ls.style.width=''; ls.style.transformOrigin=''; }
-  }
-  if (fsMode) resizeBookFs();
-
-  $('chint').style.display = isCover ? 'block' : 'none';
-
-  // 頁碼
-  let info;
-  if (isCover)    info = '封面';
-  else if (isBackCover) info = '封底';
-  else {
-    const L = si*2-1, R = si*2;
-    const lv = L<=N?L:null, rv = R<=N?R:null;
-    info = lv&&rv ? `第 ${lv}–${rv} 頁` : lv ? `第 ${lv} 頁` : `第 ${rv} 頁`;
-  }
-  $('pinfo').textContent = info + ` ／ 共 ${N} 頁`;
-  $('bprev').disabled = $('bfirst').disabled = si===0;
-  $('bnext').disabled = $('blast').disabled  = si>=maxSheet;
-  if (fsMode) syncFsPinfo();
-
-  // 縮圖高亮
-  const activePages = isCover ? [1] : [si*2, si*2+1].filter(x => x>=1 && x<=N);
-  document.querySelectorAll('.thumb').forEach((t,i) =>
-    t.classList.toggle('active', activePages.includes(i+1)));
-  document.querySelector('.thumb.active')?.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
-
-  // 音訊
-  if (trigAudio && hasPageAudio) {
-    const aidx = isCover ? 1 : si*2;
-    if (aidx >= 1 && aidx <= N) loadAud(aidx);
-  }
-}
-
-// ── go ──
-function go(dir) {
-  if (flipping) return;
-  const target = si + dir;
-  if (target < 0 || target > maxSheet) return;
-  flipping = true;
-
-  const leavingCover  = si===0 && dir>0;
-  const enteringCover = target===0 && dir<0;
-  const leavingBack   = hasBack && si===totalSheets && dir<0;
-  const enteringBack  = hasBack && target===totalSheets && dir>0;
-
-  const doShow = t => { showAt(t, false); if (fsMode) resizeBookFs(); };
-
-  const resetLastSheet = () => {
-    const ls = sheets[totalSheets-1];
-    if (ls) { ls.style.left=''; ls.style.right=''; ls.style.width=''; ls.style.transformOrigin=''; }
-  };
-
-  if (leavingCover) {
-    sheets[0].classList.remove('cover-full');
-    $('book').className = 'book';
-    if (!fsMode) $('book').style.width = (PW*2+16)+'px';
-    if (fsMode) resizeBookFs();
-    requestAnimationFrame(() => doShow(target));
-  } else if (enteringCover || enteringBack || leavingBack) {
-    if (leavingBack || enteringBack) {
-      $('book').className = 'book';
-      resetLastSheet();
-      if (!fsMode) $('book').style.width = (PW*2+16)+'px';
-      if (fsMode) resizeBookFs();
-      requestAnimationFrame(() => doShow(target));
-    } else {
-      doShow(target);
-    }
-  } else {
-    doShow(target);
-  }
-
-  setTimeout(() => {
-    flipping = false;
-    if (fsMode) resizeBookFs();
-    if (hasPageAudio) {
-      const aidx = si===0 ? 1 : si*2;
-      if (aidx>=1 && aidx<=N) loadAud(aidx);
-    }
-  }, 680);
-}
-
-// ── Thumbs ──
-function buildThumbs() {
-  const strip = $('thumbs'); strip.innerHTML = '';
-  for (let i = 1; i <= N; i++) {
-    const isCover = i===1, isBack = hasBack && i===N;
-    const d = document.createElement('div');
-    d.className = 'thumb' + (isCover?' thumb-cover':isBack?' thumb-back':'');
-    const img = document.createElement('img');
-    img.src = imgSrc(i); img.loading = 'lazy';
-    const num = document.createElement('div');
-    num.className = 'thumb-num';
-    num.textContent = isCover?'封面':isBack?'封底':i-1;
-    d.appendChild(img); d.appendChild(num);
-    d.onclick = () => {
-      if (flipping) return;
-      const t = i===1 ? 0 : Math.ceil((i-1)/2);
-      showAt(Math.min(t, maxSheet));
-    };
-    strip.appendChild(d);
-  }
-}
-
-// ── Audio ──
-function setupAudio() {
-  if (CONFIG.audioMode === 'none') return;
-  $('ctrl-panel').style.display = 'flex';
-
-  // ── 逐頁音訊區 ──
-  if (hasPageAudio) {
-    $('page-aud-row').style.display = 'flex';
-    $('page-aud-label').style.display = CONFIG.audioMode === 'both' ? 'block' : 'none';
-    aud.volume = 0.8;
-    loadAud(1);
-    $('aplay').onclick = () => aud.paused ? aud.play() : aud.pause();
-    aud.addEventListener('timeupdate', updAud);
-    aud.addEventListener('loadedmetadata', updAud);
-    aud.addEventListener('play',  () => { $('aplay').textContent='⏸'; syncFsAutoBtn(); });
-    aud.addEventListener('pause', () => $('aplay').textContent='▶');
-    $('abar').onclick = e => { const r=e.currentTarget.getBoundingClientRect(); if(aud.duration) aud.currentTime=((e.clientX-r.left)/r.width)*aud.duration; };
-    $('avol').oninput = e => aud.volume = parseFloat(e.target.value);
-  } else {
-    // 純 bg 模式：隱藏逐頁音訊區，隱藏分隔線（自動播放移到同列）
-    $('page-aud-row').querySelector('.aud-play').style.display = 'none';
-    $('page-aud-row').querySelector('.aud-info').style.display = 'none';
-    $('page-aud-row').querySelector('.aud-vol').style.display = 'none';
-    $('ctrl-div').style.display = 'none';
-    $('page-aud-label').style.display = 'none';
-  }
-
-  // ── 背景音樂區 ──
-  if (hasBgAudio) {
-    $('bg-aud-row').style.display = 'flex';
-    audBg.src = CONFIG.bgFile;
-    audBg.loop = true;
-    audBg.volume = 0.5;
-    $('bgname').textContent = CONFIG.bgFile;
-    audBg.play().catch(()=>{});
-    $('bgplay').onclick = () => audBg.paused ? audBg.play() : audBg.pause();
-    audBg.addEventListener('timeupdate', updBgAud);
-    audBg.addEventListener('loadedmetadata', updBgAud);
-    audBg.addEventListener('play',  () => $('bgplay').textContent='⏸');
-    audBg.addEventListener('pause', () => $('bgplay').textContent='▶');
-    $('bgbar').onclick = e => { const r=e.currentTarget.getBoundingClientRect(); if(audBg.duration) audBg.currentTime=((e.clientX-r.left)/r.width)*audBg.duration; };
-    $('bgvol').oninput = e => audBg.volume = parseFloat(e.target.value);
-  }
-}
-
-function loadAud(pageNum) {
-  if (!hasPageAudio) return;
-  const src = audSrc(pageNum);
-  if (aud.src.endsWith(src) && !aud.paused) return;
-  aud.src = src; aud.loop = false;
-  $('aname').textContent = src;
-  $('fs-aname').textContent = src;
-  aud.play().catch(()=>{});
-}
-
-function updAud() {
-  const c=aud.currentTime||0, d=aud.duration||0;
-  $('afill').style.width = d ? `${c/d*100}%` : '0%';
-  $('acur').textContent = fmt(c); $('adur').textContent = fmt(d);
-  $('fs-afill').style.width = $('afill').style.width;
-}
-
-function updBgAud() {
-  const c=audBg.currentTime||0, d=audBg.duration||0;
-  $('bgfill').style.width = d ? `${c/d*100}%` : '0%';
-  $('bgcur').textContent = fmt(c); $('bgdur').textContent = fmt(d);
-}
-function fmt(s) { if(!isFinite(s))return'0:00'; return`${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,'0')}`; }
-
-// ── Auto Play ──
-function setupAutoPlay() {
-  $('ctrl-panel').style.display = 'flex';
-  $('speed-row').querySelectorAll('.speed-chip').forEach(c => {
-    c.addEventListener('click', () => {
-      $('speed-row').querySelectorAll('.speed-chip').forEach(x => x.classList.remove('active'));
-      c.classList.add('active');
-      autoSec = parseInt(c.dataset.sec);
-      if (autoTimer) { stopAuto(); startAuto(); }
-    });
-  });
-  $('auto-btn').onclick = () => { if (autoTimer) stopAuto(); else startAuto(); syncFsAutoBtn(); };
-}
-
-function startAuto() {
-  if (si >= maxSheet) showAt(0, false);
-  $('auto-btn').className = 'auto-play-btn playing';
-  $('auto-icon').textContent = '⏸';
-  // 用按鈕點擊（用戶手勢）觸發音訊
-  if (hasPageAudio && aud.paused) aud.play().catch(()=>{});
-  if (hasBgAudio && audBg.paused) audBg.play().catch(()=>{});
-  scheduleNext();
-}
-function stopAuto() {
-  clearTimeout(autoTimer); autoTimer=null;
-  cancelAnimationFrame(autoRafId); autoRafId=null;
-  $('auto-btn').className = 'auto-play-btn stopped';
-  $('auto-icon').textContent = '▶▶';
-  $('auto-cd').textContent = '—';
-  setRing(0); syncFsAutoBtn();
-}
-function scheduleNext() {
-  // 僅逐頁音訊才等 metadata；bg 模式直接用預設秒數
-  if (hasPageAudio && (!aud.duration || isNaN(aud.duration))) {
-    aud.addEventListener('loadedmetadata', scheduleNext, { once: true });
-    return;
-  }
-  let waitMs = autoSec * 1000;
-  // 逐頁音訊：取預設秒數與音訊長度的較大值
-  if (hasPageAudio && aud.duration > 0) {
-    waitMs = Math.max(waitMs, aud.duration * 1000);
-  }
-  tickCountdown(waitMs);
-  autoTimer = setTimeout(flipNext, waitMs + 150);
-}
-
-function flipNext() {
-  cancelAnimationFrame(autoRafId);
-  if (si >= maxSheet) { stopAuto(); return; }
-  go(+1);
-  setTimeout(() => { if (autoTimer !== null) scheduleNext(); }, 700);
-}
-function tickCountdown(totalMs) {
-  cancelAnimationFrame(autoRafId);
-  const start = performance.now();
-  function frame(now) {
-    const left = Math.max(0, totalMs-(now-start));
-    $('auto-cd').textContent = (left/1000).toFixed(1)+'s';
-    setRing(1-left/totalMs);
-    if (left>0) autoRafId=requestAnimationFrame(frame);
-  }
-  autoRafId = requestAnimationFrame(frame);
-}
-function setRing(pct) {
-  $('ring-fill').style.strokeDashoffset = RING_C*(1-Math.max(0,Math.min(1,pct)));
-}
-
-// ── Nav ──
-function setupNav() {
-  $('bprev').onclick  = () => { stopAuto(); go(-1); };
-  $('bnext').onclick  = () => { stopAuto(); go(+1); };
-  $('bfirst').onclick = () => { if(!flipping){ stopAuto(); showAt(0); } };
-  $('blast').onclick  = () => { if(!flipping){ stopAuto(); showAt(maxSheet); } };
-  $('tap-L').onclick  = () => { stopAuto(); go(-1); };
-  $('tap-R').onclick  = () => { stopAuto(); go(+1); };
-  document.addEventListener('keydown', e => {
-    const m={ArrowRight:+1,ArrowDown:+1,PageDown:+1,ArrowLeft:-1,ArrowUp:-1,PageUp:-1};
-    if (m[e.key]!==undefined) { stopAuto(); go(m[e.key]); }
-    else if(e.key==='Home') { stopAuto(); showAt(0); }
-    else if(e.key==='End')  { stopAuto(); showAt(maxSheet); }
-    else if(e.key==='f'||e.key==='F') fsMode ? exitFs() : enterFs();
-    else if(e.key==='Escape' && fsMode) exitFs();
+  allTags.forEach(tag => {
+    const btn = document.createElement('button');
+    btn.className = 'tag-pill';
+    btn.textContent = tag;
+    btn.onclick = () => { activeTag = tag; updateFilter(); setActiveTag(btn); };
+    tagFilter.appendChild(btn);
   });
 }
 
-// ── Fullscreen ──
-function setupFs() {
-  $('fs-btn').onclick      = enterFs;
-  $('fs-exit-btn').onclick = exitFs;
-  $('fs-first').onclick = () => { stopAuto(); showAt(0); };
-  $('fs-last').onclick  = () => { stopAuto(); showAt(maxSheet); };
-  $('fs-prev').onclick  = () => { stopAuto(); go(-1); };
-  $('fs-next').onclick  = () => { stopAuto(); go(+1); };
-  $('fs-auto-btn').onclick = () => { if(autoTimer) stopAuto(); else startAuto(); syncFsAutoBtn(); };
-  $('fs-aplay').onclick = () => aud.paused ? aud.play() : aud.pause();
-  $('fs-abar').onclick = e => { const r=e.currentTarget.getBoundingClientRect(); if(aud.duration) aud.currentTime=((e.clientX-r.left)/r.width)*aud.duration; };
-  aud.addEventListener('play',  () => $('fs-aplay').textContent='⏸');
-  aud.addEventListener('pause', () => $('fs-aplay').textContent='▶');
-  document.addEventListener('mousemove',  () => { if(fsMode) showFsCtrl(); });
-  document.addEventListener('touchstart', () => { if(fsMode) showFsCtrl(); }, {passive:true});
-  document.addEventListener('fullscreenchange', () => { if(!document.fullscreenElement && fsMode) exitFs(); });
-}
-function enterFs() {
-  fsMode = true;
-  document.body.classList.add('fs-mode');
-  $('fs-audio-row').style.display = hasPageAudio ? 'flex' : 'none';
-  const el = document.documentElement;
-  if (el.requestFullscreen) el.requestFullscreen().catch(()=>{});
-  else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
-  window.addEventListener('resize', resizeBookFs);
-  resizeBookFs(); syncFsPinfo(); syncFsAutoBtn(); showFsCtrl();
-}
-function exitFs() {
-  fsMode = false;
-  document.body.classList.remove('fs-mode');
-  if (document.fullscreenElement) document.exitFullscreen().catch(()=>{});
-  else if (document.webkitFullscreenElement) document.webkitExitFullscreen();
-  window.removeEventListener('resize', resizeBookFs);
-  resizeBook(); clearTimeout(fsHideTimer);
-}
-function resizeBookFs() {
-  if (!PW||!PH) return;
-  const isSingle = si===0 || (hasBack && si===totalSheets);
-  const ar = isSingle ? PW/PH : (PW*2+16)/PH;
-  const vw=window.innerWidth, vh=window.innerHeight-90;
-  const newH = Math.floor(vw/vh>ar ? vh : vw/ar);
-  const newPW = Math.round(newH*(PW/PH));
-  $('book').style.height = newH+'px';
-  $('book').style.width  = (isSingle ? newPW : newPW*2+16)+'px';
-}
-function resizeBook() {
-  const isSingle = si===0 || (hasBack && si===totalSheets);
-  $('book').style.height = PH+'px';
-  $('book').style.width  = (isSingle ? PW : PW*2+16)+'px';
-}
-function showFsCtrl() {
-  $('fs-controls').classList.add('visible');
-  $('fs-exit-btn').style.opacity='1';
-  clearTimeout(fsHideTimer);
-  fsHideTimer = setTimeout(() => { $('fs-controls').classList.remove('visible'); $('fs-exit-btn').style.opacity='0.15'; }, 3000);
-}
-function syncFsPinfo() {
-  $('fs-pinfo').textContent = $('pinfo').textContent;
-  ['first','last','prev','next'].forEach(k => $('fs-'+k).disabled = $('b'+k).disabled);
-}
-function syncFsAutoBtn() {
-  const btn = $('fs-auto-btn');
-  btn.className = 'fs-auto-btn '+(autoTimer?'playing':'stopped');
-  btn.textContent = autoTimer ? '⏸⏸' : '▶▶';
+function setActiveTag(el) {
+  document.querySelectorAll('.tag-pill').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
 }
 
-// ── Start ──
-init();
+// ── 搜尋 ──
+document.getElementById('search-box').addEventListener('input', e => {
+  searchQuery = e.target.value.trim().toLowerCase();
+  updateFilter();
+});
+
+// ── 渲染書本 ──
+function renderBooks(books) {
+  const grid = document.getElementById('shelf-grid');
+  const empty = document.getElementById('empty-state');
+  grid.innerHTML = '';
+
+  if (books.length === 0) { empty.style.display = 'block'; return; }
+  empty.style.display = 'none';
+
+  books.forEach((book, i) => {
+    const coverSrc = book.cover || `${book.folder}/p1.${LIBRARY.imgExt}`;
+    const href = `${book.folder}/${book.file}`;
+
+    const a = document.createElement('a');
+    a.className = 'book-card';
+    a.href = href;
+    a.style.animationDelay = `${i * 0.06}s`;
+
+    const tagsHtml = (book.tags || []).map(t =>
+      `<span class="book-tag">${t}</span>`
+    ).join('');
+
+    a.innerHTML = `
+      <div class="book-3d">
+        <div class="book-spine"></div>
+        <div class="book-placeholder"><span>📖</span></div>
+        <div class="book-cover">
+          <img src="${coverSrc}" alt="${book.title}" loading="lazy"
+               onerror="this.parentElement.style.display='none'">
+        </div>
+        <div class="book-open-hint"><span>開始閱讀</span></div>
+        <div class="book-shadow"></div>
+      </div>
+      <div class="book-info">
+        <div class="book-name">${book.title}</div>
+        ${book.desc ? `<div class="book-desc">${book.desc}</div>` : ''}
+        ${tagsHtml ? `<div class="book-tags">${tagsHtml}</div>` : ''}
+      </div>`;
+
+    grid.appendChild(a);
+  });
+}
+
+function updateFilter() {
+  const filtered = LIBRARY.books.filter(b => {
+    const matchTag = !activeTag || (b.tags && b.tags.includes(activeTag));
+    const matchSearch = !searchQuery ||
+      b.title.toLowerCase().includes(searchQuery) ||
+      (b.desc && b.desc.toLowerCase().includes(searchQuery)) ||
+      (b.tags && b.tags.some(t => t.toLowerCase().includes(searchQuery)));
+    return matchTag && matchSearch;
+  });
+  renderBooks(filtered);
+  document.getElementById('lib-count').textContent =
+    `共 ${LIBRARY.books.length} 本電子書${filtered.length < LIBRARY.books.length ? `（顯示 ${filtered.length} 本）` : ''}`;
+}
+
+// 初始渲染
+updateFilter();
 </script>
 </body>
 </html>
