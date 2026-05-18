@@ -11,11 +11,13 @@
 const CONFIG = {
   title:      '有聲電子書',
   totalPages: 10,            // 總頁數（含封面）
-  audioMode:  'page',        // 'none' | 'bg' | 'page'
+  audioMode:  'both',        // 'none' | 'bg' | 'page' | 'both'
+                              //   both → 逐頁音訊 + 背景音樂同時
   imgExt:     'png',
   audExt:     'mp3',
   imgPrefix:  'p',           // p1.png, p2.png …
   audPrefix:  'a',           // a1.mp3, a2.mp3 …
+  bgFile:     'bg.mp3',        // 背景音樂檔案名稱
 };
 /* ════════════════════════════════════ */
 </script>
@@ -166,12 +168,14 @@ body::before {
 /* ── Control Panel ── */
 .ctrl-panel {
   margin-top: 14px; background: rgba(30,26,22,0.88);
-  border: 1px solid var(--border); border-radius: 14px; padding: 12px 18px;
-  display: none; align-items: center; gap: 0;
-  min-width: 300px; max-width: 680px; width: 100%;
-  backdrop-filter: blur(8px);
+  border: 1px solid var(--border); border-radius: 14px; padding: 10px 16px;
+  display: none; flex-direction: row; align-items: center; gap: 0;
+  max-width: 900px; width: 100%;
+  backdrop-filter: blur(8px); overflow-x: auto;
 }
-.ctrl-divider { width: 1px; height: 36px; background: var(--border); flex-shrink: 0; margin: 0 16px; }
+.ctrl-row { display: contents; } /* 展開為同一 flex 列 */
+.ctrl-row-label { font-size: 0.65rem; color: var(--dim); white-space: nowrap; margin-right: 6px; flex-shrink: 0; letter-spacing: 0.5px; }
+.ctrl-divider { width: 1px; height: 32px; background: var(--border); flex-shrink: 0; margin: 0 12px; }
 .aud-play {
   width: 38px; height: 38px; border-radius: 50%;
   background: linear-gradient(135deg,#c4872a,#e8a83c);
@@ -285,14 +289,34 @@ body.fs-mode .fs-exit-btn { display:flex; }
     <button class="nav-btn" id="blast">⏭</button>
   </div>
   <div class="ctrl-panel" id="ctrl-panel">
-    <button class="aud-play" id="aplay">▶</button>
-    <div class="aud-info" style="flex:1;min-width:0;margin-left:12px">
+
+    <!-- 逐頁音訊區 -->
+    <span class="ctrl-row-label" id="page-aud-label" style="display:none">📄</span>
+    <button class="aud-play" id="aplay" style="display:none">▶</button>
+    <div class="aud-info" id="page-aud-info" style="flex:1.2;min-width:110px;margin-left:10px;display:none">
       <div class="aud-name" id="aname">音訊</div>
       <div class="aud-bar-wrap" id="abar"><div class="aud-bar-fill" id="afill"></div></div>
       <div class="aud-time"><span id="acur">0:00</span><span id="adur">0:00</span></div>
     </div>
-    <div class="aud-vol">🔊<input type="range" id="avol" min="0" max="1" step="0.05" value="0.8"></div>
-    <div class="ctrl-divider"></div>
+    <div class="aud-vol" id="page-vol" style="display:none">🔊<input type="range" id="avol" min="0" max="1" step="0.05" value="0.8"></div>
+
+    <!-- 分隔 -->
+    <div class="ctrl-divider" id="div-page-bg" style="display:none"></div>
+
+    <!-- 背景音樂區 -->
+    <span class="ctrl-row-label" id="bg-aud-label" style="display:none">🎶</span>
+    <button class="aud-play" id="bgplay" style="display:none">▶</button>
+    <div class="aud-info" id="bg-aud-info" style="flex:1.2;min-width:110px;margin-left:10px;display:none">
+      <div class="aud-name" id="bgname">背景音樂</div>
+      <div class="aud-bar-wrap" id="bgbar"><div class="aud-bar-fill" id="bgfill"></div></div>
+      <div class="aud-time"><span id="bgcur">0:00</span><span id="bgdur">0:00</span></div>
+    </div>
+    <div class="aud-vol" id="bg-vol" style="display:none">🔊<input type="range" id="bgvol" min="0" max="1" step="0.05" value="0.4"></div>
+
+    <!-- 分隔 -->
+    <div class="ctrl-divider" id="ctrl-div"></div>
+
+    <!-- 自動翻頁區 -->
     <div class="auto-side">
       <button class="auto-play-btn stopped" id="auto-btn">
         <span id="auto-icon">▶▶</span>
@@ -314,6 +338,7 @@ body.fs-mode .fs-exit-btn { display:flex; }
       </div>
       <div class="auto-countdown" id="auto-cd">—</div>
     </div>
+
   </div>
   <div class="thumb-strip" id="thumbs"></div>
 </div>
@@ -338,11 +363,16 @@ body.fs-mode .fs-exit-btn { display:flex; }
 </div>
 
 <audio id="aud"></audio>
+<audio id="audBg" loop></audio>
 
 <script>
 const $ = id => document.getElementById(id);
-const aud = $('aud');
+const aud   = $('aud');
+const audBg = $('audBg');
 const RING_C = 2 * Math.PI * 22;
+
+const hasPageAudio = CONFIG.audioMode === 'page' || CONFIG.audioMode === 'both';
+const hasBgAudio   = CONFIG.audioMode === 'bg'   || CONFIG.audioMode === 'both';
 
 const N        = CONFIG.totalPages;
 const hasBack  = (N % 2 === 0); // 最後一頁是封底
@@ -462,7 +492,7 @@ function showAt(idx, trigAudio = true) {
     ?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
 
   // 音訊
-  if (trigAudio && CONFIG.audioMode === 'page') loadAud(pageNum);
+  if (trigAudio && hasPageAudio) loadAud(pageNum);
 }
 
 /* ══════════════════════════════════════════════════════════
@@ -568,27 +598,57 @@ function buildThumbs() {
 function setupAudio() {
   if (CONFIG.audioMode === 'none') return;
   $('ctrl-panel').style.display = 'flex';
-  aud.volume = 0.8;
-  if (CONFIG.audioMode === 'bg') { aud.src = audSrc(1); aud.loop = true; aud.play().catch(()=>{}); }
-  if (CONFIG.audioMode === 'page') loadAud(1);
 
-  $('aplay').onclick = () => aud.paused ? aud.play() : aud.pause();
-  aud.addEventListener('timeupdate', updAud);
-  aud.addEventListener('loadedmetadata', updAud);
-  aud.addEventListener('play',  () => { $('aplay').textContent='⏸'; syncFsAutoBtn(); });
-  aud.addEventListener('pause', () =>   $('aplay').textContent='▶');
-  $('abar').onclick = e => {
-    const r = e.currentTarget.getBoundingClientRect();
-    if (aud.duration) aud.currentTime = ((e.clientX-r.left)/r.width)*aud.duration;
-  };
-  $('avol').oninput = e => aud.volume = parseFloat(e.target.value);
+  const show = id => $(id).style.display = '';   // 顯示元素（移除 inline style）
+
+  // ── 逐頁音訊 ──
+  if (hasPageAudio) {
+    if (CONFIG.audioMode === 'both') show('page-aud-label');
+    show('aplay'); show('page-aud-info'); show('page-vol');
+    if (hasBgAudio) show('div-page-bg');  // 兩區之間分隔線
+    aud.volume = 0.8;
+    loadAud(1);
+    $('aplay').onclick = () => aud.paused ? aud.play() : aud.pause();
+    aud.addEventListener('timeupdate', updAud);
+    aud.addEventListener('loadedmetadata', updAud);
+    aud.addEventListener('play',  () => { $('aplay').textContent='⏸'; syncFsAutoBtn(); });
+    aud.addEventListener('pause', () =>   $('aplay').textContent='▶');
+    $('abar').onclick = e => {
+      const r=e.currentTarget.getBoundingClientRect();
+      if(aud.duration) aud.currentTime=((e.clientX-r.left)/r.width)*aud.duration;
+    };
+    $('avol').oninput = e => aud.volume = parseFloat(e.target.value);
+  }
+
+  // ── 背景音樂 ──
+  if (hasBgAudio) {
+    if (CONFIG.audioMode === 'both') show('bg-aud-label');
+    show('bgplay'); show('bg-aud-info'); show('bg-vol');
+    audBg.src    = CONFIG.bgFile;
+    audBg.loop   = true;
+    audBg.volume = 0.4;
+    $('bgname').textContent = CONFIG.bgFile;
+    audBg.play().catch(()=>{});
+    $('bgplay').onclick = () => audBg.paused ? audBg.play() : audBg.pause();
+    audBg.addEventListener('timeupdate', updBgAud);
+    audBg.addEventListener('loadedmetadata', updBgAud);
+    audBg.addEventListener('play',  () => $('bgplay').textContent='⏸');
+    audBg.addEventListener('pause', () => $('bgplay').textContent='▶');
+    $('bgbar').onclick = e => {
+      const r=e.currentTarget.getBoundingClientRect();
+      if(audBg.duration) audBg.currentTime=((e.clientX-r.left)/r.width)*audBg.duration;
+    };
+    $('bgvol').oninput = e => audBg.volume = parseFloat(e.target.value);
+  }
 }
 function loadAud(pageNum) {
-  if (CONFIG.audioMode !== 'page') return;
+  if (!hasPageAudio) return;
   const src = audSrc(pageNum);
   if (aud.src.endsWith(src) && !aud.paused) return;
   aud.src = src; aud.loop = false;
   $('aname').textContent = src;
+  // 音訊載入失敗（檔案不存在）→ 清空 src，讓 scheduleNext 改用選取秒數
+  aud.onerror = () => { aud.src = ''; $('aname').textContent = '（無音訊）'; };
   aud.play().catch(()=>{});
 }
 function updAud() {
@@ -598,17 +658,17 @@ function updAud() {
   $('fs-afill').style.width=$('afill').style.width;
   $('fs-aname').textContent=$('aname').textContent;
 }
+function updBgAud() {
+  const c=audBg.currentTime||0, d=audBg.duration||0;
+  $('bgfill').style.width = d?`${c/d*100}%`:'0%';
+  $('bgcur').textContent=fmt(c); $('bgdur').textContent=fmt(d);
+}
 function fmt(s) { if(!isFinite(s))return'0:00'; return`${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,'0')}`; }
 
 /* ── Auto Play ── */
 function setupAutoPlay() {
   $('ctrl-panel').style.display = 'flex';
-  if (CONFIG.audioMode === 'none') {
-    $('aplay').style.display = 'none';
-    $('ctrl-panel').querySelector('.aud-info').style.display='none';
-    $('ctrl-panel').querySelector('.aud-vol').style.display='none';
-    $('ctrl-panel').querySelector('.ctrl-divider').style.display='none';
-  }
+  // none 模式：音訊元素預設已隱藏，僅顯示自動翻頁區
   $('speed-row').querySelectorAll('.speed-chip').forEach(c => {
     c.addEventListener('click', () => {
       $('speed-row').querySelectorAll('.speed-chip').forEach(x=>x.classList.remove('active'));
@@ -621,7 +681,8 @@ function setupAutoPlay() {
 function startAuto() {
   if (si >= MAX_SI) showAt(0, false);
   $('auto-btn').className='auto-play-btn playing'; $('auto-icon').textContent='⏸';
-  if (CONFIG.audioMode!=='none' && aud.paused) aud.play().catch(()=>{});
+  if (hasPageAudio && aud.paused) aud.play().catch(()=>{});
+  if (hasBgAudio && audBg.paused) audBg.play().catch(()=>{});
   scheduleNext();
 }
 function stopAuto() {
@@ -631,11 +692,38 @@ function stopAuto() {
   $('auto-cd').textContent='—'; setRing(0); syncFsAutoBtn();
 }
 function scheduleNext() {
-  let waitMs = autoSec * 1000;
-  if (CONFIG.audioMode==='page' && aud.duration>0) {
-    const rem = (aud.duration - aud.currentTime) * 1000;
-    if (rem > 0) waitMs = Math.max(waitMs, rem);
+  // 有逐頁音訊模式：等音訊 metadata 載入後再決定等待時間
+  if (hasPageAudio) {
+    if (!aud.src) {
+      // 該頁無音訊 src → 用選取秒數
+      _doSchedule(autoSec * 1000);
+    } else if (aud.duration > 0) {
+      // metadata 已載入 → 用音訊剩餘時長（從頭算，確保完整播完）
+      const durMs = aud.duration * 1000;
+      _doSchedule(durMs);
+    } else {
+      // metadata 尚未載入 → 等待一次 loadedmetadata 或 error
+      const onMeta = () => {
+        cleanup();
+        _doSchedule(aud.duration > 0 ? aud.duration * 1000 : autoSec * 1000);
+      };
+      const onErr = () => {
+        cleanup();
+        _doSchedule(autoSec * 1000); // 音訊載入失敗 → 用選取秒數
+      };
+      const cleanup = () => {
+        aud.removeEventListener('loadedmetadata', onMeta);
+        aud.removeEventListener('error', onErr);
+      };
+      aud.addEventListener('loadedmetadata', onMeta, { once: true });
+      aud.addEventListener('error', onErr, { once: true });
+    }
+  } else {
+    // 無逐頁音訊 → 直接用選取秒數
+    _doSchedule(autoSec * 1000);
   }
+}
+function _doSchedule(waitMs) {
   tickCountdown(waitMs);
   autoTimer = setTimeout(flipNext, waitMs + 150);
 }
