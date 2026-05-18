@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>有聲翻頁電子書</title>
+<script>
+/* ════════════════════════════════════
+   ★ 書本設定（每次換書只需改這裡）
+   ════════════════════════════════════ */
+const CONFIG = {
+  title:      '有聲電子書',
+  totalPages: 10,            // 總頁數（含封面）
+  audioMode:  'page',        // 'none' | 'bg' | 'page'
+  imgExt:     'png',
+  audExt:     'mp3',
+  imgPrefix:  'p',           // p1.png, p2.png …
+  audPrefix:  'a',           // a1.mp3, a2.mp3 …
+};
+/* ════════════════════════════════════ */
+</script>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #12100e; --border: #3a2e22; --page-bg: #fef8ed;
+  --accent: #c4872a; --glow: rgba(196,135,42,0.35); --muted: #9a7d60; --dim: #6a5040;
+}
+
+body {
+  background: var(--bg); min-height: 100vh;
+  font-family: 'Georgia','Noto Serif TC',serif; color: #e0c8a8;
+  display: flex; flex-direction: column; align-items: center;
+  overflow-x: hidden; padding: 0 0 24px;
+}
+body::before {
+  content: ''; position: fixed; inset: 0;
+  background-image:
+    radial-gradient(ellipse 120% 80% at 50% 0%, rgba(196,135,42,0.06) 0%, transparent 60%),
+    url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23c4872a' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  pointer-events: none; z-index: 0;
+}
+
+/* ── Loading ── */
+#loading {
+  position: relative; z-index: 1;
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; min-height: 100vh; gap: 16px; text-align: center;
+  animation: fadeIn 0.5s ease;
+}
+@keyframes fadeIn { from{opacity:0} to{opacity:1} }
+.ld-logo  { font-size: 3rem; filter: drop-shadow(0 0 20px var(--glow)); }
+.ld-title { font-size: 1.8rem; color: var(--accent); letter-spacing: 3px; }
+.ld-spin  { font-size: 2rem; animation: spin 2.5s linear infinite; display:inline-block; }
+@keyframes spin { to{transform:rotate(360deg)} }
+
+/* ── App ── */
+#app {
+  position: relative; z-index: 1;
+  display: none; flex-direction: column; align-items: center;
+  width: 100%; padding: 20px 12px 0; animation: fadeIn 0.5s ease;
+}
+
+/* ── Top Bar ── */
+.topbar {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 16px; max-width: 800px; width: 100%;
+}
+.book-title { font-size: 0.88rem; color: var(--muted); letter-spacing: 2px;
+  text-transform: uppercase; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.icon-btn {
+  width: 34px; height: 34px; border-radius: 50%;
+  border: 1px solid var(--border); background: transparent;
+  color: var(--muted); cursor: pointer; font-size: 0.95rem;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s; flex-shrink: 0;
+}
+.icon-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ── Book Stage ── */
+.book-stage { perspective: 2200px; }
+
+.book {
+  position: relative;
+  box-shadow: -18px 12px 50px rgba(0,0,0,0.85), 18px 12px 40px rgba(0,0,0,0.55);
+  border-radius: 4px; overflow: hidden;
+}
+
+/* ════════════════════════════════════════════════════════════
+   Sheet（橫版）
+   ────────────────────────────────────────────────────────────
+   參考直版的翻頁機制：
+     - 每張 sheet 全寬堆疊，transform-origin: center center
+     - 正面（front）：本頁圖片
+     - 反面（back） ：下一頁圖片，預旋 rotateY(180deg) 使方向正確
+     - 翻頁：加 .flipped → rotateY(-180deg)（CSS 轉場，一氣呵成）
+     - 後退：移除 .flipped → 反向轉場回到 0deg
+   zIndex 規則：
+     - 已翻過（i < si）：低 zIndex（i），隱於後
+     - 尚未翻（i >= si）：高 zIndex（N-1-i），sheet[si] 最頂
+   ════════════════════════════════════════════════════════════ */
+.sheet {
+  position: absolute; inset: 0;
+  transform-style: preserve-3d;
+  transform-origin: center center;
+  transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+}
+.sheet.flipped { transform: rotateY(-180deg); }
+/* 跳頁（showAt）時關閉動畫，避免多張同時飛 */
+.sheet.instant { transition: none; }
+
+.page {
+  position: absolute; inset: 0;
+  background: var(--page-bg);
+  backface-visibility: hidden; -webkit-backface-visibility: hidden;
+  overflow: hidden;
+}
+.page.front { transform: rotateY(0deg); }
+.page.back  { transform: rotateY(180deg); }  /* 預旋，使反面方向正確 */
+.page img   { width: 100%; height: 100%; object-fit: contain; display: block; }
+.page-num   {
+  position: absolute; bottom: 8px; right: 10px;
+  font-size: 0.68rem; color: rgba(100,70,40,0.45);
+  font-style: italic; pointer-events: none; user-select: none;
+}
+
+/* 封面提示 */
+.cover-hint {
+  position: absolute; bottom: 18px; left: 50%; transform: translateX(-50%);
+  font-size: 0.74rem; color: rgba(196,135,42,0.75);
+  letter-spacing: 1.5px; text-transform: uppercase;
+  animation: pulse 2s ease-in-out infinite;
+  white-space: nowrap; pointer-events: none; z-index: 9999;
+}
+@keyframes pulse { 0%,100%{opacity:.35} 50%{opacity:1} }
+
+/* 翻頁熱區 */
+.tap-zone {
+  position: absolute; top: 0; height: 100%; width: 38%;
+  cursor: pointer; z-index: 10000;
+  display: flex; align-items: center;
+  opacity: 0; transition: opacity 0.2s;
+}
+.tap-zone:hover { opacity: 1; }
+.tap-L { left: 0; justify-content: flex-start; padding-left: 10px; }
+.tap-R { right: 0; justify-content: flex-end;  padding-right: 10px; }
+.tap-arrow {
+  width: 38px; height: 38px; border-radius: 50%;
+  background: rgba(196,135,42,0.18); border: 1px solid rgba(196,135,42,0.4);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--accent); font-size: 1rem; backdrop-filter: blur(4px);
+}
+
+/* ── Nav Row ── */
+.nav-row { display: flex; align-items: center; gap: 16px; margin-top: 18px; }
+.nav-btn {
+  width: 44px; height: 44px; border-radius: 50%;
+  border: 1px solid var(--border); background: rgba(196,135,42,0.08);
+  color: var(--accent); font-size: 1.1rem; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; transition: all 0.2s;
+}
+.nav-btn:hover:not(:disabled) { background: var(--accent); color: #1a1008; box-shadow: 0 0 16px var(--glow); }
+.nav-btn:disabled { opacity: 0.22; cursor: default; }
+.page-info { color: var(--muted); font-size: 0.83rem; min-width: 160px; text-align: center; }
+
+/* ── Control Panel ── */
+.ctrl-panel {
+  margin-top: 14px; background: rgba(30,26,22,0.88);
+  border: 1px solid var(--border); border-radius: 14px; padding: 12px 18px;
+  display: none; align-items: center; gap: 0;
+  min-width: 300px; max-width: 680px; width: 100%;
+  backdrop-filter: blur(8px);
+}
+.ctrl-divider { width: 1px; height: 36px; background: var(--border); flex-shrink: 0; margin: 0 16px; }
+.aud-play {
+  width: 38px; height: 38px; border-radius: 50%;
+  background: linear-gradient(135deg,#c4872a,#e8a83c);
+  border: none; color: #1a1008; font-size: 1rem; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  box-shadow: 0 2px 10px var(--glow); transition: transform 0.2s;
+}
+.aud-play:hover { transform: scale(1.1); }
+.aud-info { flex: 1; min-width: 0; }
+.aud-name { font-size: 0.77rem; color: #b08a60; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 6px; }
+.aud-bar-wrap { height: 3px; background: #3a2e22; border-radius: 2px; cursor: pointer; }
+.aud-bar-fill { height: 100%; background: linear-gradient(90deg,#c4872a,#e8a83c); border-radius: 2px; width: 0%; transition: width 0.1s; }
+.aud-time { display: flex; justify-content: space-between; font-size: 0.67rem; color: var(--dim); margin-top: 4px; }
+.aud-vol { display: flex; align-items: center; gap: 6px; color: var(--dim); font-size: 0.9rem; flex-shrink: 0; margin-left: 10px; }
+.aud-vol input[type=range] { width: 54px; accent-color: var(--accent); cursor: pointer; }
+.auto-side { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+.auto-play-btn {
+  width: 44px; height: 44px; border-radius: 50%; flex-shrink: 0;
+  border: none; cursor: pointer; font-size: 1rem;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s; position: relative;
+}
+.auto-play-btn.stopped { background: rgba(196,135,42,0.1); border: 1.5px solid var(--border); color: var(--accent); }
+.auto-play-btn.playing { background: linear-gradient(135deg,#c4872a,#e8a83c); color:#1a1008; box-shadow:0 2px 14px var(--glow); }
+.auto-play-btn:hover { transform: scale(1.08); }
+.auto-play-btn svg.ring { position:absolute; inset:-4px; width:calc(100% + 8px); height:calc(100% + 8px); transform:rotate(-90deg); pointer-events:none; }
+.ring-track { fill:none; stroke:rgba(196,135,42,0.15); stroke-width:3; }
+.ring-fill  { fill:none; stroke:#e8a83c; stroke-width:3; stroke-linecap:round; transition:stroke-dashoffset 0.25s linear; }
+.auto-right { display: flex; flex-direction: column; gap: 6px; }
+.auto-label { font-size: 0.72rem; color: var(--muted); white-space: nowrap; }
+.auto-speed-row { display: flex; gap: 4px; flex-wrap: wrap; }
+.speed-chip { padding:2px 8px; border-radius:12px; font-size:0.72rem; border:1px solid var(--border); background:transparent; color:var(--dim); cursor:pointer; font-family:inherit; transition:all 0.18s; }
+.speed-chip:hover { border-color:var(--accent); color:var(--accent); }
+.speed-chip.active { background:var(--accent); border-color:var(--accent); color:#1a1008; font-weight:bold; }
+.auto-countdown { font-size:0.8rem; color:var(--accent); min-width:26px; text-align:right; flex-shrink:0; font-variant-numeric:tabular-nums; }
+
+/* ── Thumbnails ── */
+.thumb-strip {
+  display: flex; gap: 6px; margin-top: 14px;
+  overflow-x: auto; max-width: min(720px,96vw);
+  padding: 6px 4px 10px;
+  scrollbar-width: thin; scrollbar-color: #4a3828 transparent;
+}
+.thumb { flex-shrink:0; width:50px; height:68px; border-radius:3px; overflow:hidden; cursor:pointer; border:2px solid transparent; opacity:.45; transition:all 0.2s; position:relative; background:#1a1410; }
+.thumb:hover { opacity:.82; }
+.thumb.active { opacity:1; border-color:var(--accent); box-shadow:0 0 10px var(--glow); }
+.thumb img { width:100%; height:100%; object-fit:cover; display:block; }
+.thumb-num { position:absolute; bottom:0; left:0; right:0; text-align:center; font-size:0.58rem; color:rgba(0,0,0,.55); background:rgba(255,255,255,.72); padding:1px 0; }
+.thumb-cover::after { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg,#c4872a,#e8a83c); }
+
+/* ── Fullscreen ── */
+.fs-btn { margin-left: auto; }
+body.fs-mode { overflow: hidden; }
+body.fs-mode #app { position:fixed; inset:0; z-index:100; background:var(--bg); padding:0; justify-content:center; overflow:hidden; }
+body.fs-mode .topbar, body.fs-mode .thumb-strip, body.fs-mode .nav-row, body.fs-mode .ctrl-panel { display:none !important; }
+body.fs-mode .book-stage { flex:1; display:flex; align-items:center; justify-content:center; width:100%; min-height:0; }
+.fs-controls {
+  position:fixed; bottom:0; left:0; right:0; z-index:200;
+  padding:16px 24px 20px;
+  background:linear-gradient(to top,rgba(0,0,0,0.85) 0%,transparent 100%);
+  display:none; flex-direction:column; align-items:center; gap:10px;
+  opacity:0; transition:opacity 0.3s; pointer-events:none;
+}
+.fs-controls.visible { opacity:1; pointer-events:auto; }
+body.fs-mode .fs-controls { display:flex; }
+.fs-nav-row { display:flex; align-items:center; gap:16px; }
+.fs-nav-btn { width:42px; height:42px; border-radius:50%; border:1px solid rgba(196,135,42,0.4); background:rgba(196,135,42,0.12); color:var(--accent); font-size:1.1rem; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.2s; }
+.fs-nav-btn:hover:not(:disabled) { background:var(--accent); color:#1a1008; }
+.fs-nav-btn:disabled { opacity:.2; cursor:default; }
+.fs-page-info { color:rgba(196,135,42,0.85); font-size:0.85rem; min-width:160px; text-align:center; }
+.fs-audio-row { display:flex; align-items:center; gap:12px; max-width:480px; width:100%; }
+.fs-aud-play { width:34px; height:34px; border-radius:50%; background:linear-gradient(135deg,#c4872a,#e8a83c); border:none; color:#1a1008; cursor:pointer; font-size:.9rem; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.fs-aud-info { flex:1; min-width:0; }
+.fs-aud-name { font-size:.72rem; color:rgba(196,135,42,.8); margin-bottom:5px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.fs-aud-bar  { height:3px; background:rgba(255,255,255,.2); border-radius:2px; cursor:pointer; }
+.fs-aud-fill { height:100%; background:linear-gradient(90deg,#c4872a,#e8a83c); border-radius:2px; width:0%; transition:width 0.1s; }
+.fs-auto-btn { width:36px; height:36px; border-radius:50%; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:.85rem; transition:all .2s; }
+.fs-auto-btn.stopped { background:rgba(196,135,42,.15); border:1.5px solid rgba(196,135,42,.3); color:var(--accent); }
+.fs-auto-btn.playing { background:linear-gradient(135deg,#c4872a,#e8a83c); color:#1a1008; }
+.fs-exit-btn { position:fixed; top:16px; right:16px; z-index:201; width:38px; height:38px; border-radius:50%; border:1px solid rgba(255,255,255,.2); background:rgba(0,0,0,.5); color:rgba(255,255,255,.7); cursor:pointer; font-size:1rem; display:none; align-items:center; justify-content:center; transition:all .2s; backdrop-filter:blur(4px); }
+.fs-exit-btn:hover { border-color:#fff; color:#fff; }
+body.fs-mode .fs-exit-btn { display:flex; }
+</style>
+</head>
+<body>
+
+<div id="loading">
+  <div class="ld-logo">📖</div>
+  <div class="ld-title" id="ld-title">載入中…</div>
+  <span class="ld-spin">⟳</span>
+</div>
+
+<div id="app">
+  <div class="topbar">
+    <div class="book-title" id="btitle"></div>
+    <button class="icon-btn fs-btn" id="fs-btn">⛶</button>
+  </div>
+  <div class="book-stage">
+    <div class="book" id="book">
+      <!-- sheets 由 JS 建立 -->
+      <div class="tap-zone tap-L" id="tap-L"><div class="tap-arrow">◀</div></div>
+      <div class="tap-zone tap-R" id="tap-R"><div class="tap-arrow">▶</div></div>
+      <div class="cover-hint" id="chint">點擊翻開 ▶</div>
+    </div>
+  </div>
+  <div class="nav-row">
+    <button class="nav-btn" id="bfirst">⏮</button>
+    <button class="nav-btn" id="bprev">◀</button>
+    <span class="page-info" id="pinfo">—</span>
+    <button class="nav-btn" id="bnext">▶</button>
+    <button class="nav-btn" id="blast">⏭</button>
+  </div>
+  <div class="ctrl-panel" id="ctrl-panel">
+    <button class="aud-play" id="aplay">▶</button>
+    <div class="aud-info" style="flex:1;min-width:0;margin-left:12px">
+      <div class="aud-name" id="aname">音訊</div>
+      <div class="aud-bar-wrap" id="abar"><div class="aud-bar-fill" id="afill"></div></div>
+      <div class="aud-time"><span id="acur">0:00</span><span id="adur">0:00</span></div>
+    </div>
+    <div class="aud-vol">🔊<input type="range" id="avol" min="0" max="1" step="0.05" value="0.8"></div>
+    <div class="ctrl-divider"></div>
+    <div class="auto-side">
+      <button class="auto-play-btn stopped" id="auto-btn">
+        <span id="auto-icon">▶▶</span>
+        <svg class="ring" viewBox="0 0 52 52">
+          <circle class="ring-track" cx="26" cy="26" r="22"/>
+          <circle class="ring-fill" cx="26" cy="26" r="22" id="ring-fill" stroke-dasharray="138.2" stroke-dashoffset="138.2"/>
+        </svg>
+      </button>
+      <div class="auto-right">
+        <div class="auto-label">⏱ 自動翻頁</div>
+        <div class="auto-speed-row" id="speed-row">
+          <button class="speed-chip" data-sec="3">3秒</button>
+          <button class="speed-chip active" data-sec="5">5秒</button>
+          <button class="speed-chip" data-sec="8">8秒</button>
+          <button class="speed-chip" data-sec="10">10秒</button>
+          <button class="speed-chip" data-sec="15">15秒</button>
+          <button class="speed-chip" data-sec="30">30秒</button>
+        </div>
+      </div>
+      <div class="auto-countdown" id="auto-cd">—</div>
+    </div>
+  </div>
+  <div class="thumb-strip" id="thumbs"></div>
+</div>
+
+<button class="fs-exit-btn" id="fs-exit-btn">✕</button>
+<div class="fs-controls" id="fs-controls">
+  <div class="fs-nav-row">
+    <button class="fs-nav-btn" id="fs-first">⏮</button>
+    <button class="fs-nav-btn" id="fs-prev">◀</button>
+    <span class="fs-page-info" id="fs-pinfo">—</span>
+    <button class="fs-nav-btn" id="fs-next">▶</button>
+    <button class="fs-nav-btn" id="fs-last">⏭</button>
+    <button class="fs-auto-btn stopped" id="fs-auto-btn">▶▶</button>
+  </div>
+  <div class="fs-audio-row" id="fs-audio-row" style="display:none">
+    <button class="fs-aud-play" id="fs-aplay">▶</button>
+    <div class="fs-aud-info">
+      <div class="fs-aud-name" id="fs-aname">音訊</div>
+      <div class="fs-aud-bar" id="fs-abar"><div class="fs-aud-fill" id="fs-afill"></div></div>
+    </div>
+  </div>
+</div>
+
+<audio id="aud"></audio>
+
+<script>
+const $ = id => document.getElementById(id);
+const aud = $('aud');
+const RING_C = 2 * Math.PI * 22;
+
+const N        = CONFIG.totalPages;
+const hasBack  = (N % 2 === 0); // 最後一頁是封底
+// 橫版：每頁一張 sheet，共 N 張
+const TOTAL    = N;              // sheet 總數
+const MAX_SI   = N - 1;         // si 最大值
+
+let si = 0, flipping = false, PW = 0, PH = 0;
+let sheets = [];
+let fsMode = false, fsHideTimer = null;
+let autoTimer = null, autoSec = 5, autoRafId = null;
+
+function imgSrc(i) { return `${CONFIG.imgPrefix}${i}.${CONFIG.imgExt}`; }
+function audSrc(i) { return `${CONFIG.audPrefix}${i}.${CONFIG.audExt}`; }
+
+/* ══════════════════════════════════════════════════════════
+   buildSheets
+   ─────────────────────────────────────────────────────────
+   N 張全寬 sheet 堆疊，每張帶正反兩面：
+     正面（front）= 本頁圖片（第 i+1 頁）
+     反面（back） = 下一頁圖片（第 i+2 頁），預旋 180deg
+   與參考直版邏輯完全相同，只是尺寸改為全寬。
+   ══════════════════════════════════════════════════════════ */
+function buildSheets() {
+  const bookEl = $('book');
+  bookEl.querySelectorAll('.sheet').forEach(s => s.remove());
+  sheets = [];
+
+  for (let i = 0; i < TOTAL; i++) {
+    const frontNum = i + 1;        // 正面頁碼（1-based）
+    const backNum  = i + 2;        // 反面頁碼
+
+    const sheet = document.createElement('div');
+    sheet.className = 'sheet instant'; // instant：初始無動畫
+
+    // 正面
+    const front = document.createElement('div');
+    front.className = 'page front';
+    const fImg = document.createElement('img');
+    fImg.src = imgSrc(frontNum); fImg.draggable = false; fImg.loading = 'lazy';
+    front.appendChild(fImg);
+    if (frontNum > 1 && !(hasBack && frontNum === N)) {
+      const num = document.createElement('div');
+      num.className = 'page-num'; num.textContent = frontNum - 1;
+      front.appendChild(num);
+    }
+
+    // 反面（預旋 180deg 由 CSS .page.back 處理）
+    const back = document.createElement('div');
+    back.className = 'page back';
+    if (backNum <= N) {
+      const bImg = document.createElement('img');
+      bImg.src = imgSrc(backNum); bImg.draggable = false; bImg.loading = 'lazy';
+      back.appendChild(bImg);
+      if (!(hasBack && backNum === N)) {
+        const num = document.createElement('div');
+        num.className = 'page-num'; num.textContent = backNum - 1;
+        back.appendChild(num);
+      }
+    }
+
+    sheet.appendChild(front);
+    sheet.appendChild(back);
+    bookEl.insertBefore(sheet, $('tap-L'));
+    sheets.push(sheet);
+  }
+}
+
+/* ══════════════════════════════════════════════════════════
+   applySheetStates（即時套用，不播動畫）
+   ─────────────────────────────────────────────────────────
+   i < si  → flipped，低 zIndex（i）
+   i >= si → not flipped，高 zIndex（TOTAL-1-i），sheet[si] 最頂
+   ══════════════════════════════════════════════════════════ */
+function applySheetStates(targetSi) {
+  sheets.forEach((s, i) => {
+    s.classList.add('instant');          // 關閉動畫
+    if (i < targetSi) {
+      s.classList.add('flipped');
+      s.style.zIndex = String(i);
+    } else {
+      s.classList.remove('flipped');
+      s.style.zIndex = String(TOTAL - 1 - i);
+    }
+  });
+  // 下一幀恢復動畫能力
+  requestAnimationFrame(() => sheets.forEach(s => s.classList.remove('instant')));
+}
+
+/* ══════════════════════════════════════════════════════════
+   showAt（跳頁，無動畫）
+   ══════════════════════════════════════════════════════════ */
+function showAt(idx, trigAudio = true) {
+  si = Math.max(0, Math.min(idx, MAX_SI));
+  applySheetStates(si);
+
+  const pageNum = si + 1;
+  let info;
+  if (pageNum === 1)               info = '封面';
+  else if (hasBack && pageNum===N) info = '封底';
+  else                             info = `第 ${pageNum - 1} 頁`;
+
+  $('pinfo').textContent = info + ` ／ 共 ${N} 頁`;
+  $('chint').style.display = si === 0 ? 'block' : 'none';
+  $('bprev').disabled = $('bfirst').disabled = si === 0;
+  $('bnext').disabled = $('blast').disabled  = si >= MAX_SI;
+  if (fsMode) syncFsPinfo();
+
+  // 調整書本尺寸
+  const bw = fsMode ? null : PW + 'px';
+  if (bw) $('book').style.width = bw;
+
+  // 縮圖高亮
+  document.querySelectorAll('.thumb').forEach((t, i) =>
+    t.classList.toggle('active', i === si));
+  document.querySelector('.thumb.active')
+    ?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+
+  // 音訊
+  if (trigAudio && CONFIG.audioMode === 'page') loadAud(pageNum);
+}
+
+/* ══════════════════════════════════════════════════════════
+   go（翻頁，含動畫）
+   ─────────────────────────────────────────────────────────
+   與直版參考相同的邏輯：
+     向前翻：sheet[si]   加 .flipped → 0deg → -180deg
+     向後翻：sheet[si-1] 移 .flipped → -180deg → 0deg
+   只有邊界 sheet 做 CSS 轉場；其餘 sheet 已在正確狀態。
+   在動畫期間暫時提升 flipping sheet 的 zIndex，確保可見。
+   ══════════════════════════════════════════════════════════ */
+function go(dir) {
+  if (flipping) return;
+  const target = si + dir;
+  if (target < 0 || target > MAX_SI) return;
+  flipping = true;
+
+  // 決定哪一張 sheet 要翻
+  const flipIdx   = dir > 0 ? si : target;      // 正翻用 si，反翻用 target
+  const flipSheet = sheets[flipIdx];
+
+  // 動畫期間提升 zIndex，確保翻頁可見
+  flipSheet.style.zIndex = String(TOTAL + 1);
+  flipSheet.classList.remove('instant');
+
+  if (dir > 0) {
+    // 向前：加 .flipped（0deg → -180deg）
+    flipSheet.classList.add('flipped');
+  } else {
+    // 向後：移 .flipped（-180deg → 0deg）
+    flipSheet.classList.remove('flipped');
+  }
+
+  setTimeout(() => {
+    si = target;
+    // 修正 flipping sheet 的最終 zIndex
+    flipSheet.style.zIndex = dir > 0 ? String(flipIdx) : String(TOTAL - 1 - flipIdx);
+    flipping = false;
+    showAt(si, true);    // 更新 UI 與音訊（applySheetStates 維持已有狀態）
+  }, 680);
+}
+
+/* ── Init ── */
+function init() {
+  $('ld-title').textContent = CONFIG.title;
+  $('btitle').textContent   = CONFIG.title;
+  document.title = CONFIG.title;
+  buildSheets();
+
+  const probe = new Image();
+  probe.onload = () => {
+    const ar = probe.naturalWidth / probe.naturalHeight;
+    PH = Math.min(window.innerHeight - 290, 480);
+    PW = Math.round(PH * ar);
+    const maxW = window.innerWidth - 48;
+    if (PW > maxW) { PW = maxW; PH = Math.round(PW / ar); }
+    $('book').style.height = PH + 'px';
+    $('book').style.width  = PW + 'px';
+    buildThumbs();
+    showAt(0, false);
+    setupAudio();
+    setupAutoPlay();
+    setupNav();
+    setupFs();
+    $('loading').style.display = 'none';
+    $('app').style.display = 'flex';
+  };
+  probe.onerror = () => {
+    PH = 400; PW = 640;
+    $('book').style.height = PH + 'px';
+    $('book').style.width  = PW + 'px';
+    buildThumbs();
+    showAt(0, false);
+    setupAudio();
+    setupAutoPlay();
+    setupNav();
+    setupFs();
+    $('loading').style.display = 'none';
+    $('app').style.display = 'flex';
+  };
+  probe.src = imgSrc(1);
+}
+
+/* ── Thumbs ── */
+function buildThumbs() {
+  const strip = $('thumbs'); strip.innerHTML = '';
+  for (let i = 1; i <= N; i++) {
+    const isCover = i === 1;
+    const d = document.createElement('div');
+    d.className = 'thumb' + (isCover ? ' thumb-cover' : '');
+    const img = document.createElement('img');
+    img.src = imgSrc(i); img.loading = 'lazy';
+    const num = document.createElement('div');
+    num.className = 'thumb-num';
+    num.textContent = isCover ? '封面' : (hasBack && i===N ? '封底' : i-1);
+    d.appendChild(img); d.appendChild(num);
+    d.onclick = () => { if (!flipping) { stopAuto(); showAt(i - 1); } };
+    strip.appendChild(d);
+  }
+}
+
+/* ── Audio ── */
+function setupAudio() {
+  if (CONFIG.audioMode === 'none') return;
+  $('ctrl-panel').style.display = 'flex';
+  aud.volume = 0.8;
+  if (CONFIG.audioMode === 'bg') { aud.src = audSrc(1); aud.loop = true; aud.play().catch(()=>{}); }
+  if (CONFIG.audioMode === 'page') loadAud(1);
+
+  $('aplay').onclick = () => aud.paused ? aud.play() : aud.pause();
+  aud.addEventListener('timeupdate', updAud);
+  aud.addEventListener('loadedmetadata', updAud);
+  aud.addEventListener('play',  () => { $('aplay').textContent='⏸'; syncFsAutoBtn(); });
+  aud.addEventListener('pause', () =>   $('aplay').textContent='▶');
+  $('abar').onclick = e => {
+    const r = e.currentTarget.getBoundingClientRect();
+    if (aud.duration) aud.currentTime = ((e.clientX-r.left)/r.width)*aud.duration;
+  };
+  $('avol').oninput = e => aud.volume = parseFloat(e.target.value);
+}
+function loadAud(pageNum) {
+  if (CONFIG.audioMode !== 'page') return;
+  const src = audSrc(pageNum);
+  if (aud.src.endsWith(src) && !aud.paused) return;
+  aud.src = src; aud.loop = false;
+  $('aname').textContent = src;
+  aud.play().catch(()=>{});
+}
+function updAud() {
+  const c=aud.currentTime||0, d=aud.duration||0;
+  $('afill').style.width = d?`${c/d*100}%`:'0%';
+  $('acur').textContent=fmt(c); $('adur').textContent=fmt(d);
+  $('fs-afill').style.width=$('afill').style.width;
+  $('fs-aname').textContent=$('aname').textContent;
+}
+function fmt(s) { if(!isFinite(s))return'0:00'; return`${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,'0')}`; }
+
+/* ── Auto Play ── */
+function setupAutoPlay() {
+  $('ctrl-panel').style.display = 'flex';
+  if (CONFIG.audioMode === 'none') {
+    $('aplay').style.display = 'none';
+    $('ctrl-panel').querySelector('.aud-info').style.display='none';
+    $('ctrl-panel').querySelector('.aud-vol').style.display='none';
+    $('ctrl-panel').querySelector('.ctrl-divider').style.display='none';
+  }
+  $('speed-row').querySelectorAll('.speed-chip').forEach(c => {
+    c.addEventListener('click', () => {
+      $('speed-row').querySelectorAll('.speed-chip').forEach(x=>x.classList.remove('active'));
+      c.classList.add('active'); autoSec = parseInt(c.dataset.sec);
+      if (autoTimer) { stopAuto(); startAuto(); }
+    });
+  });
+  $('auto-btn').onclick = () => { if(autoTimer) stopAuto(); else startAuto(); syncFsAutoBtn(); };
+}
+function startAuto() {
+  if (si >= MAX_SI) showAt(0, false);
+  $('auto-btn').className='auto-play-btn playing'; $('auto-icon').textContent='⏸';
+  if (CONFIG.audioMode!=='none' && aud.paused) aud.play().catch(()=>{});
+  scheduleNext();
+}
+function stopAuto() {
+  clearTimeout(autoTimer); autoTimer=null;
+  cancelAnimationFrame(autoRafId); autoRafId=null;
+  $('auto-btn').className='auto-play-btn stopped'; $('auto-icon').textContent='▶▶';
+  $('auto-cd').textContent='—'; setRing(0); syncFsAutoBtn();
+}
+function scheduleNext() {
+  let waitMs = autoSec * 1000;
+  if (CONFIG.audioMode==='page' && aud.duration>0) {
+    const rem = (aud.duration - aud.currentTime) * 1000;
+    if (rem > 0) waitMs = Math.max(waitMs, rem);
+  }
+  tickCountdown(waitMs);
+  autoTimer = setTimeout(flipNext, waitMs + 150);
+}
+function flipNext() {
+  cancelAnimationFrame(autoRafId);
+  if (si >= MAX_SI) { stopAuto(); return; }
+  go(+1);
+  setTimeout(() => { if(autoTimer!==null) scheduleNext(); }, 700);
+}
+function tickCountdown(totalMs) {
+  cancelAnimationFrame(autoRafId);
+  const start = performance.now();
+  function frame(now) {
+    const left = Math.max(0, totalMs-(now-start));
+    $('auto-cd').textContent=(left/1000).toFixed(1)+'s';
+    setRing(1-left/totalMs);
+    if(left>0) autoRafId=requestAnimationFrame(frame);
+  }
+  autoRafId=requestAnimationFrame(frame);
+}
+function setRing(pct) {
+  $('ring-fill').style.strokeDashoffset=RING_C*(1-Math.max(0,Math.min(1,pct)));
+}
+
+/* ── Nav ── */
+function setupNav() {
+  $('bprev').onclick  = () => { stopAuto(); go(-1); };
+  $('bnext').onclick  = () => { stopAuto(); go(+1); };
+  $('bfirst').onclick = () => { if(!flipping){stopAuto();showAt(0);} };
+  $('blast').onclick  = () => { if(!flipping){stopAuto();showAt(MAX_SI);} };
+  $('tap-L').onclick  = () => { stopAuto(); go(-1); };
+  $('tap-R').onclick  = () => { stopAuto(); go(+1); };
+  document.addEventListener('keydown', e => {
+    const m={ArrowRight:+1,ArrowDown:+1,PageDown:+1,ArrowLeft:-1,ArrowUp:-1,PageUp:-1};
+    if(m[e.key]!==undefined){stopAuto();go(m[e.key]);}
+    else if(e.key==='Home'){stopAuto();showAt(0);}
+    else if(e.key==='End') {stopAuto();showAt(MAX_SI);}
+    else if(e.key==='f'||e.key==='F') fsMode?exitFs():enterFs();
+    else if(e.key==='Escape'&&fsMode) exitFs();
+  });
+}
+
+/* ── Fullscreen ── */
+function setupFs() {
+  $('fs-btn').onclick      = enterFs;
+  $('fs-exit-btn').onclick = exitFs;
+  $('fs-first').onclick = ()=>{stopAuto();showAt(0);};
+  $('fs-last').onclick  = ()=>{stopAuto();showAt(MAX_SI);};
+  $('fs-prev').onclick  = ()=>{stopAuto();go(-1);};
+  $('fs-next').onclick  = ()=>{stopAuto();go(+1);};
+  $('fs-auto-btn').onclick=()=>{if(autoTimer)stopAuto();else startAuto();syncFsAutoBtn();};
+  $('fs-aplay').onclick=()=>aud.paused?aud.play():aud.pause();
+  $('fs-abar').onclick=e=>{const r=e.currentTarget.getBoundingClientRect();if(aud.duration)aud.currentTime=((e.clientX-r.left)/r.width)*aud.duration;};
+  aud.addEventListener('play', ()=>$('fs-aplay').textContent='⏸');
+  aud.addEventListener('pause',()=>$('fs-aplay').textContent='▶');
+  document.addEventListener('mousemove', ()=>{if(fsMode)showFsCtrl();});
+  document.addEventListener('touchstart',()=>{if(fsMode)showFsCtrl();},{passive:true});
+  document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement&&fsMode)exitFs();});
+}
+function enterFs() {
+  fsMode=true; document.body.classList.add('fs-mode');
+  $('fs-audio-row').style.display=CONFIG.audioMode!=='none'?'flex':'none';
+  const el=document.documentElement;
+  if(el.requestFullscreen) el.requestFullscreen().catch(()=>{});
+  else if(el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+  window.addEventListener('resize',resizeBookFs);
+  resizeBookFs(); syncFsPinfo(); syncFsAutoBtn(); showFsCtrl();
+}
+function exitFs() {
+  fsMode=false; document.body.classList.remove('fs-mode');
+  if(document.fullscreenElement) document.exitFullscreen().catch(()=>{});
+  else if(document.webkitFullscreenElement) document.webkitExitFullscreen();
+  window.removeEventListener('resize',resizeBookFs);
+  $('book').style.height=PH+'px'; $('book').style.width=PW+'px';
+  clearTimeout(fsHideTimer);
+}
+function resizeBookFs() {
+  if(!PW||!PH) return;
+  const ar=PW/PH, vw=window.innerWidth, vh=window.innerHeight-90;
+  const newH=Math.floor(vw/vh>ar?vh:vw/ar);
+  const newW=Math.round(newH*ar);
+  $('book').style.height=newH+'px'; $('book').style.width=newW+'px';
+}
+function showFsCtrl() {
+  $('fs-controls').classList.add('visible'); $('fs-exit-btn').style.opacity='1';
+  clearTimeout(fsHideTimer);
+  fsHideTimer=setTimeout(()=>{
+    $('fs-controls').classList.remove('visible'); $('fs-exit-btn').style.opacity='0.15';
+  },3000);
+}
+function syncFsPinfo() {
+  $('fs-pinfo').textContent=$('pinfo').textContent;
+  ['first','last','prev','next'].forEach(k=>$('fs-'+k).disabled=$('b'+k).disabled);
+}
+function syncFsAutoBtn() {
+  const btn=$('fs-auto-btn');
+  btn.className='fs-auto-btn '+(autoTimer?'playing':'stopped');
+  btn.textContent=autoTimer?'⏸⏸':'▶▶';
+}
+
+init();
+</script>
+</body>
+</html>
