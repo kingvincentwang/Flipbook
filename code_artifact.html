@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>手繪關西小旅行：知識大闖關</title>
+  <!-- 導入 Tailwind CSS 獲取現代化、美觀的排版與樣式 -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google 內建字體支援 -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Noto Sans TC', sans-serif;
+      background-color: #f3ede1;
+    }
+    
+    /* 讓角色移動時有平滑的 1.5 秒物理補間動畫 */
+    .character-transition {
+      transition: left 1.5s ease-in-out, top 1.5s ease-in-out;
+    }
+
+    /* 呼吸 pulsing 效果，標示當前可點擊景點 */
+    @keyframes ping-slow {
+      0% {
+        transform: scale(1);
+        opacity: 0.8;
+      }
+      70% {
+        transform: scale(2);
+        opacity: 0;
+      }
+      100% {
+        transform: scale(2.2);
+        opacity: 0;
+      }
+    }
+    .animate-ping-slow {
+      animation: ping-slow 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+    }
+
+    /* 角色上下彈跳效果 (靜止時使用，確保中心與底對齊) */
+    @keyframes character-bounce {
+      0%, 100% {
+        transform: translate(-50%, -100%) translateY(0);
+      }
+      50% {
+        transform: translate(-50%, -100%) translateY(-10px);
+      }
+    }
+    .animate-char-bounce {
+      animation: character-bounce 2s infinite ease-in-out;
+    }
+
+    /* 角色移動時的輕微左右搖擺，模擬走路 (確保中心與底對齊) */
+    @keyframes character-walk {
+      0%, 100% {
+        transform: translate(-50%, -100%) rotate(0deg);
+      }
+      25% {
+        transform: translate(-50%, -100%) rotate(-5deg);
+      }
+      75% {
+        transform: translate(-50%, -100%) rotate(5deg);
+      }
+    }
+    .animate-char-walk {
+      animation: character-walk 0.3s infinite linear;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col items-center py-6 px-4 text-[#5c4033]">
+
+  <!-- 頂部標題區 -->
+  <div class="text-center mb-6 max-w-2xl">
+    <h1 class="text-3xl md:text-5xl font-black tracking-wider mb-2 drop-shadow-sm text-[#5c4033]">
+      手繪關西小旅行：知識大闖關
+    </h1>
+    <p id="game-status" class="text-[#8c6b54] text-lg font-bold">
+      載入中...
+    </p>
+  </div>
+
+  <!-- 遊戲主體：手繪地圖容器 -->
+  <div class="relative w-full max-w-5xl rounded-2xl shadow-2xl overflow-hidden border-8 border-[#d7c4a1] bg-[#faf6eb]">
+    
+    <!-- 手繪地圖背景圖片 -->
+    <img 
+      src="Gemini_Generated_Image_13k9ht13k9ht13k9.png" 
+      alt="手繪關西地圖" 
+      class="w-full h-auto object-cover select-none block"
+    >
+
+    <!-- 關卡標記點容器 (由 JS 動態生成) -->
+    <div id="stages-container"></div>
+
+    <!-- 闖關主角人物 (已移除會與內層動畫衝突的定位偏移 class) -->
+    <div 
+      id="player-character" 
+      class="absolute character-transition z-30"
+      style="left: 18%; top: 35%;"
+    >
+      <div id="char-sprite-wrapper" class="animate-char-bounce">
+        <!-- 角色圖片 -->
+        <img 
+          src="ip2.png" 
+          alt="闖關主角" 
+          class="w-14 md:w-24 drop-shadow-xl select-none"
+        >
+      </div>
+    </div>
+  </div>
+
+  <!-- 答題挑戰視窗 (Modal) -->
+  <div id="quiz-modal" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm hidden">
+    <div class="bg-white w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden transform transition-all">
+      <!-- 視窗頭部 -->
+      <div class="bg-[#f08a5d] p-4 md:p-6 text-center text-white">
+        <h2 id="modal-title" class="text-2xl md:text-3xl font-black tracking-wide">
+          紅茶工廠 - 挑戰 (1/5)
+        </h2>
+      </div>
+      
+      <!-- 視窗身體與題目 -->
+      <div class="p-6 md:p-8 bg-[#fffcf5]">
+        <h3 id="question-text" class="text-xl md:text-2xl font-bold text-gray-800 mb-6 leading-relaxed text-center">
+          關西被譽為何種茶的故鄉？
+        </h3>
+        
+        <!-- 選項按鈕 -->
+        <div id="options-container" class="space-y-3 md:space-y-4">
+          <!-- 由 JS 動態注入選項按鈕 -->
+        </div>
+
+        <!-- 答題回饋區 -->
+        <div id="feedback-text" class="mt-6 h-8 flex items-center justify-center text-xl font-bold"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 全破關慶祝視窗 (Modal) -->
+  <div id="victory-modal" class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 backdrop-blur-md hidden">
+    <div class="bg-white rounded-3xl p-8 max-w-md text-center shadow-2xl">
+      <img src="ip2.png" alt="勝利主角" class="w-32 mx-auto mb-4 animate-bounce">
+      <h2 class="text-4xl font-black text-[#f08a5d] mb-4">通關成功！</h2>
+      <p class="text-lg text-gray-600 mb-8 font-medium">
+        你已經完成了所有的景點考驗，<br>成為真正的「關西小旅行」達人！
+      </p>
+      <button 
+        onclick="restartGame()"
+        class="bg-[#f08a5d] hover:bg-[#e07545] text-white font-bold py-3 px-8 rounded-full text-xl shadow-lg transition-transform hover:scale-105"
+      >
+        再玩一次
+      </button>
+    </div>
+  </div>
+
+  <!-- 遊戲邏輯與交互 -->
+  <script>
+    // === 關卡與題庫資料 ===
+    const STAGES = [
+      {
+        id: 0,
+        name: "紅茶工廠",
+        x: 18, y: 35, // 地圖上的百分比座標 (X, Y)
+        questions: [
+          { q: "關西被譽為何種茶的故鄉？", options: ["紅茶", "綠茶", "烏龍茶", "普洱茶"], ans: 0 },
+          { q: "台灣紅茶股份有限公司大約創立於哪一個年代？", options: ["1910年代", "1930年代", "1950年代", "1970年代"], ans: 1 },
+          { q: "早期關西紅茶主要外銷到哪個地區？", options: ["歐洲與美國", "非洲", "南美洲", "中東"], ans: 0 },
+          { q: "紅茶的製作過程中，哪一個步驟決定了茶葉的發酵程度？", options: ["揉捻", "萎凋", "發酵", "乾燥"], ans: 2 },
+          { q: "在傳統紅茶工廠內，通常會保留什麼材質的牆面來幫助調節溫濕度？", options: ["玻璃牆", "紅磚牆", "鋼筋水泥", "木板牆"], ans: 1 }
+        ]
+      },
+      {
+        id: 1,
+        name: "關西太和宮",
+        x: 40, y: 35,
+        questions: [
+          { q: "關西太和宮主祀哪位神明？", options: ["媽祖", "三官大帝", "觀音菩薩", "關聖帝君"], ans: 1 },
+          { q: "太和宮是關西鎮的信仰中心，它的建築風格屬於？", options: ["日式神社", "傳統客家/閩南廟宇", "哥德式", "羅馬式"], ans: 1 },
+          { q: "傳統廟宇屋頂上常見的立體人物或神獸裝飾工藝稱行為什麼？", options: ["剪黏", "彩繪玻璃", "馬賽克", "木雕"], ans: 0 },
+          { q: "到廟宇參拜時，傳統習俗上應該從哪邊的門進入？", options: ["龍邊(面向廟的右邊)", "虎邊(面向廟的左邊)", "中間大門", "後門"], ans: 0 },
+          { q: "太和宮廟前的廣場(廟埕)，常常是當地居民做什麼的場所？", options: ["賽車", "舉辦祭典與看戲", "游泳", "溜冰"], ans: 1 }
+        ]
+      },
+      {
+        id: 2,
+        name: "渡船頭",
+        x: 61, y: 36,
+        questions: [
+          { q: "早期關西的渡船頭主要位於哪條河流的流域上？", options: ["頭前溪", "牛欄河/鳳山溪", "淡水河", "大漢溪"], ans: 1 },
+          { q: "渡船頭在過去主要的功能是什麼？", options: ["觀光遊憩", "貨物運輸與交通", "舉辦划船比賽", "水力發電"], ans: 1 },
+          { q: "隨著什麼交通設施的興建，渡船頭的功能逐漸沒落？", options: ["飛機場", "捷運", "橋樑與公路", "高鐵"], ans: 2 },
+          { q: "以前渡船頭運送的物資可能包含關西的哪項特產？", options: ["香蕉", "仙草與茶葉", "蘋果", "釋迦"], ans: 1 },
+          { q: "現在的渡船頭周邊多半已轉型為什麼用途？", options: ["商業港口", "軍事基地", "水岸親水公園", "工業區"], ans: 2 }
+        ]
+      },
+      {
+        id: 3,
+        name: "潮音禪寺",
+        x: 82, y: 24,
+        questions: [
+          { q: "潮音禪寺的外觀建築風格受到了哪個東南亞國家的影響？", options: ["泰國", "日本", "韓國", "印度"], ans: 0 },
+          { q: "佛教中，代表出淤泥而不染、清淨莊嚴的植物是什麼，常在寺廟中見到？", options: ["玫瑰", "蓮花", "菊花", "蘭花"], ans: 1 },
+          { q: "潮音禪寺位於哪條美麗的河畔旁？", options: ["牛欄河", "濁水溪", "高屏溪", "立霧溪"], ans: 0 },
+          { q: "進入佛寺參拜時，為了表示尊重，通常會要求注意什麼？", options: ["穿著暴露", "大聲喧嘩", "服裝整齊與保持安靜", "攜帶寵物"], ans: 2 },
+          { q: "許多人會到潮音禪寺祈福，佛教信仰中認為「因果」的意思是？", options: ["隨便亂說", "種什麼因，得什麼果", "水果的種類", "不用努力就會成功"], ans: 1 }
+        ]
+      },
+      {
+        id: 4,
+        name: "金勇農場",
+        x: 82, y: 58,
+        questions: [
+          { q: "金勇農場以種植哪種水果聞名，有「聯合國」之稱？", options: ["蘋果", "葡萄", "番茄", "草莓"], ans: 2 },
+          { q: "農場內提供什麼樣的體驗活動讓遊客親自參與？", options: ["採礦", "採果與DIY", "捕魚", "伐木"], ans: 1 },
+          { q: "番茄富含哪種營養素，加熱後更容易被人體吸收？", options: ["茄紅素", "花青素", "葉黃素", "鈣質"], ans: 0 },
+          { q: "在溫室中種植農作，主要的好處是什麼？", options: ["讓水果變黑", "避免病蟲害與氣候影響", "節省肥料", "不需要澆水"], ans: 1 },
+          { q: "除了番茄，關西還有一項非常有名的「黑色」農產品是什麼？", options: ["黑豆", "仙草", "芝麻", "咖啡"], ans: 1 }
+        ]
+      },
+      {
+        id: 5,
+        name: "東安古橋",
+        x: 55, y: 72,
+        questions: [
+          { q: "東安古橋是由什麼材質建造而成的？", options: ["鋼筋水泥", "木頭", "方解石/方石", "磚塊"], ans: 2 },
+          { q: "東安古橋的橋拱有幾個，造型十分優美？", options: ["1個", "3個", "5個", "7個"], ans: 2 },
+          { q: "這座古橋曾經是哪一部知名國片的拍攝場景？", options: ["海角七號", "我的少女時代", "那些年，我們一起追的女孩", "賽德克巴萊"], ans: 1 },
+          { q: "東安古橋橫跨了哪一條充滿生態的河流？", options: ["頭前溪", "牛欄河", "淡水河", "大甲溪"], ans: 1 },
+          { q: "古橋旁的親水公園，常常可以見到當地居民在做什麼？", options: ["打獵", "散步與騎自行車", "賽車", "露營生火"], ans: 1 }
+        ]
+      },
+      {
+        id: 6,
+        name: "關西國小",
+        x: 18, y: 76,
+        questions: [
+          { q: "關西鎮以前因為盛產某種農作物加工品，舊稱是什麼？", options: ["鹹菜甕", "貓裡", "諸羅", "蛤仔難"], ans: 0 },
+          { q: "關西鎮的居民組成，以哪個族群的比例最高？", options: ["閩南人", "原住民", "客家人", "新住民"], ans: 2 },
+          { q: "「關西」這個地名是因為舊稱的日語發音與日本哪個地方相似而改名的？", options: ["關東", "關西", "北海道", "九州"], ans: 1 },
+          { q: "小學生在校園裡最需要遵守的安全守則是什麼？", options: ["走廊奔跑", "攀爬樹木", "上下樓梯不推擠", "隨便採摘校園植物吃"], ans: 2 },
+          { q: "完成了這趟關西小旅行，你覺得最應該把什麼帶回家？", options: ["亂丟的垃圾", "滿滿的美好回憶與知識", "拔下來的花草", "別人的東西"], ans: 1 }
+        ]
+      }
+    ];
+
+    // === 遊戲運行狀態 ===
+    let currentStage = 0;
+    let questionIdx = 0;
+    let isMoving = false;
+    let feedbackLocked = false;
+
+    // === DOM 元素獲取 ===
+    const gameStatus = document.getElementById('game-status');
+    const stagesContainer = document.getElementById('stages-container');
+    const playerCharacter = document.getElementById('player-character');
+    const charSpriteWrapper = document.getElementById('char-sprite-wrapper');
+    const quizModal = document.getElementById('quiz-modal');
+    const victoryModal = document.getElementById('victory-modal');
+    
+    const modalTitle = document.getElementById('modal-title');
+    const questionText = document.getElementById('question-text');
+    const optionsContainer = document.getElementById('options-container');
+    const feedbackText = document.getElementById('feedback-text');
+
+    // === 初始化遊戲 ===
+    function initGame() {
+      renderMapNodes();
+      updatePlayerPosition();
+      updateStatusHeader();
+      // 確保一開始視窗是隱藏的
+      quizModal.classList.add('hidden');
+      victoryModal.classList.add('hidden');
+    }
+
+    // === 更新頂部狀態文字 ===
+    function updateStatusHeader() {
+      const stage = STAGES[currentStage];
+      gameStatus.innerHTML = `現在位置：<span class="text-orange-600 font-extrabold">${stage.name}</span> (第 ${currentStage + 1} / ${STAGES.length} 關)`;
+    }
+
+    // === 繪製地圖上各關卡的節點與特效 ===
+    function renderMapNodes() {
+      stagesContainer.innerHTML = '';
+      STAGES.forEach((stage) => {
+        const isActive = stage.id === currentStage;
+        const isPassed = stage.id < currentStage;
+
+        // 建立外層定位容器
+        const nodeEl = document.createElement('div');
+        nodeEl.className = `absolute transform -translate-x-1/2 -translate-y-1/2 z-10`;
+        nodeEl.style.left = `${stage.x}%`;
+        nodeEl.style.top = `${stage.y}%`;
+
+        // 如果是當前關卡，且未在移動中：顯示點擊發光動畫
+        if (isActive && !isMoving) {
+          nodeEl.classList.add('cursor-pointer', 'z-20');
+          nodeEl.innerHTML = `
+            <div class="relative flex justify-center items-center" onclick="startStageQuiz(${stage.id})">
+              <!-- 發光外環 -->
+              <div class="absolute w-12 h-12 md:w-20 md:h-20 bg-yellow-400 rounded-full animate-ping-slow"></div>
+              <!-- 提示文字框 -->
+              <div class="absolute top-[-40px] md:top-[-50px] bg-white text-orange-600 px-3 py-1 rounded-full shadow-md font-black text-xs md:text-sm whitespace-nowrap animate-bounce border border-orange-200">
+                點擊挑戰!
+              </div>
+            </div>
+          `;
+        } 
+        // 如果是已通過的關卡：顯示綠色勾勾
+        else if (isPassed) {
+          nodeEl.innerHTML = `
+            <div class="w-6 h-6 md:w-8 md:h-8 bg-green-500 rounded-full border-2 border-white flex items-center justify-center shadow-md">
+              <span class="text-white text-xs md:text-sm font-bold">✓</span>
+            </div>
+          `;
+        }
+
+        stagesContainer.appendChild(nodeEl);
+      });
+    }
+
+    // === 更新主角位置 ===
+    function updatePlayerPosition() {
+      const stage = STAGES[currentStage];
+      playerCharacter.style.left = `${stage.x}%`;
+      playerCharacter.style.top = `${stage.y}%`;
+    }
+
+    // === 點擊景點：開始答題 ===
+    function startStageQuiz(stageId) {
+      if (isMoving) return;
+      questionIdx = 0;
+      feedbackLocked = false;
+      feedbackText.textContent = '';
+      showQuizModal();
+    }
+
+    // === 顯示問題視窗 ===
+    function showQuizModal() {
+      const stage = STAGES[currentStage];
+      const currentQuestion = stage.questions[questionIdx];
+
+      modalTitle.textContent = `${stage.name} - 挑戰 (${questionIdx + 1}/5)`;
+      questionText.textContent = currentQuestion.q;
+
+      // 清空舊選項
+      optionsContainer.innerHTML = '';
+
+      // 產生新選項按鈕
+      currentQuestion.options.forEach((opt, idx) => {
+        const btn = document.createElement('button');
+        btn.className = `w-full text-left p-4 rounded-xl text-lg md:text-xl font-medium transition-all duration-200 border-2 bg-white text-gray-700 border-gray-200 hover:border-[#f08a5d] hover:bg-orange-50 hover:shadow-md`;
+        btn.innerHTML = `<span class="font-bold text-[#f08a5d] mr-2">${String.fromCharCode(65 + idx)}.</span> ${opt}`;
+        
+        btn.onclick = () => handleAnswer(idx, btn);
+        optionsContainer.appendChild(btn);
+      });
+
+      quizModal.classList.remove('hidden');
+    }
+
+    // === 處理回答 ===
+    function handleAnswer(selectedIndex, clickedBtn) {
+      if (feedbackLocked) return;
+      feedbackLocked = true;
+
+      const stage = STAGES[currentStage];
+      const currentQuestion = stage.questions[questionIdx];
+
+      if (selectedIndex === currentQuestion.ans) {
+        // 答對效果
+        clickedBtn.className = `w-full text-left p-4 rounded-xl text-lg md:text-xl font-bold transition-all duration-200 border-2 bg-green-100 border-green-500 text-green-800`;
+        feedbackText.innerHTML = `<span class="text-green-600 animate-pulse">🎉 答對了！</span>`;
+
+        setTimeout(() => {
+          feedbackLocked = false;
+          feedbackText.textContent = '';
+          if (questionIdx < 4) {
+            questionIdx++;
+            showQuizModal();
+          } else {
+            // 通過此關！關閉視窗，開始走往下一關
+            quizModal.classList.add('hidden');
+            triggerMovement();
+          }
+        }, 1000);
+      } else {
+        // 答錯效果
+        clickedBtn.className = `w-full text-left p-4 rounded-xl text-lg md:text-xl font-bold transition-all duration-200 border-2 bg-red-100 border-red-500 text-red-800`;
+        feedbackText.innerHTML = `<span class="text-red-500 animate-bounce">❌ 答錯了，請再試一次！</span>`;
+
+        // 僅鎖定 1.2 秒讓玩家看答案，之後即可重新嘗試本題
+        setTimeout(() => {
+          feedbackLocked = false;
+          feedbackText.textContent = '';
+          // 還原按鈕樣式
+          clickedBtn.className = `w-full text-left p-4 rounded-xl text-lg md:text-xl font-medium transition-all duration-200 border-2 bg-white text-gray-700 border-gray-200 hover:border-[#f08a5d] hover:bg-orange-50 hover:shadow-md`;
+        }, 1200);
+      }
+    }
+
+    // === 觸發主角前進下一關的移動動畫 ===
+    function triggerMovement() {
+      if (currentStage < STAGES.length - 1) {
+        isMoving = true;
+        currentStage++;
+
+        // 改變主角動畫為「走路搖擺」
+        charSpriteWrapper.className = 'animate-char-walk';
+        
+        // 重新整理地圖（隱藏發光環，在主角走到前先不能點）
+        renderMapNodes();
+
+        // 平滑移動主角
+        updatePlayerPosition();
+
+        // 動畫結束後的排程（1.5 秒後）
+        setTimeout(() => {
+          isMoving = false;
+          // 恢復成一般彈跳動畫
+          charSpriteWrapper.className = 'animate-char-bounce';
+          // 重新繪製新關卡的發光提示與先前已過關的綠色勾勾
+          renderMapNodes();
+          updateStatusHeader();
+        }, 1500);
+      } else {
+        // 全破關
+        setTimeout(() => {
+          victoryModal.classList.remove('hidden');
+        }, 500);
+      }
+    }
+
+    // === 重新開始遊戲 ===
+    function restartGame() {
+      currentStage = 0;
+      questionIdx = 0;
+      isMoving = false;
+      feedbackLocked = false;
+      initGame();
+    }
+
+    // 當頁面載入完成後，正式啟動遊戲
+    window.onload = function() {
+      initGame();
+    };
+  </script>
+</body>
+</html>
