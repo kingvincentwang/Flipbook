@@ -1,1 +1,350 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>關西國小食旅地圖</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&family=Nunito:wght@600;800&display=swap');
 
+        body {
+            font-family: 'Nunito', 'Noto Sans TC', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #fcf4e8;
+            overflow-x: hidden;
+        }
+
+        /* ✅ 修正：移除 aspect-ratio，讓 img 自己撐開高度 */
+        .map-container {
+            position: relative;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            border-radius: 1.5rem;
+            overflow: hidden; /* 讓圓角剪裁到底圖圖片 */
+        }
+
+        /* ✅ 底圖圖片：撐滿容器、不留白 */
+        .map-bg-img {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+
+        /* ✅ 熱點與人物的覆蓋層，絕對定位蓋在圖片上 */
+        .map-overlay {
+            position: absolute;
+            inset: 0;
+        }
+
+        .hotspot {
+            position: absolute;
+            border-radius: 50%;
+            /* 視覺上完全隱藏，只保留定位用途 */
+            background-color: transparent;
+            border: none;
+        }
+
+        .hotspot-active {
+            /* 同樣隱藏，不顯示高亮圈 */
+        }
+
+        #character {
+            position: absolute;
+            width: 7%;
+            min-width: 50px;
+            max-width: 90px;
+            z-index: 30;
+            cursor: pointer;
+            filter: drop-shadow(0px 8px 10px rgba(0, 0, 0, 0.3));
+            transition: left 1.5s cubic-bezier(0.25, 1, 0.5, 1), top 1.5s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        .walking {
+            animation: walkBob 0.3s infinite alternate;
+        }
+
+        .idle-prompt {
+            animation: idleBounce 1.2s infinite alternate;
+        }
+
+        @keyframes walkBob {
+            0%   { transform: translateY(0) rotate(-3deg); }
+            100% { transform: translateY(-10px) rotate(3deg); }
+        }
+
+        @keyframes idleBounce {
+            0%   { transform: translateY(0) scale(1); }
+            100% { transform: translateY(-5px) scale(1.03); }
+        }
+
+        .modal-enter {
+            opacity: 0;
+            transform: scale(0.9) translateY(20px);
+            transition: opacity 0.3s ease-out, transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .modal-enter-active {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+        .modal-exit {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+            transition: opacity 0.2s ease-in, transform 0.2s ease-in;
+        }
+        .modal-exit-active {
+            opacity: 0;
+            transform: scale(0.9) translateY(20px);
+            pointer-events: none;
+        }
+
+        /* 各熱點位置（百分比定位） */
+        #spot-school   { top: 44%; left: 45%; width: 10%; height: 10%; }
+        #spot-tomato   { top: 32%; left: 16%; width: 12%; height: 12%; }
+        #spot-xiancao  { top: 62%; left: 21%; width: 12%; height: 12%; }
+        #spot-tea      { top: 31%; left: 51%; width: 12%; height: 12%; }
+        #spot-tofu     { top: 60%; left: 40%; width: 12%; height: 12%; }
+        #spot-soy      { top: 40%; left: 63%; width: 12%; height: 12%; }
+        #spot-mustard  { top: 60%; left: 68%; width: 12%; height: 12%; }
+
+        @media (max-width: 768px) {
+            .modal-content {
+                width: 95% !important;
+                margin: auto;
+            }
+        }
+    </style>
+</head>
+<body class="bg-amber-50 flex flex-col items-center py-6 px-4">
+
+    <header class="text-center mb-5">
+        <h1 class="text-3xl md:text-5xl font-extrabold text-orange-600 mb-3 drop-shadow-sm flex items-center justify-center gap-2">
+            🏫 關西國小食旅地圖 🗺️
+        </h1>
+        <p class="text-md md:text-lg text-gray-700 font-medium bg-white/80 inline-block px-6 py-2.5 rounded-full shadow-md border border-orange-100">
+            請點擊身穿灰色夾克的主角 <span class="text-orange-500 font-bold">「關西導遊」</span> 讓他出發旅行吧！ 🚀
+        </p>
+    </header>
+
+    <!-- 進度導覽面板 -->
+    <div class="w-full max-w-4xl mb-4 bg-white/90 backdrop-blur rounded-2xl p-4 shadow-md border border-orange-100 flex flex-wrap items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+            <span class="text-2xl">🎒</span>
+            <div>
+                <h4 class="font-bold text-gray-800 text-sm md:text-base">當前旅行進度</h4>
+                <p id="status-text" class="text-orange-500 font-bold text-xs md:text-sm">準備出發！第一站：一年級蕃茄</p>
+            </div>
+        </div>
+        <div class="flex items-center gap-1 md:gap-2 text-xs md:text-sm font-bold text-gray-400">
+            <span id="step-node-0" class="px-2 py-1 bg-orange-500 text-white rounded-lg">起點</span>
+            <span>➡️</span>
+            <span id="step-node-1" class="px-2 py-1 rounded-lg">1年級🍅</span>
+            <span>➡️</span>
+            <span id="step-node-2" class="px-2 py-1 rounded-lg">2年級🍮</span>
+            <span>➡️</span>
+            <span id="step-node-3" class="px-2 py-1 rounded-lg">3年級🫖</span>
+            <span>➡️</span>
+            <span id="step-node-4" class="px-2 py-1 rounded-lg">4年級🧊</span>
+            <span>➡️</span>
+            <span id="step-node-5" class="px-2 py-1 rounded-lg">5年級🧴</span>
+            <span>➡️</span>
+            <span id="step-node-6" class="px-2 py-1 rounded-lg">6年級🥬</span>
+        </div>
+    </div>
+
+    <main class="w-full max-w-4xl">
+        <!-- ✅ 修正：map-container 不設 aspect-ratio，改用 img 撐開高度 -->
+        <div class="map-container border-8 border-orange-200">
+
+            <!-- ✅ 底圖用 img 標籤，高度自動跟著圖片走，零空白 -->
+            <img src="guanxifood.png" alt="關西食旅地圖" class="map-bg-img">
+
+            <!-- ✅ 覆蓋層：熱點 + 人物全部放在這裡，用百分比定位 -->
+            <div class="map-overlay">
+
+                <div id="spot-school"  class="hotspot" title="起點：關西國小"></div>
+                <div id="spot-tomato"  class="hotspot" title="一年級：蕃茄"></div>
+                <div id="spot-xiancao" class="hotspot" title="二年級：仙草"></div>
+                <div id="spot-tea"     class="hotspot" title="三年級：紅茶"></div>
+                <div id="spot-tofu"    class="hotspot" title="四年級：豆腐"></div>
+                <div id="spot-soy"     class="hotspot" title="五年級：醬油"></div>
+                <div id="spot-mustard" class="hotspot" title="六年級：鹹菜"></div>
+
+                <div id="character" class="idle-prompt" onclick="moveCharacterToNextStop()">
+                    <div class="absolute -top-10 left-1/2 -translate-x-1/2 bg-orange-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow-lg whitespace-nowrap animate-bounce">
+                        點我出發！
+                    </div>
+                    <img src="ip8.png" alt="關西導遊" class="w-full h-auto">
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- 教學彈出視窗 -->
+    <div id="infoModal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity" onclick="closeModal()"></div>
+        <div id="modalContent" class="modal-content relative bg-white rounded-3xl shadow-2xl p-6 md:p-8 w-11/12 max-w-md modal-enter border-4 border-orange-300 z-10 flex flex-col items-center text-center">
+            <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-400 hover:text-red-500 hover:bg-red-50 p-2 rounded-full transition-colors focus:outline-none">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+            <div id="modalIcon" class="text-6xl mb-4 bg-orange-100 p-4 rounded-full shadow-inner inline-block"></div>
+            <h2 id="modalTitle" class="text-3xl font-bold text-gray-800 mb-2 border-b-2 border-orange-200 pb-2 inline-block"></h2>
+            <h3 id="modalGrade" class="text-lg font-bold text-orange-500 mb-4 bg-orange-50 px-3 py-1 rounded-full"></h3>
+            <div id="modalText" class="text-gray-600 text-base md:text-lg leading-relaxed text-left bg-gray-50 p-5 rounded-2xl w-full border border-gray-100 shadow-inner"></div>
+            <button onclick="closeModal()" class="mt-6 bg-gradient-to-r from-orange-500 to-amber-500 text-white font-bold py-3.5 px-8 rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-all w-full text-lg">
+                完成學習！回地圖 🎉
+            </button>
+        </div>
+    </div>
+
+    <!-- 終點慶祝彈窗 -->
+    <div id="celebrateModal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
+        <div class="absolute inset-0 bg-black/70 backdrop-blur-md"></div>
+        <div class="relative bg-white rounded-3xl shadow-2xl p-8 w-11/12 max-w-md border-4 border-amber-400 z-10 flex flex-col items-center text-center">
+            <div class="text-7xl mb-4">🏆</div>
+            <h2 class="text-3xl font-extrabold text-orange-600 mb-2">恭喜完成旅程！</h2>
+            <p class="text-gray-600 text-lg mb-6">您已經跟著導遊一起，走遍了關西國小一到六年級的所有食農校本課程！</p>
+            <button onclick="resetToStart()" class="bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold py-3 px-8 rounded-full shadow-lg hover:scale-105 transition-all w-full text-lg">
+                重新探索一次 🔄
+            </button>
+        </div>
+    </div>
+
+    <footer class="mt-8 text-center text-gray-500 text-sm pb-6">
+        <p>此互動網頁基於關西國小校本課程設計</p>
+        <p class="mt-1">© 2026 關西美食旅遊地圖</p>
+    </footer>
+
+    <script>
+       const routeData = [
+            { key: 'school',  name: '關西國小',    top: '20%', left: '46%', label: '起點' },
+            { key: 'tomato',  name: '一年級：蕃茄', top: '33%', left: '15%', label: '1年級🍅',
+              icon: '🍅', title: '可愛小蕃茄 🍅', grade: '一年級課程',
+              text: '<p class="mb-2"><strong>探索重點：</strong> 從種子到果實的奇妙旅程！</p><p>一年級的小朋友在農園裡親手栽種小蕃茄。透過觀察蕃茄的生長，學習照顧植物的耐心，並體驗收成的喜悅。紅通通的蕃茄不僅可愛，還富含營養喔！</p>' },
+            { key: 'xiancao', name: '二年級：仙草', top: '70%', left: '13%', label: '2年級🍮',
+              icon: '🍮', title: 'Q彈黑仙草 🍮', grade: '二年級課程',
+              text: '<p class="mb-2"><strong>探索重點：</strong> 關西最知名的黑寶石！</p><p>關西是台灣仙草的重要產地。二年級的課程帶領學生認識這種神奇的植物，了解它是如何從綠色的葉子熬煮成清涼退火、Q彈美味的黑色仙草凍，是夏天最棒的甜點！</p>' },
+            { key: 'tea',     name: '三年級：紅茶', top: '30%', left: '80%', label: '3年級🫖',
+              icon: '🫖', title: '香醇好紅茶 🫖', grade: '三年級課程',
+              text: '<p class="mb-2"><strong>探索重點：</strong> 茶香四溢的茶園風光！</p><p>關西的丘陵地形非常適合種茶。三年級小朋友會走進茶園，認識茶樹的種類，了解採茶、揉茶到烘焙的過程，品嚐一杯在地好茶，體會「粒粒皆辛苦」的茶農精神。</p>' },
+            { key: 'tofu',    name: '四年級：豆腐', top: '70%', left: '40%', label: '4年級🧊',
+              icon: '🧊', title: '白嫩嫩豆腐 🧊', grade: '四年級課程',
+              text: '<p class="mb-2"><strong>探索重點：</strong> 黃豆的百變魔法！</p><p>四年級的主角是豆腐！學生將學習黃豆如何經過浸泡、磨漿、煮沸、點滷等繁雜工序，最終凝結成白嫩美味的豆腐。這是一場結合科學變化與傳統工藝的美食魔法！</p>' },
+            { key: 'soy',     name: '五年級：醬油', top: '70%', left: '58%', label: '5年級🧴',
+              icon: '🧴', title: '甘醇手工醬油 🧴', grade: '五年級課程',
+              text: '<p class="mb-2"><strong>探索重點：</strong> 時間醞釀的醍醐味！</p><p>延續黃豆的主題，五年級帶領學生進入發酵的世界。認識黑豆或黃豆如何與麴菌作用，經過長時間的日曬與靜置，發酵釀造出為料理增添靈魂的甘醇醬油。</p>' },
+            { key: 'mustard', name: '六年級：鹹菜', top: '70%', left: '80%', label: '6年級🥬',
+              icon: '🥬', title: '客家酸菜(鹹菜) 🥬', grade: '六年級課程',
+              text: '<p class="mb-2"><strong>探索重點：</strong> 傳承客家惜物精神！</p><p>六年級的壓軸是代表客家文化的鹹菜。學生將體驗從芥菜採收、委凋、粗鹽揉捻到入甕發酵的完整過程。這不僅是美味的傳承，更是學習先民保存食物的智慧與勤儉精神。</p>' }
+        ];
+
+        let currentStep = 0;
+        let isMoving = false;
+
+        const character  = document.getElementById('character');
+        const modal      = document.getElementById('infoModal');
+        const modalContent = document.getElementById('modalContent');
+        const statusText = document.getElementById('status-text');
+
+        function initPosition() {
+            const start = routeData[0];
+            character.style.top  = start.top;
+            character.style.left = start.left;
+            updateStatusBar();
+        }
+
+        function moveCharacterToNextStop() {
+            if (isMoving) return;
+            if (currentStep >= routeData.length - 1) {
+                document.getElementById('celebrateModal').classList.remove('hidden');
+                return;
+            }
+            isMoving = true;
+            currentStep++;
+            character.classList.remove('idle-prompt');
+            character.classList.add('walking');
+            const target = routeData[currentStep];
+            statusText.innerText = `正在前往 ${target.name}... 🎒`;
+            character.style.top  = target.top;
+            character.style.left = target.left;
+            setTimeout(() => {
+                character.classList.remove('walking');
+                character.classList.add('idle-prompt');
+                isMoving = false;
+                openModal(target);
+                updateStatusBar();
+            }, 1500);
+        }
+
+        function updateStatusBar() {
+            for (let i = 0; i < routeData.length; i++) {
+                const node = document.getElementById(`step-node-${i}`);
+                if (node) {
+                    node.className = "px-2 py-1 rounded-lg transition-all duration-300";
+                    if (i === currentStep)      node.classList.add("bg-orange-500", "text-white", "scale-110");
+                    else if (i < currentStep)   node.classList.add("bg-orange-200", "text-orange-700");
+                    else                         node.classList.add("bg-gray-200", "text-gray-500");
+                }
+                const hotspot = document.getElementById(`spot-${routeData[i].key}`);
+                if (hotspot) {
+                    hotspot.classList.remove('hotspot-active');
+                    if (i === currentStep + 1) hotspot.classList.add('hotspot-active');
+                }
+            }
+            if (currentStep < routeData.length - 1) {
+                const next = routeData[currentStep + 1];
+                statusText.innerText = `目前位置：${routeData[currentStep].name}。點擊導遊出發前往下一站：${next.name}！ ✨`;
+            } else {
+                statusText.innerText = `🎉 恭喜！您已成功完成全部的關西美食課程學習！`;
+            }
+        }
+
+        function openModal(data) {
+            if (!data.text) return;
+            document.getElementById('modalIcon').innerText   = data.icon;
+            document.getElementById('modalTitle').innerText  = data.title;
+            document.getElementById('modalGrade').innerText  = data.grade;
+            document.getElementById('modalText').innerHTML   = data.text;
+            modal.classList.remove('hidden');
+            requestAnimationFrame(() => {
+                modalContent.classList.remove('modal-exit', 'modal-exit-active');
+                modalContent.classList.add('modal-enter');
+                requestAnimationFrame(() => { modalContent.classList.add('modal-enter-active'); });
+            });
+        }
+
+        function closeModal() {
+            modalContent.classList.remove('modal-enter', 'modal-enter-active');
+            modalContent.classList.add('modal-exit');
+            requestAnimationFrame(() => {
+                modalContent.classList.add('modal-exit-active');
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                    modalContent.classList.remove('modal-exit', 'modal-exit-active');
+                    if (currentStep === routeData.length - 1) {
+                        setTimeout(() => { document.getElementById('celebrateModal').classList.remove('hidden'); }, 500);
+                    }
+                }, 200);
+            });
+        }
+
+        function resetToStart() {
+            document.getElementById('celebrateModal').classList.add('hidden');
+            currentStep = 0;
+            initPosition();
+        }
+
+        window.onload = initPosition;
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === "Escape" && !modal.classList.contains('hidden')) closeModal();
+        });
+    </script>
+</body>
+</html>
