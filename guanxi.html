@@ -84,31 +84,28 @@
   <div class="relative w-full max-w-5xl rounded-2xl shadow-2xl overflow-hidden border-8 border-[#d7c4a1] bg-[#faf6eb]">
     
     <!-- 手繪地圖背景圖片 -->
-    <img 
-      src="Gemini_Generated_Image_13k9ht13k9ht13k9.png" 
-      alt="手繪關西地圖" 
-      class="w-full h-auto object-cover select-none block"
-    >
+    <img src="Gemini_Generated_Image_13k9ht13k9ht13k9.png" alt="手繪關西地圖" class="w-full h-auto object-cover select-none block">
 
     <!-- 關卡標記點容器 (由 JS 動態生成) -->
     <div id="stages-container"></div>
 
     <!-- 闖關主角人物 (已移除會與內層動畫衝突的定位偏移 class) -->
     <div 
-      id="player-character" 
-      class="absolute character-transition z-30"
-      style="left: 18%; top: 35%;"
-    >
-      <div id="char-sprite-wrapper" class="animate-char-bounce">
-        <!-- 角色圖片 -->
-        <img 
-          src="ip2.png" 
-          alt="闖關主角" 
-          class="w-14 md:w-24 drop-shadow-xl select-none"
-        >
-      </div>
-    </div>
-  </div>
+	  id="player-character" 
+	  class="absolute character-transition z-30"
+	  style="left: 18%; top: 35%;">
+	  <!-- 點擊挑戰提示，跟著角色，預設隱藏 -->
+	  <div id="challenge-hint" class="hidden cursor-pointer select-none absolute top-[-36px] md:top-[-48px] left-1/2 -translate-x-1/2 bg-white text-orange-600 px-3 py-1 rounded-full shadow-md font-black text-xs md:text-sm whitespace-nowrap animate-bounce border border-orange-200" style="cursor:pointer!important;user-select:none;">
+		  點擊挑戰!
+		</div>
+	  <div id="char-sprite-wrapper" class="animate-char-bounce">
+		<img 
+		  src="ip2.png" 
+		  alt="闖關主角" 
+		  class="w-12 md:w-20 drop-shadow-xl select-none"
+		>
+	  </div>
+	</div>
 
   <!-- 答題挑戰視窗 (Modal) -->
   <div id="quiz-modal" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm hidden">
@@ -161,7 +158,7 @@
       {
         id: 0,
         name: "紅茶工廠",
-        x: 18, y: 35, // 地圖上的百分比座標 (X, Y)
+        x: 18, y: 50, // 地圖上的百分比座標 (X, Y)
         questions: [
           { q: "關西被譽為何種茶的故鄉？", options: ["紅茶", "綠茶", "烏龍茶", "普洱茶"], ans: 0 },
           { q: "台灣紅茶股份有限公司大約創立於哪一個年代？", options: ["1910年代", "1930年代", "1950年代", "1970年代"], ans: 1 },
@@ -173,7 +170,7 @@
       {
         id: 1,
         name: "關西太和宮",
-        x: 40, y: 35,
+        x: 40, y: 50,
         questions: [
           { q: "關西太和宮主祀哪位神明？", options: ["媽祖", "三官大帝", "觀音菩薩", "關聖帝君"], ans: 1 },
           { q: "太和宮是關西鎮的信仰中心，它的建築風格屬於？", options: ["日式神社", "傳統客家/閩南廟宇", "哥德式", "羅馬式"], ans: 1 },
@@ -185,7 +182,7 @@
       {
         id: 2,
         name: "渡船頭",
-        x: 61, y: 36,
+        x: 61, y: 48,
         questions: [
           { q: "早期關西的渡船頭主要位於哪條河流的流域上？", options: ["頭前溪", "牛欄河/鳳山溪", "淡水河", "大漢溪"], ans: 1 },
           { q: "渡船頭在過去主要的功能是什麼？", options: ["觀光遊憩", "貨物運輸與交通", "舉辦划船比賽", "水力發電"], ans: 1 },
@@ -197,7 +194,7 @@
       {
         id: 3,
         name: "潮音禪寺",
-        x: 82, y: 24,
+        x: 82, y: 45,
         questions: [
           { q: "潮音禪寺的外觀建築風格受到了哪個東南亞國家的影響？", options: ["泰國", "日本", "韓國", "印度"], ans: 0 },
           { q: "佛教中，代表出淤泥而不染、清淨莊嚴的植物是什麼，常在寺廟中見到？", options: ["玫瑰", "蓮花", "菊花", "蘭花"], ans: 1 },
@@ -209,7 +206,7 @@
       {
         id: 4,
         name: "金勇農場",
-        x: 82, y: 58,
+        x: 82, y: 78,
         questions: [
           { q: "金勇農場以種植哪種水果聞名，有「聯合國」之稱？", options: ["蘋果", "葡萄", "番茄", "草莓"], ans: 2 },
           { q: "農場內提供什麼樣的體驗活動讓遊客親自參與？", options: ["採礦", "採果與DIY", "捕魚", "伐木"], ans: 1 },
@@ -221,7 +218,7 @@
       {
         id: 5,
         name: "東安古橋",
-        x: 55, y: 72,
+        x: 55, y: 92,
         questions: [
           { q: "東安古橋是由什麼材質建造而成的？", options: ["鋼筋水泥", "木頭", "方解石/方石", "磚塊"], ans: 2 },
           { q: "東安古橋的橋拱有幾個，造型十分優美？", options: ["1個", "3個", "5個", "7個"], ans: 2 },
@@ -233,7 +230,7 @@
       {
         id: 6,
         name: "關西國小",
-        x: 18, y: 76,
+        x: 18, y: 90,
         questions: [
           { q: "關西鎮以前因為盛產某種農作物加工品，舊稱是什麼？", options: ["鹹菜甕", "貓裡", "諸羅", "蛤仔難"], ans: 0 },
           { q: "關西鎮的居民組成，以哪個族群的比例最高？", options: ["閩南人", "原住民", "客家人", "新住民"], ans: 2 },
@@ -281,10 +278,20 @@
 
     // === 繪製地圖上各關卡的節點與特效 ===
     function renderMapNodes() {
-      stagesContainer.innerHTML = '';
-      STAGES.forEach((stage) => {
-        const isActive = stage.id === currentStage;
-        const isPassed = stage.id < currentStage;
+		  // 控制角色頭上的提示顯示
+		  const hint = document.getElementById('challenge-hint');
+		  if (isMoving) {
+			hint.classList.add('hidden');
+		  } else {
+			hint.classList.remove('hidden');
+			// 動態綁定當前關卡的點擊事件
+			hint.onclick = () => startStageQuiz(currentStage);
+		  }
+		  
+		  stagesContainer.innerHTML = '';
+		  STAGES.forEach((stage) => {
+			const isActive = stage.id === currentStage;
+			const isPassed = stage.id < currentStage;
 
         // 建立外層定位容器
         const nodeEl = document.createElement('div');
@@ -300,9 +307,7 @@
               <!-- 發光外環 -->
               <div class="absolute w-12 h-12 md:w-20 md:h-20 bg-yellow-400 rounded-full animate-ping-slow"></div>
               <!-- 提示文字框 -->
-              <div class="absolute top-[-40px] md:top-[-50px] bg-white text-orange-600 px-3 py-1 rounded-full shadow-md font-black text-xs md:text-sm whitespace-nowrap animate-bounce border border-orange-200">
-                點擊挑戰!
-              </div>
+              
             </div>
           `;
         } 
@@ -346,15 +351,23 @@
       // 清空舊選項
       optionsContainer.innerHTML = '';
 
-      // 產生新選項按鈕
-      currentQuestion.options.forEach((opt, idx) => {
-        const btn = document.createElement('button');
-        btn.className = `w-full text-left p-4 rounded-xl text-lg md:text-xl font-medium transition-all duration-200 border-2 bg-white text-gray-700 border-gray-200 hover:border-[#f08a5d] hover:bg-orange-50 hover:shadow-md`;
-        btn.innerHTML = `<span class="font-bold text-[#f08a5d] mr-2">${String.fromCharCode(65 + idx)}.</span> ${opt}`;
-        
-        btn.onclick = () => handleAnswer(idx, btn);
-        optionsContainer.appendChild(btn);
-      });
+      // 將選項與正確答案索引打包，再洗牌
+	const optionsWithIndex = currentQuestion.options.map((opt, idx) => ({ opt, idx }));
+	for (let i = optionsWithIndex.length - 1; i > 0; i--) {
+	  const j = Math.floor(Math.random() * (i + 1));
+	  [optionsWithIndex[i], optionsWithIndex[j]] = [optionsWithIndex[j], optionsWithIndex[i]];
+	}
+
+	// 產生新選項按鈕（用洗牌後的順序）
+	optionsWithIndex.forEach((item, displayIdx) => {
+	  const btn = document.createElement('button');
+	  btn.className = `w-full text-left p-4 rounded-xl text-lg md:text-xl font-medium transition-all duration-200 border-2 bg-white text-gray-700 border-gray-200 hover:border-[#f08a5d] hover:bg-orange-50 hover:shadow-md`;
+	  btn.innerHTML = `<span class="font-bold text-[#f08a5d] mr-2">${String.fromCharCode(65 + displayIdx)}.</span> ${item.opt}`;
+	  
+	  // 用原始的 idx 對應正確答案
+	  btn.onclick = () => handleAnswer(item.idx, btn);
+	  optionsContainer.appendChild(btn);
+	});
 
       quizModal.classList.remove('hidden');
     }
