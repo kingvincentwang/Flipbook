@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>守護關西的小小特派員</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/reveal.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/theme/white.min.css">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700;900&family=Noto+Sans+TC:wght@300;400;700&display=swap');
+
+  :root {
+    --brick: #C0392B;
+    --brick-light: #E8A598;
+    --gold: #D4A017;
+    --earth: #7B5E3A;
+    --cream: #FEF9F0;
+    --ink: #2C1810;
+    --moss: #4A7C59;
+    --sky: #5B8DB8;
+  }
+
+  .reveal {
+    font-family: 'Noto Sans TC', sans-serif;
+  }
+
+  .reveal .slides section {
+    height: 100%;
+    padding: 0;
+  }
+
+  /* === TITLE SLIDE === */
+  .slide-title {
+    background: linear-gradient(135deg, #2C1810 0%, #7B3F2A 40%, #C0392B 100%);
+    display: flex !important;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+  }
+  .slide-title::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-image: 
+      repeating-linear-gradient(45deg, transparent, transparent 20px, rgba(255,255,255,0.02) 20px, rgba(255,255,255,0.02) 40px);
+  }
+  .slide-title .badge {
+    background: var(--gold);
+    color: var(--ink);
+    font-family: 'Noto Serif TC', serif;
+    font-weight: 900;
+    font-size: 0.85em;
+    padding: 6px 20px;
+    letter-spacing: 4px;
+    margin-bottom: 24px;
+    clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+  }
+  .slide-title h1 {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 3em !important;
+    font-weight: 900;
+    color: var(--cream) !important;
+    text-align: center;
+    line-height: 1.2;
+    margin: 0 0 16px 0 !important;
+    text-shadow: 2px 4px 12px rgba(0,0,0,0.5);
+  }
+  .slide-title .subtitle {
+    color: var(--brick-light);
+    font-size: 1.1em;
+    letter-spacing: 2px;
+  }
+  .slide-title .characters {
+    margin-top: 32px;
+    font-size: 2.5em;
+    filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.4));
+    animation: float 3s ease-in-out infinite;
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+  .slide-title .corner-deco {
+    position: absolute;
+    width: 80px; height: 80px;
+    border: 3px solid rgba(212,160,23,0.4);
+  }
+  .slide-title .corner-deco.tl { top: 20px; left: 20px; border-right: none; border-bottom: none; }
+  .slide-title .corner-deco.br { bottom: 20px; right: 20px; border-left: none; border-top: none; }
+
+  /* === INTRO SLIDE === */
+  .slide-intro {
+    background: var(--cream);
+    display: flex !important;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 40px !important;
+  }
+  .slide-intro .eyebrow {
+    color: var(--brick);
+    font-size: 0.75em;
+    letter-spacing: 4px;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  .slide-intro h2 {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 2em !important;
+    color: var(--ink) !important;
+    margin-bottom: 24px !important;
+  }
+  .slide-intro .story-text {
+    font-size: 0.95em;
+    color: #5A4035;
+    line-height: 2;
+    max-width: 700px;
+    text-align: center;
+    border-left: 4px solid var(--gold);
+    padding-left: 20px;
+    text-align: left;
+  }
+  .slide-intro .emoji-row {
+    margin-top: 28px;
+    font-size: 2em;
+    letter-spacing: 12px;
+  }
+
+  /* === STOP SLIDES === */
+  .slide-stop {
+    display: flex !important;
+    flex-direction: row;
+    height: 100%;
+  }
+  .stop-left {
+    width: 38%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 30px;
+    position: relative;
+  }
+  .stop-right {
+    width: 62%;
+    background: var(--cream);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 40px 48px;
+  }
+  .stop-number {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 5em;
+    font-weight: 900;
+    opacity: 0.15;
+    position: absolute;
+    top: 10px;
+    left: 20px;
+    color: white;
+    line-height: 1;
+  }
+  .stop-icon {
+    font-size: 3.5em;
+    margin-bottom: 12px;
+    filter: drop-shadow(2px 4px 8px rgba(0,0,0,0.3));
+  }
+  .stop-name {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 1.3em;
+    font-weight: 700;
+    color: white;
+    text-align: center;
+    text-shadow: 1px 2px 6px rgba(0,0,0,0.4);
+  }
+  .stop-right h2 {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 1.8em !important;
+    color: var(--ink) !important;
+    margin-bottom: 20px !important;
+    border-bottom: 2px solid var(--brick-light);
+    padding-bottom: 12px;
+  }
+  .stop-right p {
+    font-size: 0.92em !important;
+    color: #4A3728;
+    line-height: 1.9;
+    margin-bottom: 16px !important;
+  }
+  .hakka-tag {
+    display: inline-block;
+    background: var(--earth);
+    color: white;
+    font-size: 0.75em;
+    padding: 4px 12px;
+    border-radius: 2px;
+    margin-top: 8px;
+    font-style: italic;
+    letter-spacing: 1px;
+  }
+  .activity-chip {
+    display: inline-block;
+    border: 1.5px solid var(--brick);
+    color: var(--brick);
+    font-size: 0.72em;
+    padding: 3px 10px;
+    border-radius: 20px;
+    margin: 4px 4px 0 0;
+    font-weight: 700;
+  }
+
+  /* Stop color themes */
+  .theme-brick .stop-left { background: linear-gradient(160deg, #8B2315, #C0392B); }
+  .theme-earth .stop-left { background: linear-gradient(160deg, #5C3A1E, #8B6240); }
+  .theme-gold .stop-left  { background: linear-gradient(160deg, #8B6914, #C8951A); }
+  .theme-moss .stop-left  { background: linear-gradient(160deg, #2D5A3C, #4A7C59); }
+  .theme-sky .stop-left   { background: linear-gradient(160deg, #2B5D8A, #5B8DB8); }
+  .theme-indigo .stop-left{ background: linear-gradient(160deg, #2E2070, #4A3DAD); }
+
+  /* === ACTIVITY SLIDE === */
+  .slide-activity {
+    background: #2C1810;
+    display: flex !important;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 40px !important;
+  }
+  .slide-activity h2 {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 1.9em !important;
+    color: var(--gold) !important;
+    margin-bottom: 32px !important;
+  }
+  .activity-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    width: 100%;
+    max-width: 800px;
+  }
+  .activity-card {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(212,160,23,0.25);
+    border-radius: 4px;
+    padding: 20px 16px;
+    text-align: center;
+  }
+  .activity-card .icon { font-size: 2em; margin-bottom: 10px; }
+  .activity-card .label {
+    color: var(--cream);
+    font-size: 0.88em;
+    font-weight: 700;
+    margin-bottom: 6px;
+    font-family: 'Noto Serif TC', serif;
+  }
+  .activity-card .desc {
+    color: rgba(255,255,255,0.55);
+    font-size: 0.72em;
+    line-height: 1.6;
+  }
+
+  /* === ENDING SLIDE === */
+  .slide-end {
+    background: linear-gradient(180deg, #FEF9F0 0%, #FDE8D8 100%);
+    display: flex !important;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 40px !important;
+  }
+  .slide-end h2 {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 2.2em !important;
+    color: var(--ink) !important;
+    margin-bottom: 20px !important;
+  }
+  .book-visual {
+    background: white;
+    border: 2px solid var(--brick);
+    border-radius: 4px 12px 12px 4px;
+    padding: 24px 32px;
+    box-shadow: 6px 6px 0 var(--brick);
+    max-width: 520px;
+    margin-bottom: 28px;
+    position: relative;
+  }
+  .book-visual::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 8px;
+    background: var(--brick);
+    border-radius: 4px 0 0 4px;
+  }
+  .book-title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 1.2em;
+    font-weight: 900;
+    color: var(--brick);
+    margin-bottom: 10px;
+    padding-left: 14px;
+  }
+  .book-items {
+    list-style: none;
+    padding-left: 14px;
+    margin: 0;
+  }
+  .book-items li {
+    font-size: 0.82em;
+    color: var(--earth);
+    padding: 3px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .book-items li::before { content: '▸'; color: var(--gold); }
+  .pledge {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 1.1em;
+    color: var(--ink);
+    text-align: center;
+    line-height: 1.9;
+    max-width: 560px;
+  }
+  .pledge strong { color: var(--brick); }
+
+  /* === MAP SLIDE === */
+  .slide-map {
+    background: #F5EDD8;
+    display: flex !important;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 30px !important;
+  }
+  .slide-map h2 {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 1.7em !important;
+    color: var(--ink) !important;
+    margin-bottom: 24px !important;
+  }
+  .route-container {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    flex-wrap: nowrap;
+    max-width: 900px;
+  }
+  .route-stop {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    flex: 1;
+  }
+  .route-dot {
+    width: 52px; height: 52px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4em;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+    margin-bottom: 8px;
+    border: 3px solid white;
+  }
+  .route-label {
+    font-size: 0.7em;
+    color: var(--earth);
+    font-weight: 700;
+    font-family: 'Noto Serif TC', serif;
+    max-width: 80px;
+    line-height: 1.4;
+  }
+  .route-arrow {
+    font-size: 1.3em;
+    color: var(--earth);
+    opacity: 0.5;
+    flex-shrink: 0;
+    margin: 0 4px;
+    margin-bottom: 28px;
+  }
+  .dot-c1 { background: linear-gradient(135deg, #C0392B, #8B2315); }
+  .dot-c2 { background: linear-gradient(135deg, #7B5E3A, #5C3A1E); }
+  .dot-c3 { background: linear-gradient(135deg, #C8951A, #8B6914); }
+  .dot-c4 { background: linear-gradient(135deg, #4A7C59, #2D5A3C); }
+  .dot-c5 { background: linear-gradient(135deg, #5B8DB8, #2B5D8A); }
+  .dot-c6 { background: linear-gradient(135deg, #4A3DAD, #2E2070); }
+
+  /* Reveal overrides */
+  .reveal h1, .reveal h2, .reveal h3 { text-transform: none !important; }
+  .reveal .progress { background: rgba(192,57,43,0.2); }
+  .reveal .progress span { background: var(--brick); }
+  .reveal .controls { color: var(--brick); }
+  .reveal .slide-number { color: var(--earth); font-family: 'Noto Sans TC'; }
+</style>
+</head>
+<body>
+<div class="reveal">
+  <div class="slides">
+
+    <!-- SLIDE 1: TITLE -->
+    <section class="slide-title">
+      <div class="corner-deco tl"></div>
+      <div class="corner-deco br"></div>
+      <div class="badge">浪漫臺三線 · 客庄文化探索</div>
+      <h1>守護關西的<br>小小特派員</h1>
+      <div class="subtitle">阿明與希希的家鄉探險之旅</div>
+      <div class="characters">🎒📓🗺️</div>
+    </section>
+
+    <!-- SLIDE 2: 主角介紹 -->
+    <section class="slide-intro">
+      <div class="eyebrow">✦ 今天的任務 ✦</div>
+      <h2>出發！挖掘家鄉的寶藏</h2>
+      <p class="story-text">
+        陽光灑在關西鎮的街道上，今天是一個特別的日子。<br>
+        <strong>阿明</strong>和好朋友<strong>希希</strong>揹起小背包，手裡拿著筆記本，<br>
+        準備展開一場「守護關西」的探險之旅。<br><br>
+        他們不是普通的學生，<br>
+        而是今天最神氣的——<strong>「小小特派員」</strong>！
+      </p>
+      <div class="emoji-row">📍🏮🧭📝🎌</div>
+    </section>
+
+    <!-- SLIDE 3: 探索路線地圖 -->
+    <section class="slide-map">
+      <h2>📍 今日探索路線</h2>
+      <div class="route-container">
+        <div class="route-stop">
+          <div class="route-dot dot-c1">🏛️</div>
+          <div class="route-label">關西分駐所</div>
+        </div>
+        <div class="route-arrow">→</div>
+        <div class="route-stop">
+          <div class="route-dot dot-c2">🪨</div>
+          <div class="route-label">石爺亭</div>
+        </div>
+        <div class="route-arrow">→</div>
+        <div class="route-stop">
+          <div class="route-dot dot-c3">🧧</div>
+          <div class="route-label">護心符<br>手作</div>
+        </div>
+        <div class="route-arrow">→</div>
+        <div class="route-stop">
+          <div class="route-dot dot-c4">🧱</div>
+          <div class="route-label">石店尾<br>老街</div>
+        </div>
+        <div class="route-arrow">→</div>
+        <div class="route-stop">
+          <div class="route-dot dot-c5">🛣️</div>
+          <div class="route-label">浪漫<br>臺三線</div>
+        </div>
+        <div class="route-arrow">→</div>
+        <div class="route-stop">
+          <div class="route-dot dot-c6">📖</div>
+          <div class="route-label">製作<br>觀光小書</div>
+        </div>
+      </div>
+      <p style="color: var(--earth); font-size: 0.8em; margin-top: 24px; font-family: 'Noto Serif TC';">六站探索 · 用心記錄 · 傳承文化</p>
+    </section>
+
+    <!-- SLIDE 4: 第一站 關西分駐所 -->
+    <section class="slide-stop theme-brick">
+      <div class="stop-left">
+        <div class="stop-number">01</div>
+        <div class="stop-icon">🏛️</div>
+        <div class="stop-name">關西分駐所</div>
+      </div>
+      <div class="stop-right">
+        <h2>第一站：關西分駐所</h2>
+        <p>
+          這座建築物有著<strong>古老的屋頂</strong>和漂亮的牆面，
+          像是一位威武又親切的守護者。
+          林老師帶著孩子們走進分駐所，
+          耐心地教大家練習<strong>客語</strong>。
+        </p>
+        <p>
+          阿明認真地張大嘴巴說著：<br>
+          <span class="hakka-tag">lo-kiê（老街）</span>
+          <span class="hakka-tag">fûn-chu-só（分駐所）</span>
+        </p>
+        <p>
+          學會家鄉話，就像拿到了
+          一把<strong>通往過去的鑰匙</strong>。
+        </p>
+        <div>
+          <span class="activity-chip">🗣️ 客語學習</span>
+          <span class="activity-chip">🏗️ 建築觀察</span>
+          <span class="activity-chip">📖 歷史記錄</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 5: 第二站 石爺亭 -->
+    <section class="slide-stop theme-earth">
+      <div class="stop-left">
+        <div class="stop-number">02</div>
+        <div class="stop-icon">🪨</div>
+        <div class="stop-name">石爺亭</div>
+      </div>
+      <div class="stop-right">
+        <h2>第二站：石爺亭</h2>
+        <p>
+          聽說這裡的<strong>石爺公</strong>是小朋友的守護神，
+          會保佑大家平安長大。
+        </p>
+        <p>
+          阿明和希希安靜地站在石爺亭前，
+          感受這裡<strong>莊嚴又溫暖</strong>的氣氛，
+          心裡充滿了對家鄉的感謝。
+        </p>
+        <div>
+          <span class="activity-chip">🙏 文化體驗</span>
+          <span class="activity-chip">🕊️ 民俗信仰</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 6: 第三站 護心符 -->
+    <section class="slide-stop theme-gold">
+      <div class="stop-left">
+        <div class="stop-number">03</div>
+        <div class="stop-icon">🧧</div>
+        <div class="stop-name">護心符手作</div>
+      </div>
+      <div class="stop-right">
+        <h2>第三站：製作護心符</h2>
+        <p>
+          林老師遞給他們<strong>彩色的紅線和布料</strong>，
+          阿明專注地把祝福塞進小袋子裡，
+          希希則細心地打上一個漂亮的結。
+        </p>
+        <p>
+          阿明笑著說：<br>
+          <em style="color: var(--brick); font-family: 'Noto Serif TC';">
+            「有了這個，我們就能把平安帶回家了！」
+          </em>
+        </p>
+        <div>
+          <span class="activity-chip">✂️ 手作體驗</span>
+          <span class="activity-chip">🎁 文化傳承</span>
+          <span class="activity-chip">❤️ 祝福分享</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 7: 第四站 石店尾老街 -->
+    <section class="slide-stop theme-moss">
+      <div class="stop-left">
+        <div class="stop-number">04</div>
+        <div class="stop-icon">🧱</div>
+        <div class="stop-name">石店尾老街</div>
+      </div>
+      <div class="stop-right">
+        <h2>第四站：石店尾老街</h2>
+        <p>
+          穿過幽靜的小徑，這裡的<strong>紅磚牆</strong>
+          散發著古樸的氣息。
+        </p>
+        <p>
+          阿明化身為<strong>小小導覽員</strong>，
+          指著老牆對希希說：
+          <em style="color: var(--moss);">「這裡以前住著很多勤奮的人們喔！」</em>
+        </p>
+        <p>
+          他學著導覽員的樣子，專業極了。
+        </p>
+        <div>
+          <span class="activity-chip">🗺️ 導覽解說</span>
+          <span class="activity-chip">🏘️ 聚落文化</span>
+          <span class="activity-chip">📸 記錄影像</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 8: 第五站 浪漫臺三線 -->
+    <section class="slide-stop theme-sky">
+      <div class="stop-left">
+        <div class="stop-number">05</div>
+        <div class="stop-icon">🛣️</div>
+        <div class="stop-name">浪漫臺三線</div>
+      </div>
+      <div class="stop-right">
+        <h2>第五站：浪漫臺三線</h2>
+        <p>
+          他們沿著著名的<strong>浪漫臺三線</strong>前行，
+          欣賞著沿途的自然風光。
+        </p>
+        <p>
+          希希舉起隨身的小旗子，
+          試著<strong>用客語介紹</strong>這條美麗的公路。
+          她雖然有點害羞，但聲音越來越響亮——
+          要把關西的美分享給每個人！
+        </p>
+        <div>
+          <span class="activity-chip">🌿 自然生態</span>
+          <span class="activity-chip">🗣️ 客語介紹</span>
+          <span class="activity-chip">🚶 漫步體驗</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 9: 相遇曾爺爺 -->
+    <section class="slide-intro" style="background: linear-gradient(135deg, #FEF9F0, #FDE8D8);">
+      <div class="eyebrow">✦ 街角的溫暖相遇 ✦</div>
+      <h2>用客語打招呼！</h2>
+      <p class="story-text">
+        在街角，他們遇到了一位正在散步的<strong>曾爺爺</strong>。<br><br>
+        阿明勇敢地走上前，<br>
+        用剛剛學到的<strong>客語</strong>跟爺爺打招呼。<br><br>
+        曾爺爺聽了<strong>笑得合不攏嘴</strong>，<br>
+        誇獎他們是——<br>
+        <em style="color: var(--brick); font-family: 'Noto Serif TC'; font-size: 1.15em;">「最棒的關西守護者！」</em>
+      </p>
+      <div class="emoji-row">👴🤝🧒</div>
+    </section>
+
+    <!-- SLIDE 10: 成果展示 -->
+    <section class="slide-activity">
+      <h2>🎨 回到學校後……</h2>
+      <div class="activity-grid">
+        <div class="activity-card">
+          <div class="icon">🖊️</div>
+          <div class="label">阿明的畫</div>
+          <div class="desc">畫下了莊嚴的<br>關西分駐所</div>
+        </div>
+        <div class="activity-card">
+          <div class="icon">🧧</div>
+          <div class="label">希希的畫</div>
+          <div class="desc">畫上了彩色<br>護心符</div>
+        </div>
+        <div class="activity-card">
+          <div class="icon">📝</div>
+          <div class="label">文字記錄</div>
+          <div class="desc">把看到的<br>聽到的全寫下</div>
+        </div>
+        <div class="activity-card">
+          <div class="icon">🗣️</div>
+          <div class="label">客語練習</div>
+          <div class="desc">lo-kiê<br>fûn-chu-só</div>
+        </div>
+        <div class="activity-card">
+          <div class="icon">🤝</div>
+          <div class="label">同心協力</div>
+          <div class="desc">匯集所有<br>記憶與心情</div>
+        </div>
+        <div class="activity-card">
+          <div class="icon">📖</div>
+          <div class="label">完成小書</div>
+          <div class="desc">浪漫臺三線<br>觀光小書</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 11: 結尾 -->
+    <section class="slide-end">
+      <h2>📖 小書完成了！</h2>
+      <div class="book-visual">
+        <div class="book-title">《浪漫臺三線觀光小書》</div>
+        <ul class="book-items">
+          <li>關西分駐所的歷史故事</li>
+          <li>石爺亭的守護傳說</li>
+          <li>手作護心符的溫暖祝福</li>
+          <li>石店尾老街的磚牆記憶</li>
+          <li>浪漫臺三線的自然風光</li>
+          <li>阿明與希希的客語筆記</li>
+        </ul>
+      </div>
+      <p class="pledge">
+        身為<strong>小小特派員</strong>，<br>
+        他們決定要繼續<strong>守護關西</strong>，<br>
+        讓這份<strong>文化之美</strong>永遠傳承下去。
+      </p>
+    </section>
+
+    <!-- SLIDE 12: 結語 -->
+    <section class="slide-title" style="background: linear-gradient(135deg, #2D5A3C 0%, #4A7C59 50%, #C8951A 100%);">
+      <div class="corner-deco tl"></div>
+      <div class="corner-deco br"></div>
+      <div class="badge">我們都是守護者</div>
+      <h1>關西，<br>我們愛你！</h1>
+      <div class="subtitle">阿明 × 希希 × 小小特派員</div>
+      <div class="characters">🏡💚🌿</div>
+    </section>
+
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/reveal.min.js"></script>
+<script>
+  Reveal.initialize({
+    hash: true,
+    slideNumber: 'c/t',
+    progress: true,
+    controls: true,
+    transition: 'slide',
+    transitionSpeed: 'default',
+    backgroundTransition: 'fade',
+    width: 1100,
+    height: 650,
+    margin: 0.04,
+  });
+</script>
+</body>
+</html>
