@@ -60,22 +60,22 @@
   }
   .slide-title h1 {
     font-family: 'Noto Serif TC', serif;
-    font-size: 3em !important;
+    font-size: 2.5em !important;
     font-weight: 900;
     color: var(--cream) !important;
     text-align: center;
     line-height: 1.2;
-    margin: 0 0 16px 0 !important;
+    margin: 0 0 12px 0 !important;
     text-shadow: 2px 4px 12px rgba(0,0,0,0.5);
   }
   .slide-title .subtitle {
     color: var(--brick-light);
-    font-size: 1.1em;
+    font-size: 0.95em;
     letter-spacing: 2px;
   }
   .slide-title .characters {
-    margin-top: 32px;
-    font-size: 2.5em;
+    margin-top: 20px;
+    font-size: 2em;
     filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.4));
     animation: float 3s ease-in-out infinite;
   }
@@ -110,14 +110,14 @@
   }
   .slide-intro h2 {
     font-family: 'Noto Serif TC', serif;
-    font-size: 2em !important;
+    font-size: 1.7em !important;
     color: var(--ink) !important;
-    margin-bottom: 24px !important;
+    margin-bottom: 16px !important;
   }
   .slide-intro .story-text {
-    font-size: 0.95em;
+    font-size: 0.85em;
     color: #5A4035;
-    line-height: 2;
+    line-height: 1.9;
     max-width: 700px;
     text-align: center;
     border-left: 4px solid var(--gold);
@@ -125,8 +125,8 @@
     text-align: left;
   }
   .slide-intro .emoji-row {
-    margin-top: 28px;
-    font-size: 2em;
+    margin-top: 20px;
+    font-size: 1.8em;
     letter-spacing: 12px;
   }
 
@@ -151,7 +151,7 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-    padding: 40px 48px;
+    padding: 28px 36px;
   }
   .stop-number {
     font-family: 'Noto Serif TC', serif;
@@ -179,17 +179,17 @@
   }
   .stop-right h2 {
     font-family: 'Noto Serif TC', serif;
-    font-size: 1.8em !important;
+    font-size: 1.5em !important;
     color: var(--ink) !important;
-    margin-bottom: 20px !important;
+    margin-bottom: 14px !important;
     border-bottom: 2px solid var(--brick-light);
-    padding-bottom: 12px;
+    padding-bottom: 10px;
   }
   .stop-right p {
-    font-size: 0.92em !important;
+    font-size: 0.82em !important;
     color: #4A3728;
-    line-height: 1.9;
-    margin-bottom: 16px !important;
+    line-height: 1.75;
+    margin-bottom: 10px !important;
   }
   .hakka-tag {
     display: inline-block;
@@ -232,14 +232,14 @@
   }
   .slide-activity h2 {
     font-family: 'Noto Serif TC', serif;
-    font-size: 1.9em !important;
+    font-size: 1.6em !important;
     color: var(--gold) !important;
-    margin-bottom: 32px !important;
+    margin-bottom: 20px !important;
   }
   .activity-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
+    gap: 14px;
     width: 100%;
     max-width: 800px;
   }
@@ -247,21 +247,21 @@
     background: rgba(255,255,255,0.06);
     border: 1px solid rgba(212,160,23,0.25);
     border-radius: 4px;
-    padding: 20px 16px;
+    padding: 14px 12px;
     text-align: center;
   }
-  .activity-card .icon { font-size: 2em; margin-bottom: 10px; }
+  .activity-card .icon { font-size: 1.6em; margin-bottom: 6px; }
   .activity-card .label {
     color: var(--cream);
-    font-size: 0.88em;
+    font-size: 0.82em;
     font-weight: 700;
-    margin-bottom: 6px;
+    margin-bottom: 4px;
     font-family: 'Noto Serif TC', serif;
   }
   .activity-card .desc {
     color: rgba(255,255,255,0.55);
-    font-size: 0.72em;
-    line-height: 1.6;
+    font-size: 0.68em;
+    line-height: 1.5;
   }
 
   /* === ENDING SLIDE === */
@@ -275,18 +275,18 @@
   }
   .slide-end h2 {
     font-family: 'Noto Serif TC', serif;
-    font-size: 2.2em !important;
+    font-size: 1.8em !important;
     color: var(--ink) !important;
-    margin-bottom: 20px !important;
+    margin-bottom: 14px !important;
   }
   .book-visual {
     background: white;
     border: 2px solid var(--brick);
     border-radius: 4px 12px 12px 4px;
-    padding: 24px 32px;
+    padding: 16px 24px;
     box-shadow: 6px 6px 0 var(--brick);
     max-width: 520px;
-    margin-bottom: 28px;
+    margin-bottom: 18px;
     position: relative;
   }
   .book-visual::before {
@@ -340,9 +340,9 @@
   }
   .slide-map h2 {
     font-family: 'Noto Serif TC', serif;
-    font-size: 1.7em !important;
+    font-size: 1.5em !important;
     color: var(--ink) !important;
-    margin-bottom: 24px !important;
+    margin-bottom: 18px !important;
   }
   .route-container {
     display: flex;
@@ -703,8 +703,11 @@
     transitionSpeed: 'default',
     backgroundTransition: 'fade',
     width: 1100,
-    height: 650,
-    margin: 0.04,
+    height: 700,
+    margin: 0.06,
+    minScale: 0.2,
+    maxScale: 2.0,
+    center: true,
   });
 </script>
 </body>
