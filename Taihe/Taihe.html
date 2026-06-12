@@ -4,417 +4,700 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>鳳山溪畔的守護者：關西太和宮的故事</title>
-  
-  <!-- 引入 Tailwind CSS (CDN) -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  
-  <!-- 自訂翻頁的 CSS 動畫 (強化版) -->
   <style>
-    /* 加深 3D 透視深度，數值越小 3D 變形越誇張 */
-    .page-flip-container {
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      background: #050e1f;
+      background-image:
+        radial-gradient(ellipse 80% 50% at 20% 10%, rgba(24, 95, 165, 0.35) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 40% at 80% 80%, rgba(14, 110, 86, 0.2) 0%, transparent 55%),
+        radial-gradient(ellipse 40% 30% at 60% 30%, rgba(83, 74, 183, 0.15) 0%, transparent 50%);
+      font-family: 'Segoe UI', 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+    }
+
+    /* 星點背景 */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        radial-gradient(1px 1px at 15% 20%, rgba(255,255,255,0.4) 0%, transparent 100%),
+        radial-gradient(1px 1px at 35% 60%, rgba(255,255,255,0.3) 0%, transparent 100%),
+        radial-gradient(1.5px 1.5px at 55% 15%, rgba(255,255,255,0.5) 0%, transparent 100%),
+        radial-gradient(1px 1px at 72% 45%, rgba(255,255,255,0.25) 0%, transparent 100%),
+        radial-gradient(1px 1px at 88% 75%, rgba(255,255,255,0.35) 0%, transparent 100%),
+        radial-gradient(1px 1px at 10% 80%, rgba(255,255,255,0.2) 0%, transparent 100%),
+        radial-gradient(1.5px 1.5px at 45% 90%, rgba(255,255,255,0.4) 0%, transparent 100%),
+        radial-gradient(1px 1px at 92% 25%, rgba(255,255,255,0.3) 0%, transparent 100%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .wrapper {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 960px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    /* 標題區 */
+    .header {
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(55, 138, 221, 0.15);
+      border: 1px solid rgba(55, 138, 221, 0.35);
+      color: #7dc4f0;
+      padding: 5px 16px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      backdrop-filter: blur(8px);
+    }
+
+    .badge svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+    h1 {
+      font-size: clamp(1.4rem, 4vw, 2.2rem);
+      font-weight: 700;
+      color: #e8f4ff;
+      letter-spacing: 0.02em;
+      text-shadow: 0 0 40px rgba(55, 138, 221, 0.5);
+    }
+
+    .subtitle {
+      font-size: 13px;
+      color: rgba(160, 200, 240, 0.6);
+      letter-spacing: 0.05em;
+    }
+
+    /* 主卡片 — 玻璃態 */
+    .card {
+      width: 100%;
+      background: rgba(8, 20, 45, 0.65);
+      border: 1px solid rgba(55, 138, 221, 0.2);
+      border-radius: 24px;
+      overflow: hidden;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      box-shadow:
+        0 0 0 1px rgba(55, 138, 221, 0.08) inset,
+        0 40px 80px rgba(0, 0, 0, 0.5),
+        0 0 60px rgba(24, 95, 165, 0.1);
+    }
+
+    /* 進度條 */
+    .progress-track {
+      width: 100%;
+      height: 3px;
+      background: rgba(55, 138, 221, 0.1);
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #1a6db5, #53b3f5);
+      transition: width 0.5s ease;
+      border-radius: 0 2px 2px 0;
+      box-shadow: 0 0 8px rgba(83, 179, 245, 0.6);
+    }
+
+    /* 內容區 */
+    .flip-outer {
       perspective: 1200px;
-      overflow: hidden; /* 確保翻轉時不會跑出版面 */
+      overflow: hidden;
     }
-    
-    /* 設定動畫時間與彈性曲線，讓它有「啪」一聲到位的感覺 */
+
+    .flip-container {
+      display: flex;
+      flex-direction: column;
+    }
+
+    @media (min-width: 768px) {
+      .flip-container { flex-direction: row; }
+    }
+
     .flip-next {
-      animation: flipNextAnim 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.1) forwards;
+      animation: flipNextAnim 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.1) forwards;
       transform-style: preserve-3d;
-      transform-origin: center right; /* 以外側為軸心 */
+      transform-origin: center right;
     }
+
     .flip-prev {
-      animation: flipPrevAnim 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.1) forwards;
+      animation: flipPrevAnim 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.1) forwards;
       transform-style: preserve-3d;
       transform-origin: center left;
     }
 
-    /* 向下一頁的翻轉動畫：從右側 90 度立起來，並帶著縮放飛進來 */
     @keyframes flipNextAnim {
-      0% { 
-        transform: rotateY(90deg) scale(0.8) translateZ(-200px) translateX(20%); 
-        opacity: 0; 
-      }
-      100% { 
-        transform: rotateY(0deg) scale(1) translateZ(0) translateX(0); 
-        opacity: 1; 
+      0% { transform: rotateY(90deg) scale(0.85) translateZ(-160px) translateX(15%); opacity: 0; }
+      100% { transform: rotateY(0deg) scale(1) translateZ(0) translateX(0); opacity: 1; }
+    }
+
+    @keyframes flipPrevAnim {
+      0% { transform: rotateY(-90deg) scale(0.85) translateZ(-160px) translateX(-15%); opacity: 0; }
+      100% { transform: rotateY(0deg) scale(1) translateZ(0) translateX(0); opacity: 1; }
+    }
+
+    /* 圖片側 */
+    .image-side {
+      width: 100%;
+      padding: 1.5rem;
+      border-bottom: 1px solid rgba(55, 138, 221, 0.12);
+      background: rgba(4, 12, 30, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 300px;
+    }
+
+    @media (min-width: 768px) {
+      .image-side {
+        width: 50%;
+        border-bottom: none;
+        border-right: 1px solid rgba(55, 138, 221, 0.12);
+        min-height: 440px;
       }
     }
 
-    /* 向上一頁的翻轉動畫：從左側 -90 度立起來，並帶著縮放飛進來 */
-    @keyframes flipPrevAnim {
-      0% { 
-        transform: rotateY(-90deg) scale(0.8) translateZ(-200px) translateX(-20%); 
-        opacity: 0; 
-      }
-      100% { 
-        transform: rotateY(0deg) scale(1) translateZ(0) translateX(0); 
-        opacity: 1; 
-      }
+    #story-image {
+      width: 100%;
+      max-height: 400px;
+      object-fit: contain;
+      border-radius: 12px;
+      display: none;
     }
-    
-    /* 載入中動畫 */
-    .animate-spin-slow {
-      animation: spin 1.5s linear infinite;
+
+    .img-placeholder {
+      width: 100%;
+      min-height: 280px;
+      border: 1.5px dashed rgba(55, 138, 221, 0.25);
+      border-radius: 16px;
+      background: rgba(24, 95, 165, 0.05);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      text-align: center;
+      gap: 1rem;
     }
-    @keyframes spin {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
+
+    .img-placeholder svg { color: rgba(55, 138, 221, 0.3); width: 52px; height: 52px; }
+
+    .img-placeholder-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: rgba(120, 180, 240, 0.7);
     }
+
+    .img-placeholder-hint {
+      font-size: 12px;
+      color: rgba(100, 150, 200, 0.5);
+      background: rgba(24, 95, 165, 0.08);
+      border: 1px solid rgba(55, 138, 221, 0.15);
+      border-radius: 8px;
+      padding: 10px 14px;
+      line-height: 1.7;
+    }
+
+    /* 文字側 */
+    .text-side {
+      width: 100%;
+      padding: 2.5rem 2rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+      background: rgba(6, 16, 38, 0.3);
+    }
+
+    @media (min-width: 768px) { .text-side { width: 50%; padding: 3rem 2.5rem; } }
+
+    /* 裝飾光暈 */
+    .text-side::before {
+      content: '';
+      position: absolute;
+      top: -40px;
+      right: -40px;
+      width: 200px;
+      height: 200px;
+      background: radial-gradient(circle, rgba(24, 95, 165, 0.12), transparent 70%);
+      pointer-events: none;
+    }
+
+    #story-text {
+      font-size: clamp(1rem, 2.2vw, 1.2rem);
+      color: rgba(210, 235, 255, 0.88);
+      line-height: 2.0;
+      letter-spacing: 0.04em;
+      text-align: justify;
+      font-family: 'Georgia', 'Noto Serif TC', serif;
+      position: relative;
+      z-index: 1;
+    }
+
+    #error-msg {
+      display: none;
+      margin-top: 1rem;
+      padding: 10px 14px;
+      background: rgba(162, 45, 45, 0.15);
+      border: 1px solid rgba(226, 75, 74, 0.3);
+      border-radius: 8px;
+      color: #f0a0a0;
+      font-size: 13px;
+    }
+
+    /* 控制面板 */
+    .controls {
+      background: rgba(5, 14, 35, 0.6);
+      border-top: 1px solid rgba(55, 138, 221, 0.12);
+      padding: 1.25rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      backdrop-filter: blur(10px);
+    }
+
+    @media (min-width: 768px) {
+      .controls { flex-direction: row; align-items: center; justify-content: space-between; }
+    }
+
+    /* 切換開關 */
+    .toggles {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.2rem;
+      justify-content: center;
+    }
+
+    @media (min-width: 768px) { .toggles { justify-content: flex-start; } }
+
+    .toggle-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      user-select: none;
+      font-size: 13px;
+      color: rgba(140, 190, 240, 0.7);
+      font-weight: 500;
+    }
+
+    .toggle-label input { display: none; }
+
+    .toggle-track {
+      width: 40px;
+      height: 22px;
+      border-radius: 999px;
+      background: rgba(55, 138, 221, 0.15);
+      border: 1px solid rgba(55, 138, 221, 0.25);
+      position: relative;
+      transition: background 0.25s, border-color 0.25s;
+      flex-shrink: 0;
+    }
+
+    .toggle-thumb {
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: rgba(120, 160, 210, 0.5);
+      transition: transform 0.25s, background 0.25s;
+    }
+
+    .toggle-label input:checked ~ .toggle-track {
+      background: rgba(55, 138, 221, 0.35);
+      border-color: rgba(55, 138, 221, 0.6);
+    }
+
+    .toggle-label input:checked ~ .toggle-track .toggle-thumb {
+      transform: translateX(18px);
+      background: #53b3f5;
+      box-shadow: 0 0 6px rgba(83, 179, 245, 0.7);
+    }
+
+    /* 右側：頁碼 + 按鈕 */
+    .controls-right {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.75rem;
+      width: 100%;
+    }
+
+    @media (min-width: 768px) { .controls-right { flex-direction: row; width: auto; flex: 1; justify-content: flex-end; } }
+
+    #page-indicator {
+      font-size: 12px;
+      color: rgba(100, 155, 215, 0.5);
+      letter-spacing: 0.06em;
+      white-space: nowrap;
+    }
+
+    .btn-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* 圓形按鈕 (上/下頁、下載) */
+    .btn-circle {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 1px solid rgba(55, 138, 221, 0.25);
+      background: rgba(24, 55, 100, 0.3);
+      color: rgba(140, 190, 240, 0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+
+    .btn-circle:hover {
+      background: rgba(55, 138, 221, 0.18);
+      border-color: rgba(55, 138, 221, 0.5);
+      color: #90d0ff;
+      box-shadow: 0 0 12px rgba(55, 138, 221, 0.25);
+    }
+
+    .btn-circle:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .btn-circle svg { width: 20px; height: 20px; }
+
+    /* 主播放按鈕 */
+    .btn-play {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 24px;
+      height: 44px;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+      border: 1px solid rgba(55, 138, 221, 0.45);
+      background: rgba(24, 95, 165, 0.25);
+      color: #90ccff;
+      box-shadow: 0 0 20px rgba(24, 95, 165, 0.2);
+    }
+
+    .btn-play:hover {
+      background: rgba(55, 138, 221, 0.35);
+      border-color: rgba(83, 179, 245, 0.65);
+      color: #c0e8ff;
+      box-shadow: 0 0 24px rgba(55, 138, 221, 0.35);
+    }
+
+    .btn-play:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .btn-play.playing {
+      border-color: rgba(226, 75, 74, 0.5);
+      background: rgba(162, 45, 45, 0.2);
+      color: #ffb0b0;
+      box-shadow: 0 0 20px rgba(162, 45, 45, 0.2);
+    }
+
+    .btn-play svg { width: 18px; height: 18px; }
+
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    .spin { animation: spin 1.2s linear infinite; }
   </style>
 </head>
-<body class="min-h-screen bg-orange-50 font-sans flex flex-col items-center justify-center p-4 md:p-8">
+<body>
+<div class="wrapper">
 
-  <!-- 標題區 -->
-  <div class="max-w-5xl w-full flex flex-col items-center mb-6">
-    <div class="bg-orange-100 text-orange-800 px-4 py-1 rounded-full text-sm font-semibold mb-3 flex items-center shadow-sm">
-      <svg class="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+  <!-- 標題 -->
+  <div class="header">
+    <div class="badge">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
       關西太和宮的故事
     </div>
-    <h1 class="text-2xl md:text-4xl font-bold text-slate-800 text-center leading-tight mb-2">
-      鳳山溪畔的守護者
-    </h1>
-    <p class="text-slate-500 text-sm md:text-base">作者：Vincent Wang By Gemini and storybook</p>
+    <h1>鳳山溪畔的守護者</h1>
+    <p class="subtitle">作者：Vincent Wang</p>
   </div>
 
-  <!-- 故事卡片區 -->
-  <div class="max-w-5xl w-full bg-white rounded-3xl shadow-xl overflow-hidden flex flex-col border border-orange-100">
-    
+  <!-- 主卡片 -->
+  <div class="card">
+
     <!-- 進度條 -->
-    <div class="w-full bg-orange-100 h-2">
-      <div id="progress-bar" class="bg-orange-500 h-2 transition-all duration-500 ease-in-out" style="width: 11.11%;"></div>
+    <div class="progress-track">
+      <div class="progress-fill" id="progress-bar" style="width: 11.11%;"></div>
     </div>
 
-    <!-- 內容區：套用強化的 3D 翻頁動畫 -->
-    <div class="page-flip-container w-full bg-slate-50 relative">
-      <div id="flip-container" class="flex flex-col md:flex-row w-full flip-next shadow-[0_0_30px_rgba(0,0,0,0.05)]">
-        
-        <!-- 左側：插圖位置 / 實際圖片 (完整呈現，不裁切) -->
-        <div class="w-full md:w-1/2 p-4 md:p-6 border-b md:border-b-0 md:border-r border-slate-100 bg-slate-100 flex flex-col items-center justify-center min-h-[350px] md:min-h-[480px] relative overflow-hidden">
-          
-          <!-- 故事插圖 (改為 object-contain 以 100% 完整呈現不裁切，背景防呆) -->
-          <img id="story-image" src="" alt="故事插圖" class="w-full h-full max-h-[450px] object-contain rounded-2xl shadow-sm hidden" onerror="handleImageError()">
+    <!-- 翻頁內容區 -->
+    <div class="flip-outer">
+      <div id="flip-container" class="flip-container flip-next">
 
-          <!-- 備用插圖位置提示框 -->
-          <div id="image-placeholder" class="w-full h-full min-h-[380px] border-2 border-dashed border-orange-200 rounded-2xl bg-white flex flex-col items-center justify-center p-8 text-center text-slate-400 shadow-sm relative overflow-hidden group hover:border-orange-300 transition-colors">
-            <svg class="w-16 h-16 mb-4 text-orange-200 group-hover:text-orange-300 transition-colors" xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"></rect><circle cx="9" cy="9" r="2"></circle><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path></svg>
-            <p class="font-semibold text-slate-600 mb-2 text-lg">插圖位置 (<span id="image-filename" class="text-orange-600">images/pic01.png</span>)</p>
-            <p class="text-sm text-slate-500 bg-orange-50 p-3 rounded-lg border border-orange-100">
-              <span class="font-medium text-orange-700 block mb-1">建議畫面：</span>
-              <span id="image-hint"></span>
-            </p>
+        <!-- 圖片側 -->
+        <div class="image-side">
+          <img id="story-image" src="" alt="故事插圖" onerror="handleImageError()">
+          <div class="img-placeholder" id="image-placeholder">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+            <p class="img-placeholder-title">插圖位置：<span id="image-filename">images/pic01.png</span></p>
+            <p class="img-placeholder-hint"><span id="image-hint"></span></p>
           </div>
         </div>
 
-        <!-- 右側：故事文字 -->
-        <div class="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-center relative bg-white">
-          
-          <!-- 背景裝飾 -->
-          <div class="absolute top-0 right-0 mt-6 mr-6 opacity-5 pointer-events-none">
-            <svg width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
-            </svg>
-          </div>
-
-          <p id="story-text" class="text-xl md:text-2xl text-slate-700 leading-loose tracking-wide md:leading-[2.2] text-justify font-serif relative z-10"></p>
-          
-          <div id="error-msg" class="hidden mt-6 p-3 bg-red-50 text-red-600 rounded-lg text-sm text-center border border-red-100"></div>
+        <!-- 文字側 -->
+        <div class="text-side">
+          <p id="story-text"></p>
+          <div id="error-msg"></div>
         </div>
+
       </div>
     </div>
 
     <!-- 控制面板 -->
-    <div class="bg-white border-t border-slate-100 p-6 flex flex-col lg:flex-row items-center justify-between gap-6 z-10 relative shadow-[0_-4px_10px_rgba(0,0,0,0.02)]">
-      
-      <!-- 自動播放與自動翻頁切換器 -->
-      <div class="flex flex-wrap items-center gap-6 text-sm text-slate-600 w-full lg:w-auto justify-center lg:justify-start">
-        <!-- 自動播放開關 -->
-        <label class="relative inline-flex items-center cursor-pointer select-none">
-          <input type="checkbox" id="autoplay-toggle" onchange="toggleAutoPlay()" class="sr-only peer">
-          <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-orange-500"></div>
-          <span class="ms-2 font-semibold text-slate-700">自動播放聲音</span>
+    <div class="controls">
+
+      <!-- 切換器 -->
+      <div class="toggles">
+        <label class="toggle-label">
+          <input type="checkbox" id="autoplay-toggle" onchange="toggleAutoPlay()">
+          <span class="toggle-track"><span class="toggle-thumb"></span></span>
+          自動播放聲音
         </label>
-        
-        <!-- 自動翻頁開關 -->
-        <label class="relative inline-flex items-center cursor-pointer select-none">
-          <input type="checkbox" id="autoflip-toggle" onchange="toggleAutoFlip()" class="sr-only peer">
-          <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-orange-500"></div>
-          <span class="ms-2 font-semibold text-slate-700">自動翻頁</span>
+        <label class="toggle-label">
+          <input type="checkbox" id="autoflip-toggle" onchange="toggleAutoFlip()">
+          <span class="toggle-track"><span class="toggle-thumb"></span></span>
+          自動翻頁
         </label>
       </div>
 
-      <!-- 進度指示與主要控制鈕 -->
-      <div class="flex flex-col sm:flex-row items-center justify-between gap-4 w-full lg:w-auto lg:flex-1">
-        <div id="page-indicator" class="text-slate-400 font-medium text-sm text-center sm:text-left">
-          第 1 頁 / 共 9 頁
-        </div>
+      <!-- 右側控制 -->
+      <div class="controls-right">
+        <span id="page-indicator">第 1 頁 / 共 9 頁</span>
+        <div class="btn-row">
 
-        <div class="flex items-center gap-3">
-          <!-- 上一頁按鈕 -->
-          <button id="prev-btn" onclick="goToPrevPage()" disabled class="p-3 rounded-full bg-white border border-slate-200 text-slate-600 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors shadow-sm">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg>
+          <button class="btn-circle" id="prev-btn" onclick="goToPrevPage()" disabled title="上一頁">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
           </button>
 
-          <!-- 播放語音按鈕 -->
-          <button id="play-btn" onclick="playAudio()" class="flex items-center justify-center gap-2 px-6 py-3 rounded-full font-bold text-white shadow-md transition-transform active:scale-95 bg-orange-500 hover:bg-orange-600 disabled:opacity-70 disabled:cursor-not-allowed">
+          <button class="btn-play" id="play-btn" onclick="playAudio()">
             <span id="play-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
             </span>
             <span id="play-text">朗讀這頁</span>
           </button>
 
-          <!-- 下載按鈕 -->
-          <button id="download-btn" onclick="downloadAudio()" class="p-3 rounded-full bg-white border border-slate-200 text-slate-600 hover:bg-slate-100 hover:text-orange-500 transition-all shadow-sm active:scale-95" title="下載此頁語音檔">
-            <span id="download-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" x2="12" y1="15" y2="3"></line></svg>
-            </span>
+          <button class="btn-circle" id="download-btn" onclick="downloadAudio()" title="下載語音檔">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
           </button>
 
-          <!-- 下一頁按鈕 -->
-          <button id="next-btn" onclick="goToNextPage()" class="p-3 rounded-full bg-white border border-slate-200 text-slate-600 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors shadow-sm">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg>
+          <button class="btn-circle" id="next-btn" onclick="goToNextPage()" title="下一頁">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
           </button>
+
         </div>
       </div>
     </div>
   </div>
+</div>
 
-  <!-- JavaScript 邏輯區 -->
-  <script>
-    // 故事資料，整合您的在地路徑: images/pic01.png ~ pic09.png 以及 wav/p01.wav ~ p09.wav
-    const storyPages = [
-      { id: 1, text: "陽光灑在波光粼粼的鳳山溪上，像是一條閃亮的銀絲帶。阿賢爺爺牽著小羽的手，沿著溪畔漫步。爺爺指著前方巍峨的建築說：「小羽，那裡就是關西人的大客廳——太和宮。它已經守護了這片土地兩百多年了喔！」小羽好奇地睜大眼睛，看著那紅瓦飛簷。", image: "images/pic01.png", audio: "wav/p01.wav", imageHint: "爺爺與小羽在波光粼粼的鳳山溪畔散步，遠處可見紅瓦飛簷的太和宮。" },
-      { id: 2, text: "「在很久很久以前的乾隆年間，先民來到這裡開墾。」阿賢爺爺邊走邊說，「大家為了祈求平安，在1812年蓋了這座廟。」小羽看著廟門口斑駁的石階，彷彿能看見古人辛勤工作的身影。爺爺告訴她，這座廟就像一位老奶奶，見證了關西的成長與變化。", image: "images/pic02.png", audio: "wav/p02.wav", imageHint: "先民辛勤開墾的疊影，以及太和宮門口充滿歷史感的斑駁石階。" },
-      { id: 3, text: "故事並不總是平順的。爺爺嘆了口氣說：「1895年，太和宮不幸毀於一場大火。直到1900年，一位叫羅碧玉的先生發起重建，大家出錢出力，才讓廟宇重現光彩。」小羽想像著羅碧玉先生指揮著工匠，大家揮汗如雨，一磚一瓦重新搭起這座信仰中心。", image: "images/pic03.png", audio: "wav/p03.wav", imageHint: "羅碧玉先生與鄉親工匠們揮汗如雨、一磚一瓦重建太和宮的場景。" },
-      { id: 4, text: "走進廟內，一對威武的龍柱吸引了小羽。爺爺指著石柱說：「這是石雕大師蔣梅水的作品。你看這兩條龍，活靈活現，好像隨時會從柱子上飛到雲端去呢！」小羽伸出小手，輕輕觸摸龍鱗，感受那冰涼而細緻的石雕工藝。", image: "images/pic04.png", audio: "wav/p04.wav", imageHint: "小羽伸出小手，輕輕觸摸蔣梅水大師雕刻的精美石雕龍柱。" },
-      { id: 5, text: "小羽抬頭看見牆上的彩色陶瓷偶，色彩斑斕且動作生動。爺爺介紹道：「這是姚自來大師的『交趾陶』作品，這一段故事叫做『天仙配』。」小羽數著上面的仙女，每一尊的表情都好精緻，衣服上的皺褶就像真的一樣，這讓她看得入了迷。", image: "images/pic05.png", audio: "wav/p05.wav", imageHint: "牆上色彩斑斕的「天仙配」交趾陶，仙女的表情與衣服皺褶栩栩如生。" },
-      { id: 6, text: "「快看屋頂！」爺爺拉著小羽來到正殿中央。那是一座像蜘蛛網一樣、層層疊疊的木造天花板。爺爺說：「這是徐清大師設計的『藻井』，完全沒用一根釘子喔！」小羽跟著爺爺一起仰起頭，覺得自己好像正看著一朵在天花板綻放的木雕大花。", image: "images/pic06.png", audio: "wav/p06.wav", imageHint: "爺爺與小羽在正殿仰頭看著如同巨大木雕花朵般、層層疊疊的無釘「藻井」。" },
-      { id: 7, text: "來到大門口，兩位威風凜凜的門神正守著太和宮。爺爺笑著說：「這是李登勝大師畫的。無論你走到哪裡，門神的眼睛好像都會跟著你轉喔！」小羽調皮地左跑跑、右跑跑，發現門神真的都在看她，忍不住咯咯地笑出聲來。", image: "images/pic07.png", audio: "wav/p07.wav", imageHint: "小羽在門口左右調皮跑動，李登勝大師畫的威風門神眼睛彷彿跟著她轉。" },
-      { id: 8, text: "繞到廟後，爺爺指著遠處的山坡說：「傳說太和宮位在『松樹排龍脈』上，那是大地的靈氣所在。」小羽看著那些蔥鬱的樹木，想像著一條隱形的巨龍正靜靜地躺在山巒間，用牠的力量守護著這座廟與整個關西。", image: "images/pic08.png", audio: "wav/p08.wav", imageHint: "遠處蔥鬱的山坡，雲霧間隱約有一條巨龍的輪廓，象徵著「松樹排龍脈」。" },
-      { id: 9, text: "參訪結束了，夕陽將太和宮的影子拉得很長。小羽牽著爺爺的手往家走，她回頭望向那座古老的廟宇，心裡想著：這裡不主要有建築，更是許多大師的心血和家鄉的故事。太和宮會繼續在鳳山溪畔，守護著爺爺、守護著小羽，守護著每一個人。", image: "images/pic09.png", audio: "wav/p09.wav", imageHint: "夕陽西下，太和宮的影子被拉長，小羽牽著爺爺的手走向歸途，回頭凝望廟宇。" }
-    ];
+<script>
+  const storyPages = [
+    { id: 1, text: "陽光灑在波光粼粼的鳳山溪上，像是一條閃亮的銀絲帶。阿賢爺爺牽著小羽的手，沿著溪畔漫步。爺爺指著前方巍峨的建築說：「小羽，那裡就是關西人的大客廳——太和宮。它已經守護了這片土地兩百多年了喔！」小羽好奇地睜大眼睛，看著那紅瓦飛簷。", image: "images/pic01.png", audio: "wav/p01.wav", imageHint: "爺爺與小羽在波光粼粼的鳳山溪畔散步，遠處可見紅瓦飛簷的太和宮。" },
+    { id: 2, text: "「在很久很久以前的乾隆年間，先民來到這裡開墾。」阿賢爺爺邊走邊說，「大家為了祈求平安，在1812年蓋了這座廟。」小羽看著廟門口斑駁的石階，彷彿能看見古人辛勤工作的身影。爺爺告訴她，這座廟就像一位老奶奶，見證了關西的成長與變化。", image: "images/pic02.png", audio: "wav/p02.wav", imageHint: "先民辛勤開墾的疊影，以及太和宮門口充滿歷史感的斑駁石階。" },
+    { id: 3, text: "故事並不總是平順的。爺爺嘆了口氣說：「1895年，太和宮不幸毀於一場大火。直到1900年，一位叫羅碧玉的先生發起重建，大家出錢出力，才讓廟宇重現光彩。」小羽想像著羅碧玉先生指揮著工匠，大家揮汗如雨，一磚一瓦重新搭起這座信仰中心。", image: "images/pic03.png", audio: "wav/p03.wav", imageHint: "羅碧玉先生與鄉親工匠們揮汗如雨、一磚一瓦重建太和宮的場景。" },
+    { id: 4, text: "走進廟內，一對威武的龍柱吸引了小羽。爺爺指著石柱說：「這是石雕大師蔣梅水的作品。你看這兩條龍，活靈活現，好像隨時會從柱子上飛到雲端去呢！」小羽伸出小手，輕輕觸摸龍鱗，感受那冰涼而細緻的石雕工藝。", image: "images/pic04.png", audio: "wav/p04.wav", imageHint: "小羽伸出小手，輕輕觸摸蔣梅水大師雕刻的精美石雕龍柱。" },
+    { id: 5, text: "小羽抬頭看見牆上的彩色陶瓷偶，色彩斑斕且動作生動。爺爺介紹道：「這是姚自來大師的『交趾陶』作品，這一段故事叫做『天仙配』。」小羽數著上面的仙女，每一尊的表情都好精緻，衣服上的皺褶就像真的一樣，這讓她看得入了迷。", image: "images/pic05.png", audio: "wav/p05.wav", imageHint: "牆上色彩斑斕的「天仙配」交趾陶，仙女的表情與衣服皺褶栩栩如生。" },
+    { id: 6, text: "「快看屋頂！」爺爺拉著小羽來到正殿中央。那是一座像蜘蛛網一樣、層層疊疊的木造天花板。爺爺說：「這是徐清大師設計的『藻井』，完全沒用一根釘子喔！」小羽跟著爺爺一起仰起頭，覺得自己好像正看著一朵在天花板綻放的木雕大花。", image: "images/pic06.png", audio: "wav/p06.wav", imageHint: "爺爺與小羽在正殿仰頭看著如同巨大木雕花朵般、層層疊疊的無釘「藻井」。" },
+    { id: 7, text: "來到大門口，兩位威風凜凜的門神正守著太和宮。爺爺笑著說：「這是李登勝大師畫的。無論你走到哪裡，門神的眼睛好像都會跟著你轉喔！」小羽調皮地左跑跑、右跑跑，發現門神真的都在看她，忍不住咯咯地笑出聲來。", image: "images/pic07.png", audio: "wav/p07.wav", imageHint: "小羽在門口左右調皮跑動，李登勝大師畫的威風門神眼睛彷彿跟著她轉。" },
+    { id: 8, text: "繞到廟後，爺爺指著遠處的山坡說：「傳說太和宮位在『松樹排龍脈』上，那是大地的靈氣所在。」小羽看著那些蔥鬱的樹木，想像著一條隱形的巨龍正靜靜地躺在山巒間，用牠的力量守護著這座廟與整個關西。", image: "images/pic08.png", audio: "wav/p08.wav", imageHint: "遠處蔥鬱的山坡，雲霧間隱約有一條巨龍的輪廓，象徵著「松樹排龍脈」。" },
+    { id: 9, text: "參訪結束了，夕陽將太和宮的影子拉得很長。小羽牽著爺爺的手往家走，她回頭望向那座古老的廟宇，心裡想著：這裡不主要有建築，更是許多大師的心血和家鄉的故事。太和宮會繼續在鳳山溪畔，守護著爺爺、守護著小羽，守護著每一個人。", image: "images/pic09.png", audio: "wav/p09.wav", imageHint: "夕陽西下，太和宮的影子被拉長，小羽牽著爺爺的手走向歸途，回頭凝望廟宇。" }
+  ];
 
-    // 狀態管理
-    let currentPage = 0;
-    let isPlaying = false;
-    let isLoadingAudio = false;
-    
-    // 自動播放與自動翻頁設定
-    let isAutoPlay = false;
-    let isAutoFlip = false;
-    let flipTimeout = null; // 用來控制自動翻頁的計時器
+  let currentPage = 0;
+  let isPlaying = false;
+  let isLoadingAudio = false;
+  let isAutoPlay = false;
+  let isAutoFlip = false;
+  let flipTimeout = null;
 
-    const audioObj = new Audio();
+  const audioObj = new Audio();
 
-    // SVG 圖示字串
-    const svgVolume = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>`;
-    const svgPause = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="4" height="16" x="6" y="4"></rect><rect width="4" height="16" x="14" y="4"></rect></svg>`;
-    const svgLoader = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="animate-spin-slow"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg>`;
+  const svgVolume = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>`;
+  const svgPause = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="4" height="16" x="6" y="4"/><rect width="4" height="16" x="14" y="4"/></svg>`;
+  const svgLoader = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="spin"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>`;
 
-    window.onload = () => {
-      renderPage('next');
-      
-      // 監聽播放完畢事件：處理自動翻頁邏輯
-      audioObj.addEventListener('ended', () => {
-        isPlaying = false;
-        updatePlayButtonUI();
-        
-        // 如果開啟了自動翻頁，且還有下一頁
-        if (isAutoFlip && currentPage < storyPages.length - 1) {
-          clearTimeout(flipTimeout);
-          // 等待 1.5 秒後執行翻頁
-          flipTimeout = setTimeout(() => {
-            goToNextPage();
-          }, 1500);
-        }
-      });
-    };
-
-    // 渲染頁面內容與動畫
-    function renderPage(direction) {
-      const page = storyPages[currentPage];
-      
-      // 1. 更新故事文字
-      document.getElementById('story-text').innerText = page.text;
-      
-      // 2. 處理圖片顯示（優先嘗試載入 images/ 中的圖檔）
-      const imgEl = document.getElementById('story-image');
-      const placeholderEl = document.getElementById('image-placeholder');
-      
-      // 填寫備用語意
-      document.getElementById('image-hint').innerText = page.imageHint;
-      document.getElementById('image-filename').innerText = page.image;
-
-      // 重置圖片，嘗試加載在地圖片
-      imgEl.src = page.image;
-      imgEl.classList.remove('hidden');
-      placeholderEl.classList.add('hidden'); // 先假定加載成功
-
-      // 3. 更新頁數進度
-      document.getElementById('page-indicator').innerText = `第 ${currentPage + 1} 頁 / 共 ${storyPages.length} 頁`;
-      const progress = ((currentPage + 1) / storyPages.length) * 100;
-      document.getElementById('progress-bar').style.width = `${progress}%`;
-
-      // 4. 更新前後頁按鈕可用狀態
-      document.getElementById('prev-btn').disabled = currentPage === 0;
-      document.getElementById('next-btn').disabled = currentPage === storyPages.length - 1;
-
-      // 5. 隱藏前頁遺留的錯誤
-      document.getElementById('error-msg').style.display = 'none';
-
-      // 6. 觸發翻頁 3D 動畫
-      const container = document.getElementById('flip-container');
-      container.classList.remove('flip-next', 'flip-prev');
-      void container.offsetWidth; // 強制重繪 (Reflow)
-      container.classList.add(direction === 'next' ? 'flip-next' : 'flip-prev');
-
-      // 7. 自動播放語音 (若開啟自動播放功能)
-      if (isAutoPlay) {
-        // 等待 3D 翻頁動畫進行到一半時再播放語音，體驗最平滑
-        setTimeout(() => {
-          if (!isPlaying && !isLoadingAudio) {
-            playAudio();
-          }
-        }, 500);
-      }
-    }
-
-    // 圖片加載失敗（資料夾沒有此圖片、或沒對齊檔名）時自動呼叫此防呆機制
-    function handleImageError() {
-      const imgEl = document.getElementById('story-image');
-      const placeholderEl = document.getElementById('image-placeholder');
-      imgEl.classList.add('hidden');
-      placeholderEl.classList.remove('hidden');
-    }
-
-    // 切換自動播放按鈕
-    function toggleAutoPlay() {
-      isAutoPlay = document.getElementById('autoplay-toggle').checked;
-      // 如果開啟了自動播放且當前沒在播放，就立刻播放
-      if (isAutoPlay && !isPlaying && !isLoadingAudio) {
-        playAudio();
-      }
-    }
-
-    // 切換自動翻頁按鈕
-    function toggleAutoFlip() {
-      isAutoFlip = document.getElementById('autoflip-toggle').checked;
-      if (!isAutoFlip) {
-        clearTimeout(flipTimeout);
-      } else if (!isPlaying && !isLoadingAudio) {
-        // 如果開啟了自動翻頁且音檔早放完了，立刻觸發下一頁
-        if (currentPage < storyPages.length - 1) {
-          goToNextPage();
-        }
-      }
-    }
-
-    // 下一頁
-    function goToNextPage() {
-      if (currentPage < storyPages.length - 1) {
-        clearTimeout(flipTimeout); // 清除可能殘留的計時器
-        stopAudio();
-        currentPage++;
-        renderPage('next');
-      }
-    }
-
-    // 上一頁
-    function goToPrevPage() {
-      if (currentPage > 0) {
-        clearTimeout(flipTimeout); // 清除可能殘留的計時器
-        stopAudio();
-        currentPage--;
-        renderPage('prev');
-      }
-    }
-
-    // 更新播放按鈕樣式
-    function updatePlayButtonUI() {
-      const btn = document.getElementById('play-btn');
-      const icon = document.getElementById('play-icon');
-      const text = document.getElementById('play-text');
-
-      btn.className = "flex items-center justify-center gap-2 px-6 py-3 rounded-full font-bold text-white shadow-md transition-transform active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed ";
-
-      if (isLoadingAudio) {
-        btn.className += "bg-orange-500";
-        btn.disabled = true;
-        icon.innerHTML = svgLoader;
-        text.innerText = "讀取音檔中...";
-      } else if (isPlaying) {
-        btn.className += "bg-rose-500 hover:bg-rose-600";
-        btn.disabled = false;
-        icon.innerHTML = svgPause;
-        text.innerText = "暫停播放";
-      } else {
-        btn.className += "bg-orange-500 hover:bg-orange-600";
-        btn.disabled = false;
-        icon.innerHTML = svgVolume;
-        text.innerText = "朗讀這頁";
-      }
-    }
-
-    // 暫停播放
-    function stopAudio() {
-      audioObj.pause();
-      audioObj.currentTime = 0;
+  window.onload = () => {
+    renderPage('next');
+    audioObj.addEventListener('ended', () => {
       isPlaying = false;
       updatePlayButtonUI();
-    }
-
-    // 顯示錯誤警示
-    function showError(msg) {
-      const errorDiv = document.getElementById('error-msg');
-      errorDiv.innerText = msg;
-      errorDiv.style.display = 'block';
-    }
-
-    // 在地播放音檔邏輯 (wav/p01.wav ~ p09.wav)
-    async function playAudio() {
-      if (isPlaying) {
-        stopAudio();
-        return;
+      if (isAutoFlip && currentPage < storyPages.length - 1) {
+        clearTimeout(flipTimeout);
+        flipTimeout = setTimeout(goToNextPage, 1500);
       }
+    });
+  };
 
-      const page = storyPages[currentPage];
-      document.getElementById('error-msg').style.display = 'none';
+  function renderPage(direction) {
+    const page = storyPages[currentPage];
+    document.getElementById('story-text').innerText = page.text;
 
-      isLoadingAudio = true;
+    const imgEl = document.getElementById('story-image');
+    const placeholderEl = document.getElementById('image-placeholder');
+    document.getElementById('image-hint').innerText = page.imageHint;
+    document.getElementById('image-filename').innerText = page.image;
+
+    imgEl.src = page.image;
+    imgEl.classList.remove(); imgEl.style.display = '';
+    placeholderEl.style.display = 'none';
+    imgEl.style.display = 'block';
+
+    document.getElementById('page-indicator').innerText = `第 ${currentPage + 1} 頁 / 共 ${storyPages.length} 頁`;
+    const progress = ((currentPage + 1) / storyPages.length) * 100;
+    document.getElementById('progress-bar').style.width = `${progress}%`;
+
+    document.getElementById('prev-btn').disabled = currentPage === 0;
+    document.getElementById('next-btn').disabled = currentPage === storyPages.length - 1;
+    document.getElementById('error-msg').style.display = 'none';
+
+    const container = document.getElementById('flip-container');
+    container.classList.remove('flip-next', 'flip-prev');
+    void container.offsetWidth;
+    container.classList.add(direction === 'next' ? 'flip-next' : 'flip-prev');
+
+    if (isAutoPlay) {
+      setTimeout(() => { if (!isPlaying && !isLoadingAudio) playAudio(); }, 500);
+    }
+  }
+
+  function handleImageError() {
+    document.getElementById('story-image').style.display = 'none';
+    document.getElementById('image-placeholder').style.display = 'flex';
+  }
+
+  function toggleAutoPlay() {
+    isAutoPlay = document.getElementById('autoplay-toggle').checked;
+    if (isAutoPlay && !isPlaying && !isLoadingAudio) playAudio();
+  }
+
+  function toggleAutoFlip() {
+    isAutoFlip = document.getElementById('autoflip-toggle').checked;
+    if (!isAutoFlip) { clearTimeout(flipTimeout); }
+    else if (!isPlaying && !isLoadingAudio && currentPage < storyPages.length - 1) goToNextPage();
+  }
+
+  function goToNextPage() {
+    if (currentPage < storyPages.length - 1) {
+      clearTimeout(flipTimeout);
+      stopAudio();
+      currentPage++;
+      renderPage('next');
+    }
+  }
+
+  function goToPrevPage() {
+    if (currentPage > 0) {
+      clearTimeout(flipTimeout);
+      stopAudio();
+      currentPage--;
+      renderPage('prev');
+    }
+  }
+
+  function updatePlayButtonUI() {
+    const btn = document.getElementById('play-btn');
+    const icon = document.getElementById('play-icon');
+    const text = document.getElementById('play-text');
+
+    btn.classList.remove('playing');
+    if (isLoadingAudio) {
+      btn.disabled = true;
+      icon.innerHTML = svgLoader;
+      text.innerText = '讀取音檔中…';
+    } else if (isPlaying) {
+      btn.disabled = false;
+      btn.classList.add('playing');
+      icon.innerHTML = svgPause;
+      text.innerText = '暫停播放';
+    } else {
+      btn.disabled = false;
+      icon.innerHTML = svgVolume;
+      text.innerText = '朗讀這頁';
+    }
+  }
+
+  function stopAudio() {
+    audioObj.pause();
+    audioObj.currentTime = 0;
+    isPlaying = false;
+    updatePlayButtonUI();
+  }
+
+  function showError(msg) {
+    const el = document.getElementById('error-msg');
+    el.innerText = msg;
+    el.style.display = 'block';
+  }
+
+  async function playAudio() {
+    if (isPlaying) { stopAudio(); return; }
+    const page = storyPages[currentPage];
+    document.getElementById('error-msg').style.display = 'none';
+    isLoadingAudio = true;
+    updatePlayButtonUI();
+    try {
+      audioObj.src = page.audio;
+      await audioObj.play();
+      isPlaying = true;
+      isLoadingAudio = false;
       updatePlayButtonUI();
-
-      try {
-        // 設定本頁對應音檔
-        audioObj.src = page.audio;
-        await audioObj.play();
-        
-        isPlaying = true;
-        isLoadingAudio = false;
-        updatePlayButtonUI();
-      } catch (error) {
-        console.error("Audio playback error:", error);
-        showError(`無法播放音檔。請確認是否已將語音檔放入 "${page.audio}" 位置！`);
-        isPlaying = false;
-        isLoadingAudio = false;
-        updatePlayButtonUI();
-        
-        // 如果自動翻頁開啟但音檔加載失敗，依然往後翻，避免程式卡住
-        if (isAutoFlip && currentPage < storyPages.length - 1) {
-          clearTimeout(flipTimeout);
-          flipTimeout = setTimeout(goToNextPage, 3000);
-        }
+    } catch (error) {
+      showError(`無法播放音檔。請確認是否已將語音檔放入 "${page.audio}" 位置！`);
+      isPlaying = false;
+      isLoadingAudio = false;
+      updatePlayButtonUI();
+      if (isAutoFlip && currentPage < storyPages.length - 1) {
+        clearTimeout(flipTimeout);
+        flipTimeout = setTimeout(goToNextPage, 3000);
       }
     }
+  }
 
-    // 在地下載音檔邏輯
-    function downloadAudio() {
-      const page = storyPages[currentPage];
-      const a = document.createElement('a');
-      a.href = page.audio;
-      a.download = page.audio.split('/').pop(); // 自動命名為 "p01.wav", "p02.wav" 等
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-    }
-  </script>
+  function downloadAudio() {
+    const page = storyPages[currentPage];
+    const a = document.createElement('a');
+    a.href = page.audio;
+    a.download = page.audio.split('/').pop();
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  }
+</script>
 </body>
 </html>
