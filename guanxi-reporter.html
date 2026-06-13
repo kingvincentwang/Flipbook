@@ -571,20 +571,28 @@
 
   /* === SUB SLIDES === */
   .slide-sub {
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: center !important;
-    align-items: center !important;
+    position: relative !important;
     height: 100% !important;
     width: 100% !important;
-    box-sizing: border-box;
-    padding: 28px 40px !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+  }
+  .slide-sub .sub-inner {
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    width: 90% !important;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
   .sub-header {
     display: flex;
     align-items: center;
     gap: 10px;
-    margin-bottom: 18px;
+    margin-bottom: 10px;
+    flex-shrink: 0;
   }
   .sub-icon { font-size: 1.8em; }
   .sub-title {
@@ -597,21 +605,23 @@
     width: 60px;
     height: 3px;
     background: var(--brick);
-    margin: 0 auto 18px auto;
+    margin: 0 auto 14px auto;
     border-radius: 2px;
+    flex-shrink: 0;
   }
   /* 客語學習卡片 */
   .hakka-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
+    gap: 8px;
     width: 100%;
-    max-width: 700px;
+    max-width: 680px;
+    flex-shrink: 0;
   }
   .hakka-card {
     background: linear-gradient(135deg, #2C1810, #7B3F2A);
     border-radius: 8px;
-    padding: 16px 12px;
+    padding: 12px 10px;
     text-align: center;
   }
   .hakka-card .hk-zh {
@@ -636,17 +646,18 @@
   .arch-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
+    gap: 8px;
     width: 100%;
     max-width: 680px;
+    flex-shrink: 0;
   }
   .arch-card {
     background: var(--cream);
     border: 1.5px solid var(--brick-light);
     border-radius: 6px;
-    padding: 14px 16px;
+    padding: 10px 12px;
     display: flex;
-    gap: 12px;
+    gap: 10px;
     align-items: flex-start;
   }
   .arch-card .arch-icon { font-size: 1.6em; flex-shrink: 0; }
@@ -678,8 +689,8 @@
   }
   .timeline-item {
     display: flex;
-    gap: 16px;
-    margin-bottom: 14px;
+    gap: 14px;
+    margin-bottom: 10px;
     position: relative;
   }
   .tl-dot {
@@ -728,21 +739,66 @@
 
   .back-btn {
     position: absolute;
-    top: 12px;
-    left: 16px;
-    font-size: 0.62em;
+    top: 10px;
+    right: 16px;
+    font-size: 0.58em;
     color: var(--brick);
     font-weight: 700;
     cursor: pointer;
     border: 1.5px solid var(--brick);
-    padding: 3px 10px;
+    padding: 2px 8px;
     border-radius: 20px;
     transition: all 0.2s;
+    z-index: 10;
   }
   .back-btn:hover {
     background: var(--brick);
     color: white;
   }
+
+  /* === MODAL 彈出層 === */
+  .sub-modal {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.55);
+    z-index: 9999;
+    justify-content: center;
+    align-items: center;
+  }
+  .sub-modal.active {
+    display: flex !important;
+  }
+  .modal-box {
+    background: white;
+    border-radius: 10px;
+    padding: 28px 32px;
+    width: 82%;
+    max-width: 700px;
+    max-height: 80vh;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    animation: modalIn 0.25s ease;
+  }
+  @keyframes modalIn {
+    from { opacity: 0; transform: scale(0.92); }
+    to   { opacity: 1; transform: scale(1); }
+  }
+  .modal-close {
+    position: absolute;
+    top: 12px; right: 14px;
+    background: var(--brick);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 4px 10px;
+    font-size: 0.7em;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: 'Noto Sans TC', sans-serif;
+  }
+  .modal-close:hover { opacity: 0.8; }
 </style>
 </head>
 <body>
@@ -833,7 +889,6 @@
 
     <!-- SLIDE 4: 第一站 關西分駐所（含子頁面） -->
     <section>
-
       <!-- 主頁 -->
       <section class="slide-stop theme-brick" style="position:relative;">
         <div class="stop-left">
@@ -843,149 +898,61 @@
         </div>
         <div class="stop-right">
           <h2>第一站：關西分駐所</h2>
-          <p>
-            這座建築物有著<strong>古老的屋頂</strong>和漂亮的牆面，
-            像是一位威武又親切的守護者。
-            林老師帶著孩子們走進分駐所，
-            耐心地教大家練習<strong>客語</strong>。
-          </p>
-          <p>
-            阿明認真地張大嘴巴說著：<br>
+          <p>這座建築物有著<strong>古老的屋頂</strong>和漂亮的牆面，像是一位威武又親切的守護者。林老師帶著孩子們走進分駐所，耐心地教大家練習<strong>客語</strong>。</p>
+          <p>阿明認真地張大嘴巴說著：<br>
             <span class="hakka-tag">lo-kiê（老街）</span>
             <span class="hakka-tag">fûn-chu-só（分駐所）</span>
           </p>
           <p>學會家鄉話，就像拿到了一把<strong>通往過去的鑰匙</strong>。</p>
           <div style="margin-top:6px;">
-            <span class="activity-chip clickable-chip" onclick="Reveal.slide(Reveal.getIndices().h, 1)">🗣️ 客語學習 ↓</span>
-            <span class="activity-chip clickable-chip" onclick="Reveal.slide(Reveal.getIndices().h, 2)">🏗️ 建築觀察 ↓</span>
-            <span class="activity-chip clickable-chip" onclick="Reveal.slide(Reveal.getIndices().h, 3)">📖 歷史記錄 ↓</span>
+            <span class="activity-chip clickable-chip" onclick="Reveal.down()">🗣️ 客語學習 ↓</span>
+            <span class="activity-chip clickable-chip" onclick="Reveal.slide(Reveal.getIndices().h,2)">🏗️ 建築觀察 ↓</span>
+            <span class="activity-chip clickable-chip" onclick="Reveal.slide(Reveal.getIndices().h,3)">📖 歷史記錄 ↓</span>
           </div>
         </div>
         <div class="down-hint">▼ 向下探索更多</div>
       </section>
 
-      <!-- 子頁 1：客語學習 -->
-      <section class="slide-sub" style="background: #FEF9F0; position: relative;">
-        <div class="back-btn" onclick="Reveal.slide(Reveal.getIndices().h, 0)">↑ 回主頁</div>
-        <div class="sub-header">
-          <div class="sub-icon">🗣️</div>
-          <div class="sub-title">客語學習</div>
-        </div>
+      <!-- 子頁1：客語學習 -->
+      <section data-background-color="#FEF9F0">
+        <button class="back-btn" onclick="Reveal.up()">↑ 回主頁</button>
+        <div class="sub-header"><div class="sub-icon">🗣️</div><div class="sub-title">客語學習</div></div>
         <div class="sub-divider"></div>
         <div class="hakka-grid">
-          <div class="hakka-card">
-            <div class="hk-zh">老街</div>
-            <div class="hk-ro">lo-kiê</div>
-            <div class="hk-meaning">充滿歷史的街道</div>
-          </div>
-          <div class="hakka-card">
-            <div class="hk-zh">分駐所</div>
-            <div class="hk-ro">fûn-chu-só</div>
-            <div class="hk-meaning">警察派出所</div>
-          </div>
-          <div class="hakka-card">
-            <div class="hk-zh">你好</div>
-            <div class="hk-ro">ngí hó</div>
-            <div class="hk-meaning">問候語</div>
-          </div>
-          <div class="hakka-card">
-            <div class="hk-zh">謝謝</div>
-            <div class="hk-ro">chhia-chhia</div>
-            <div class="hk-meaning">表示感謝</div>
-          </div>
-          <div class="hakka-card">
-            <div class="hk-zh">關西</div>
-            <div class="hk-ro">Kôn-sî</div>
-            <div class="hk-meaning">我們的家鄉</div>
-          </div>
-          <div class="hakka-card">
-            <div class="hk-zh">守護</div>
-            <div class="hk-ro">sú-fu</div>
-            <div class="hk-meaning">保護珍貴的事物</div>
-          </div>
+          <div class="hakka-card"><div class="hk-zh">老街</div><div class="hk-ro">lo-kiê</div><div class="hk-meaning">充滿歷史的街道</div></div>
+          <div class="hakka-card"><div class="hk-zh">分駐所</div><div class="hk-ro">fûn-chu-só</div><div class="hk-meaning">警察派出所</div></div>
+          <div class="hakka-card"><div class="hk-zh">你好</div><div class="hk-ro">ngí hó</div><div class="hk-meaning">問候語</div></div>
+          <div class="hakka-card"><div class="hk-zh">謝謝</div><div class="hk-ro">chhia-chhia</div><div class="hk-meaning">表示感謝</div></div>
+          <div class="hakka-card"><div class="hk-zh">關西</div><div class="hk-ro">Kôn-sî</div><div class="hk-meaning">我們的家鄉</div></div>
+          <div class="hakka-card"><div class="hk-zh">守護</div><div class="hk-ro">sú-fu</div><div class="hk-meaning">保護珍貴的事物</div></div>
         </div>
       </section>
 
-      <!-- 子頁 2：建築觀察 -->
-      <section class="slide-sub" style="background: #F5EDD8; position: relative;">
-        <div class="back-btn" onclick="Reveal.slide(Reveal.getIndices().h, 0)">↑ 回主頁</div>
-        <div class="sub-header">
-          <div class="sub-icon">🏗️</div>
-          <div class="sub-title">建築觀察</div>
-        </div>
+      <!-- 子頁2：建築觀察 -->
+      <section data-background-color="#F5EDD8">
+        <button class="back-btn" onclick="Reveal.up()">↑ 回主頁</button>
+        <div class="sub-header"><div class="sub-icon">🏗️</div><div class="sub-title">建築觀察</div></div>
         <div class="sub-divider"></div>
         <div class="arch-grid">
-          <div class="arch-card">
-            <div class="arch-icon">🏠</div>
-            <div>
-              <div class="arch-name">日式屋頂</div>
-              <div class="arch-desc">採用日治時期建築風格，屋頂線條優美，展現和風特色。</div>
-            </div>
-          </div>
-          <div class="arch-card">
-            <div class="arch-icon">🧱</div>
-            <div>
-              <div class="arch-name">紅磚外牆</div>
-              <div class="arch-desc">使用傳統紅磚砌成，顏色鮮豔，歷經百年仍屹立不搖。</div>
-            </div>
-          </div>
-          <div class="arch-card">
-            <div class="arch-icon">🪟</div>
-            <div>
-              <div class="arch-name">拱形窗戶</div>
-              <div class="arch-desc">西洋風格的拱形窗設計，透光性佳，兼具美觀與實用。</div>
-            </div>
-          </div>
-          <div class="arch-card">
-            <div class="arch-icon">🚪</div>
-            <div>
-              <div class="arch-name">木造門廊</div>
-              <div class="arch-desc">入口採木造廊柱，散發溫暖質感，迎接每位到訪的民眾。</div>
-            </div>
-          </div>
+          <div class="arch-card"><div class="arch-icon">🏠</div><div><div class="arch-name">日式屋頂</div><div class="arch-desc">採用日治時期建築風格，屋頂線條優美，展現和風特色。</div></div></div>
+          <div class="arch-card"><div class="arch-icon">🧱</div><div><div class="arch-name">紅磚外牆</div><div class="arch-desc">使用傳統紅磚砌成，顏色鮮豔，歷經百年仍屹立不搖。</div></div></div>
+          <div class="arch-card"><div class="arch-icon">🪟</div><div><div class="arch-name">拱形窗戶</div><div class="arch-desc">西洋風格的拱形窗設計，透光性佳，兼具美觀與實用。</div></div></div>
+          <div class="arch-card"><div class="arch-icon">🚪</div><div><div class="arch-name">木造門廊</div><div class="arch-desc">入口採木造廊柱，散發溫暖質感，迎接每位到訪的民眾。</div></div></div>
         </div>
       </section>
 
-      <!-- 子頁 3：歷史記錄 -->
-      <section class="slide-sub" style="background: linear-gradient(180deg, #FEF9F0, #F5EDD8); position: relative;">
-        <div class="back-btn" onclick="Reveal.slide(Reveal.getIndices().h, 0)">↑ 回主頁</div>
-        <div class="sub-header">
-          <div class="sub-icon">📖</div>
-          <div class="sub-title">歷史記錄</div>
-        </div>
+      <!-- 子頁3：歷史記錄 -->
+      <section data-background-color="#FEF9F0">
+        <button class="back-btn" onclick="Reveal.up()">↑ 回主頁</button>
+        <div class="sub-header"><div class="sub-icon">📖</div><div class="sub-title">歷史記錄</div></div>
         <div class="sub-divider"></div>
         <div class="timeline">
-          <div class="timeline-item">
-            <div class="tl-dot"></div>
-            <div class="tl-content">
-              <div class="tl-year">日治時期（1895年後）</div>
-              <div class="tl-text">日本政府在關西設立警察分駐所，維護地方治安，建築融合和洋風格。</div>
-            </div>
-          </div>
-          <div class="timeline-item">
-            <div class="tl-dot"></div>
-            <div class="tl-content">
-              <div class="tl-year">光復後（1945年）</div>
-              <div class="tl-text">臺灣光復後，分駐所持續運作，成為關西鎮重要的行政與安全中心。</div>
-            </div>
-          </div>
-          <div class="timeline-item">
-            <div class="tl-dot"></div>
-            <div class="tl-content">
-              <div class="tl-year">近代保存</div>
-              <div class="tl-text">建築列為歷史文化資產，定期修繕維護，保留珍貴的日式建築風貌。</div>
-            </div>
-          </div>
-          <div class="timeline-item">
-            <div class="tl-dot"></div>
-            <div class="tl-content">
-              <div class="tl-year">現在</div>
-              <div class="tl-text">成為浪漫臺三線重要景點，吸引遊客認識關西的歷史文化之美。</div>
-            </div>
-          </div>
+          <div class="timeline-item"><div class="tl-dot"></div><div class="tl-content"><div class="tl-year">日治時期（1895年後）</div><div class="tl-text">日本政府在關西設立警察分駐所，維護地方治安，建築融合和洋風格。</div></div></div>
+          <div class="timeline-item"><div class="tl-dot"></div><div class="tl-content"><div class="tl-year">光復後（1945年）</div><div class="tl-text">臺灣光復後，分駐所持續運作，成為關西鎮重要的行政與安全中心。</div></div></div>
+          <div class="timeline-item"><div class="tl-dot"></div><div class="tl-content"><div class="tl-year">近代保存</div><div class="tl-text">建築列為歷史文化資產，定期修繕維護，保留珍貴的日式建築風貌。</div></div></div>
+          <div class="timeline-item"><div class="tl-dot"></div><div class="tl-content"><div class="tl-year">現在</div><div class="tl-text">成為浪漫臺三線重要景點，吸引遊客認識關西的歷史文化之美。</div></div></div>
         </div>
       </section>
-
     </section>
 
     <!-- SLIDE 5: 第二站 石爺亭 -->
@@ -1210,6 +1177,8 @@
     Reveal.configure({ transition: randomTransition() });
   });
 
+
+
   // 換頁音效（Web Audio API，不需外部檔案）
   const AudioCtx = window.AudioContext || window.webkitAudioContext;
   let audioCtx = null;
@@ -1272,6 +1241,19 @@
       ? Reveal.getIndices(event.previousSlide).h
       : -1) ? 'next' : 'prev';
     playPageSound(dir);
+  });
+
+
+  // Modal 開關
+  window.openModal = function(id) {
+    document.getElementById(id).classList.add('active');
+  };
+  window.closeModal = function(id) {
+    document.getElementById(id).classList.remove('active');
+  };
+  // 換頁時關閉所有 modal
+  Reveal.on('slidechanged', () => {
+    document.querySelectorAll('.sub-modal.active').forEach(m => m.classList.remove('active'));
   });
 
   // 第一次點擊解鎖 AudioContext（瀏覽器安全限制）
