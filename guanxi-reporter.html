@@ -872,6 +872,12 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/reveal.min.js"></script>
 <script>
+  const transitions = ['slide', 'fade', 'convex', 'concave', 'zoom'];
+
+  function randomTransition() {
+    return transitions[Math.floor(Math.random() * transitions.length)];
+  }
+
   Reveal.initialize({
     hash: true,
     slideNumber: 'c/t',
@@ -886,6 +892,11 @@
     minScale: 0.1,
     maxScale: 2.0,
     center: true,
+  });
+
+  // 每次換頁前隨機換動畫
+  Reveal.on('beforeslidechange', () => {
+    Reveal.configure({ transition: randomTransition() });
   });
 
   // 換頁音效（Web Audio API，不需外部檔案）
