@@ -5,24 +5,42 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>守護關西的小小特派員</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/reveal.min.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/theme/white.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/theme/black.min.css">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700;900&family=Noto+Sans+TC:wght@300;400;700&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700;900&family=Noto+Sans+TC:wght@300;400;700&family=LXGW+WenKai+TC&family=Kaisei+Opti:wght@400;700&family=Zen+Old+Mincho:wght@400;700;900&display=swap');
 
   :root {
-    --brick: #C0392B;
-    --brick-light: #E8A598;
-    --gold: #D4A017;
-    --earth: #7B5E3A;
-    --cream: #FEF9F0;
-    --ink: #2C1810;
-    --moss: #4A7C59;
-    --sky: #5B8DB8;
+    --brick: #00C8FF;
+    --brick-light: #0A4A6E;
+    --gold: #00FFD1;
+    --earth: #7EC8E3;
+    --cream: #0A1628;
+    --ink: #E8F4FD;
+    --moss: #00FFD1;
+    --sky: #2196F3;
+    /* glass */
+    --glass-bg: rgba(255,255,255,0.05);
+    --glass-border: rgba(0,200,255,0.25);
+    --glass-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    --glow: 0 0 12px rgba(0,200,255,0.5);
+    --deep: #060E1E;
+    --mid: #0D1F3C;
+    --accent: #00C8FF;
+    --accent2: #00FFD1;
+  }
+
+  /* 全域深藍背景 */
+  body, .reveal, .reveal .slide-background {
+    background: var(--deep) !important;
+  }
+  .reveal .slides {
+    background: transparent;
   }
 
   .reveal {
     font-family: 'Noto Sans TC', sans-serif;
     font-size: 28px;
+    color: var(--ink);
   }
 
   .reveal .slides section {
@@ -37,7 +55,7 @@
 
   /* === TITLE SLIDE === */
   .slide-title {
-    background: linear-gradient(135deg, #2C1810 0%, #7B3F2A 40%, #C0392B 100%);
+    background: linear-gradient(135deg, #060E1E 0%, #0D2447 50%, #0A3A6E 100%);
     display: flex !important;
     flex-direction: column;
     justify-content: center;
@@ -56,8 +74,9 @@
       repeating-linear-gradient(45deg, transparent, transparent 20px, rgba(255,255,255,0.02) 20px, rgba(255,255,255,0.02) 40px);
   }
   .slide-title .badge {
-    background: var(--gold);
-    color: var(--ink);
+    background: transparent;
+    border: 1px solid var(--accent);
+    color: var(--accent);
     font-family: 'Noto Serif TC', serif;
     font-weight: 900;
     font-size: 0.85em;
@@ -74,7 +93,7 @@
     text-align: center;
     line-height: 1.2;
     margin: 0 0 8px 0 !important;
-    text-shadow: 2px 4px 12px rgba(0,0,0,0.5);
+    text-shadow: 0 0 20px rgba(0,200,255,0.6), 0 0 40px rgba(0,200,255,0.3);
   }
   .slide-title .subtitle {
     color: var(--brick-light);
@@ -101,7 +120,7 @@
 
   /* === INTRO SLIDE === */
   .slide-intro {
-    background: var(--cream);
+    background: var(--deep);
     display: flex !important;
     flex-direction: column;
     justify-content: center;
@@ -159,7 +178,7 @@
   }
   .stop-right {
     width: 62%;
-    background: var(--cream);
+    background: var(--deep);
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -192,23 +211,24 @@
   .stop-right h2 {
     font-family: 'Noto Serif TC', serif;
     font-size: 1.1em !important;
-    color: var(--ink) !important;
+    color: var(--accent) !important;
     margin-bottom: 8px !important;
-    border-bottom: 2px solid var(--brick-light);
+    border-bottom: 1px solid var(--glass-border);
     padding-bottom: 6px;
     text-align: left !important;
   }
   .stop-right p {
     font-size: 0.72em !important;
-    color: #4A3728;
+    color: rgba(220,240,255,0.85);
     line-height: 1.6;
     margin-bottom: 6px !important;
     text-align: left !important;
   }
   .hakka-tag {
     display: inline-block;
-    background: var(--earth);
-    color: white;
+    background: rgba(0,200,255,0.15);
+    color: var(--accent);
+    border: 1px solid var(--glass-border);
     font-size: 0.68em;
     padding: 3px 8px;
     border-radius: 2px;
@@ -218,8 +238,8 @@
   }
   .activity-chip {
     display: inline-block;
-    border: 1.5px solid var(--brick);
-    color: var(--brick);
+    border: 1px solid var(--glass-border);
+    color: var(--accent);
     font-size: 0.62em;
     padding: 2px 7px;
     border-radius: 20px;
@@ -232,23 +252,23 @@
     background: transparent;
   }
   .clickable-chip:hover {
-    background: var(--brick);
-    color: white !important;
+    background: rgba(0,200,255,0.2);
+    color: var(--accent2) !important;
     transform: translateY(-2px);
-    box-shadow: 0 3px 8px rgba(192,57,43,0.35);
+    box-shadow: var(--glow);
   }
 
   /* Stop color themes */
-  .theme-brick .stop-left { background: linear-gradient(160deg, #8B2315, #C0392B); }
-  .theme-earth .stop-left { background: linear-gradient(160deg, #5C3A1E, #8B6240); }
-  .theme-gold .stop-left  { background: linear-gradient(160deg, #8B6914, #C8951A); }
-  .theme-moss .stop-left  { background: linear-gradient(160deg, #2D5A3C, #4A7C59); }
-  .theme-sky .stop-left   { background: linear-gradient(160deg, #2B5D8A, #5B8DB8); }
-  .theme-indigo .stop-left{ background: linear-gradient(160deg, #2E2070, #4A3DAD); }
+  .theme-brick .stop-left { background: linear-gradient(160deg, #060E1E, #0A2A50); border-right: 1px solid var(--glass-border); }
+  .theme-earth .stop-left { background: linear-gradient(160deg, #060E1E, #0D2447); border-right: 1px solid var(--glass-border); }
+  .theme-gold .stop-left  { background: linear-gradient(160deg, #060E1E, #102040); border-right: 1px solid var(--glass-border); }
+  .theme-moss .stop-left  { background: linear-gradient(160deg, #060E1E, #0A3050); border-right: 1px solid var(--glass-border); }
+  .theme-sky .stop-left   { background: linear-gradient(160deg, #060E1E, #0D2A55); border-right: 1px solid var(--glass-border); }
+  .theme-indigo .stop-left{ background: linear-gradient(160deg, #060E1E, #0A1E45); border-right: 1px solid var(--glass-border); }
 
   /* === ACTIVITY SLIDE === */
   .slide-activity {
-    background: #2C1810;
+    background: var(--deep);
     display: flex !important;
     flex-direction: column;
     justify-content: center;
@@ -294,7 +314,7 @@
 
   /* === ENDING SLIDE === */
   .slide-end {
-    background: linear-gradient(180deg, #FEF9F0 0%, #FDE8D8 100%);
+    background: linear-gradient(180deg, #060E1E 0%, #0D1F3C 100%);
     display: flex !important;
     flex-direction: column;
     justify-content: center;
@@ -307,15 +327,16 @@
   .slide-end h2 {
     font-family: 'Noto Serif TC', serif;
     font-size: 1.4em !important;
-    color: var(--ink) !important;
+    color: var(--accent) !important;
     margin-bottom: 8px !important;
   }
   .book-visual {
-    background: white;
-    border: 2px solid var(--brick);
-    border-radius: 4px 12px 12px 4px;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 8px;
     padding: 10px 20px;
-    box-shadow: 4px 4px 0 var(--brick);
+    box-shadow: var(--glass-shadow), var(--glow);
+    backdrop-filter: blur(10px);
     max-width: 560px;
     width: 100%;
     margin-bottom: 12px;
@@ -333,7 +354,7 @@
     font-family: 'Noto Serif TC', serif;
     font-size: 1em;
     font-weight: 900;
-    color: var(--brick);
+    color: var(--accent);
     margin-bottom: 6px;
     padding-left: 14px;
   }
@@ -347,7 +368,7 @@
   }
   .book-items li {
     font-size: 0.76em;
-    color: var(--earth);
+    color: rgba(180,220,255,0.85);
     padding: 2px 0;
     display: flex;
     align-items: center;
@@ -357,7 +378,7 @@
   .pledge {
     font-family: 'Noto Serif TC', serif;
     font-size: 0.92em;
-    color: var(--ink);
+    color: rgba(200,235,255,0.9);
     text-align: center;
     line-height: 1.7;
     max-width: 560px;
@@ -366,7 +387,7 @@
 
   /* === MAP SLIDE === */
   .slide-map {
-    background: #F5EDD8;
+    background: var(--mid);
     display: flex !important;
     flex-direction: column;
     justify-content: center;
@@ -379,7 +400,7 @@
   .slide-map h2 {
     font-family: 'Noto Serif TC', serif;
     font-size: 1.5em !important;
-    color: var(--ink) !important;
+    color: var(--accent) !important;
     margin-bottom: 18px !important;
   }
   .route-container {
@@ -409,7 +430,7 @@
   }
   .route-label {
     font-size: 0.62em;
-    color: var(--earth);
+    color: rgba(180,220,255,0.9);
     font-weight: 700;
     font-family: 'Noto Serif TC', serif;
     max-width: 80px;
@@ -423,12 +444,12 @@
     margin: 0 4px;
     margin-bottom: 28px;
   }
-  .dot-c1 { background: linear-gradient(135deg, #C0392B, #8B2315); }
-  .dot-c2 { background: linear-gradient(135deg, #7B5E3A, #5C3A1E); }
-  .dot-c3 { background: linear-gradient(135deg, #C8951A, #8B6914); }
-  .dot-c4 { background: linear-gradient(135deg, #4A7C59, #2D5A3C); }
-  .dot-c5 { background: linear-gradient(135deg, #5B8DB8, #2B5D8A); }
-  .dot-c6 { background: linear-gradient(135deg, #4A3DAD, #2E2070); }
+  .dot-c1 { background: linear-gradient(135deg, #00C8FF, #0066AA); }
+  .dot-c2 { background: linear-gradient(135deg, #00FFD1, #008C77); }
+  .dot-c3 { background: linear-gradient(135deg, #2196F3, #0D47A1); }
+  .dot-c4 { background: linear-gradient(135deg, #00E5FF, #006888); }
+  .dot-c5 { background: linear-gradient(135deg, #40C4FF, #0077C2); }
+  .dot-c6 { background: linear-gradient(135deg, #00FFD1, #00796B); }
 
   /* Reveal overrides */
   .reveal h1, .reveal h2, .reveal h3 { text-transform: none !important; }
@@ -463,7 +484,7 @@
     width: 55% !important;
     min-width: 55% !important;
     max-width: 55% !important;
-    background: var(--cream);
+    background: var(--deep);
     display: flex !important;
     flex-direction: column !important;
     justify-content: center;
@@ -544,7 +565,7 @@
   .poll-chart-title {
     font-family: 'Noto Serif TC', serif;
     font-size: 0.85em;
-    color: var(--earth);
+    color: rgba(180,220,255,0.9);
     font-weight: 700;
     margin-bottom: 10px;
   }
@@ -652,7 +673,7 @@
     flex-shrink: 0;
   }
   .arch-card {
-    background: var(--cream);
+    background: var(--deep);
     border: 1.5px solid var(--brick-light);
     border-radius: 6px;
     padding: 10px 12px;
@@ -799,6 +820,168 @@
     font-family: 'Noto Sans TC', sans-serif;
   }
   .modal-close:hover { opacity: 0.8; }
+
+  /* === 字體切換面板 === */
+  #font-panel-btn {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    z-index: 8888;
+    background: var(--ink);
+    color: var(--gold);
+    border: none;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    font-size: 1em;
+    cursor: pointer;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+    transition: transform 0.2s;
+  }
+  #font-panel-btn:hover { transform: scale(1.1); }
+  #font-panel {
+    position: fixed;
+    bottom: 64px;
+    left: 20px;
+    z-index: 8888;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 6px 24px rgba(0,0,0,0.2);
+    padding: 14px;
+    display: none;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 180px;
+  }
+  #font-panel.open { display: flex; }
+  #font-panel .fp-title {
+    font-size: 0.65em;
+    color: #999;
+    letter-spacing: 2px;
+    margin-bottom: 2px;
+    font-family: sans-serif;
+  }
+  .font-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    border: 1.5px solid #eee;
+    transition: all 0.15s;
+  }
+  .font-option:hover { border-color: var(--brick); background: #fff5f5; }
+  .font-option.active { border-color: var(--brick); background: #fff0ee; }
+  .font-option .fo-preview {
+    font-size: 1.1em;
+    color: var(--ink);
+    flex: 1;
+  }
+  .font-option .fo-name {
+    font-size: 0.6em;
+    color: #aaa;
+    font-family: sans-serif;
+  }
+
+  /* 玻璃質感通用 */
+  .glass-card {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(12px);
+    box-shadow: var(--glass-shadow);
+  }
+  /* 格線背景裝飾 */
+  .slide-title::after,
+  .slide-intro::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,200,255,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,200,255,0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .slide-title > *, .slide-intro > * { position: relative; z-index: 1; }
+  /* 霓虹線條裝飾 */
+  .slide-title .corner-deco {
+    border-color: rgba(0,200,255,0.5) !important;
+  }
+  /* story-text 左邊線 */
+  .slide-intro .story-text {
+    border-left: 3px solid var(--accent) !important;
+    color: rgba(200,235,255,0.85) !important;
+  }
+  .slide-intro .eyebrow { color: var(--accent) !important; }
+  .slide-intro h2 { color: var(--accent) !important; }
+  /* stop-number 顏色 */
+  .stop-number { color: rgba(0,200,255,0.2) !important; }
+  .stop-icon { filter: drop-shadow(0 0 8px rgba(0,200,255,0.6)); }
+  .stop-name { color: var(--accent) !important; }
+  /* progress bar */
+  .reveal .progress span { background: var(--accent) !important; }
+  .reveal .controls { color: var(--accent) !important; }
+  /* slide-number */
+  .reveal .slide-number { color: var(--accent) !important; }
+  /* sub pages */
+  .sub-title { color: var(--accent) !important; }
+  .sub-divider { background: var(--accent) !important; box-shadow: var(--glow); }
+  .hakka-card { background: linear-gradient(135deg, #060E1E, #0D2447) !important; border: 1px solid var(--glass-border); }
+  .hk-zh { color: var(--accent2) !important; }
+  .hk-ro { color: rgba(180,220,255,0.9) !important; }
+  .hk-meaning { color: rgba(130,180,220,0.7) !important; }
+  .arch-card { background: var(--glass-bg) !important; border: 1px solid var(--glass-border) !important; backdrop-filter: blur(8px); }
+  .arch-name { color: var(--accent) !important; }
+  .arch-desc { color: rgba(180,220,255,0.8) !important; }
+  .tl-year { color: var(--accent) !important; }
+  .tl-text { color: rgba(180,220,255,0.8) !important; }
+  .tl-dot { background: var(--accent) !important; border-color: var(--deep) !important; box-shadow: var(--glow) !important; }
+  .timeline::before { background: var(--glass-border) !important; }
+  /* back-btn */
+  .back-btn { color: var(--accent) !important; border-color: var(--glass-border) !important; }
+  .back-btn:hover { background: rgba(0,200,255,0.15) !important; color: var(--accent2) !important; }
+  /* down-hint */
+  .down-hint { color: var(--accent) !important; }
+  /* poll */
+  .poll-left { background: linear-gradient(160deg, #060E1E, #0D2447) !important; }
+  .poll-right { background: var(--mid) !important; }
+  .poll-question { color: var(--accent) !important; }
+  .poll-badge { color: var(--accent2) !important; }
+  .poll-btn { background: rgba(0,200,255,0.05) !important; border-color: var(--glass-border) !important; }
+  .poll-btn.selected { background: rgba(0,200,255,0.2) !important; border-color: var(--accent) !important; color: var(--accent2) !important; }
+  .poll-submit { background: var(--accent) !important; color: var(--deep) !important; }
+  .poll-chart-title { color: var(--accent) !important; }
+  .legend-item { color: rgba(180,220,255,0.8) !important; }
+  /* activity grid */
+  .activity-card { background: var(--glass-bg) !important; border-color: var(--glass-border) !important; }
+  .activity-card .label { color: var(--accent) !important; }
+  .activity-card .desc { color: rgba(150,200,230,0.6) !important; }
+  /* route */
+  .route-arrow { color: var(--accent) !important; }
+  /* font panel */
+  #font-panel { background: #0D1F3C !important; border: 1px solid var(--glass-border); }
+  #font-panel .fp-title { color: var(--accent) !important; }
+  .font-option { border-color: var(--glass-border) !important; background: transparent !important; }
+  .font-option:hover { background: rgba(0,200,255,0.08) !important; }
+  .font-option.active { border-color: var(--accent) !important; background: rgba(0,200,255,0.12) !important; }
+  .font-option .fo-name { color: rgba(130,180,220,0.7) !important; }
+  #font-panel-btn { background: var(--mid) !important; border: 1px solid var(--glass-border) !important; }
+  /* modal */
+  .modal-box { background: #0D1F3C !important; border: 1px solid var(--glass-border); }
+  .modal-close { background: var(--accent) !important; color: var(--deep) !important; }
+  /* book spine */
+  .book-visual::before { background: var(--accent) !important; }
+  .book-title { color: var(--accent) !important; }
+  .book-items li::before { color: var(--accent2) !important; }
+  /* pledge strong */
+  .pledge strong { color: var(--accent) !important; }
+  /* sub-intro gradient override */
+  section[data-background-color="#FEF9F0"],
+  section[data-background-color="#F5EDD8"] {
+    background: var(--deep) !important;
+  }
 </style>
 </head>
 <body>
@@ -1136,7 +1319,7 @@
     </section>
 
     <!-- SLIDE 12: 結語 -->
-    <section class="slide-title" style="background: linear-gradient(135deg, #2D5A3C 0%, #4A7C59 50%, #C8951A 100%);">
+    <section class="slide-title" style="background: linear-gradient(135deg, #060E1E 0%, #0A2A50 50%, #0D3A6E 100%);">
       <div class="corner-deco tl"></div>
       <div class="corner-deco br"></div>
       <div class="badge">我們都是守護者</div>
@@ -1254,6 +1437,42 @@
   // 換頁時關閉所有 modal
   Reveal.on('slidechanged', () => {
     document.querySelectorAll('.sub-modal.active').forEach(m => m.classList.remove('active'));
+  });
+
+
+  // 字體切換
+  const fontMap = {
+    'noto-sans':  { body: "'Noto Sans TC', sans-serif",  heading: "'Noto Serif TC', serif" },
+    'noto-serif': { body: "'Noto Serif TC', serif",       heading: "'Noto Serif TC', serif" },
+    'lxgw':       { body: "'LXGW WenKai TC', cursive",   heading: "'LXGW WenKai TC', cursive" },
+    'kaisei':     { body: "'Kaisei Opti', serif",         heading: "'Kaisei Opti', serif" },
+    'zen':        { body: "'Zen Old Mincho', serif",      heading: "'Zen Old Mincho', serif" },
+  };
+
+  window.toggleFontPanel = function() {
+    document.getElementById('font-panel').classList.toggle('open');
+  };
+
+  window.setFont = function(key) {
+    const f = fontMap[key];
+    if (!f) return;
+    // 套用到整個 reveal
+    document.querySelector('.reveal').style.fontFamily = f.body;
+    document.querySelectorAll('.reveal h1,.reveal h2,.reveal h3,.sub-title,.stop-name,.poll-question,.book-title,.tl-year').forEach(el => {
+      el.style.fontFamily = f.heading;
+    });
+    // 標記 active
+    document.querySelectorAll('.font-option').forEach(o => o.classList.remove('active'));
+    document.querySelector(`.font-option[data-font="${key}"]`).classList.add('active');
+    // 關閉面板
+    document.getElementById('font-panel').classList.remove('open');
+  };
+
+  // 點其他地方關閉面板
+  document.addEventListener('click', e => {
+    if (!e.target.closest('#font-panel') && !e.target.closest('#font-panel-btn')) {
+      document.getElementById('font-panel').classList.remove('open');
+    }
   });
 
   // 第一次點擊解鎖 AudioContext（瀏覽器安全限制）
@@ -1385,5 +1604,31 @@
     document.querySelectorAll('.poll-btn').forEach(b => b.disabled = true);
   };
 </script>
+
+<!-- 字體切換面板 -->
+<button id="font-panel-btn" onclick="toggleFontPanel()" title="切換字體">字</button>
+<div id="font-panel">
+  <div class="fp-title">✦ 選擇字體</div>
+  <div class="font-option active" onclick="setFont('noto-sans')" data-font="noto-sans">
+    <span class="fo-preview" style="font-family:'Noto Sans TC'">守護關西</span>
+    <span class="fo-name">思源黑體</span>
+  </div>
+  <div class="font-option" onclick="setFont('noto-serif')" data-font="noto-serif">
+    <span class="fo-preview" style="font-family:'Noto Serif TC'">守護關西</span>
+    <span class="fo-name">思源宋體</span>
+  </div>
+  <div class="font-option" onclick="setFont('lxgw')" data-font="lxgw">
+    <span class="fo-preview" style="font-family:'LXGW WenKai TC'">守護關西</span>
+    <span class="fo-name">霞鶩文楷</span>
+  </div>
+  <div class="font-option" onclick="setFont('kaisei')" data-font="kaisei">
+    <span class="fo-preview" style="font-family:'Kaisei Opti'">守護關西</span>
+    <span class="fo-name">解星明朝</span>
+  </div>
+  <div class="font-option" onclick="setFont('zen')" data-font="zen">
+    <span class="fo-preview" style="font-family:'Zen Old Mincho'">守護關西</span>
+    <span class="fo-name">禪古明朝</span>
+  </div>
+</div>
 </body>
 </html>
