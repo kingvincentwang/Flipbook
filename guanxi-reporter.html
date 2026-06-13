@@ -557,6 +557,163 @@
     border-radius: 50%;
     flex-shrink: 0;
   }
+
+  /* === SUB SLIDES === */
+  .slide-sub {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+    height: 100% !important;
+    width: 100% !important;
+    box-sizing: border-box;
+    padding: 28px 40px !important;
+  }
+  .sub-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+  .sub-icon { font-size: 1.8em; }
+  .sub-title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 1.3em !important;
+    font-weight: 900;
+    color: var(--ink) !important;
+  }
+  .sub-divider {
+    width: 60px;
+    height: 3px;
+    background: var(--brick);
+    margin: 0 auto 18px auto;
+    border-radius: 2px;
+  }
+  /* 客語學習卡片 */
+  .hakka-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    width: 100%;
+    max-width: 700px;
+  }
+  .hakka-card {
+    background: linear-gradient(135deg, #2C1810, #7B3F2A);
+    border-radius: 8px;
+    padding: 16px 12px;
+    text-align: center;
+  }
+  .hakka-card .hk-zh {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 1em;
+    color: var(--gold);
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .hakka-card .hk-ro {
+    font-size: 0.72em;
+    color: rgba(255,255,255,0.85);
+    font-style: italic;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+  }
+  .hakka-card .hk-meaning {
+    font-size: 0.62em;
+    color: rgba(255,255,255,0.5);
+  }
+  /* 建築觀察 */
+  .arch-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    width: 100%;
+    max-width: 680px;
+  }
+  .arch-card {
+    background: var(--cream);
+    border: 1.5px solid var(--brick-light);
+    border-radius: 6px;
+    padding: 14px 16px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  .arch-card .arch-icon { font-size: 1.6em; flex-shrink: 0; }
+  .arch-card .arch-name {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 0.8em;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 4px;
+  }
+  .arch-card .arch-desc {
+    font-size: 0.68em;
+    color: #6A5040;
+    line-height: 1.6;
+  }
+  /* 歷史時間軸 */
+  .timeline {
+    width: 100%;
+    max-width: 680px;
+    position: relative;
+  }
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 28px;
+    top: 0; bottom: 0;
+    width: 2px;
+    background: var(--brick-light);
+  }
+  .timeline-item {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 14px;
+    position: relative;
+  }
+  .tl-dot {
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: var(--brick);
+    border: 2px solid white;
+    box-shadow: 0 0 0 2px var(--brick-light);
+    flex-shrink: 0;
+    margin-top: 3px;
+    position: relative;
+    z-index: 1;
+    margin-left: 22px;
+  }
+  .tl-content { flex: 1; }
+  .tl-year {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 0.72em;
+    font-weight: 900;
+    color: var(--brick);
+    margin-bottom: 2px;
+  }
+  .tl-text {
+    font-size: 0.72em;
+    color: var(--earth);
+    line-height: 1.6;
+  }
+  /* 向下提示 */
+  .down-hint {
+    position: absolute;
+    bottom: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: var(--brick);
+    font-size: 0.6em;
+    opacity: 0.7;
+    animation: bounce 1.5s ease-in-out infinite;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  @keyframes bounce {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(4px); }
+  }
 </style>
 </head>
 <body>
@@ -645,36 +802,158 @@
       <p style="color: var(--earth); font-size: 0.8em; margin-top: 24px; font-family: 'Noto Serif TC';">六站探索 · 用心記錄 · 傳承文化</p>
     </section>
 
-    <!-- SLIDE 4: 第一站 關西分駐所 -->
-    <section class="slide-stop theme-brick">
-      <div class="stop-left">
-        <div class="stop-number">01</div>
-        <div class="stop-icon">🏛️</div>
-        <div class="stop-name">關西分駐所</div>
-      </div>
-      <div class="stop-right">
-        <h2>第一站：關西分駐所</h2>
-        <p>
-          這座建築物有著<strong>古老的屋頂</strong>和漂亮的牆面，
-          像是一位威武又親切的守護者。
-          林老師帶著孩子們走進分駐所，
-          耐心地教大家練習<strong>客語</strong>。
-        </p>
-        <p>
-          阿明認真地張大嘴巴說著：<br>
-          <span class="hakka-tag">lo-kiê（老街）</span>
-          <span class="hakka-tag">fûn-chu-só（分駐所）</span>
-        </p>
-        <p>
-          學會家鄉話，就像拿到了
-          一把<strong>通往過去的鑰匙</strong>。
-        </p>
-        <div>
-          <span class="activity-chip">🗣️ 客語學習</span>
-          <span class="activity-chip">🏗️ 建築觀察</span>
-          <span class="activity-chip">📖 歷史記錄</span>
+    <!-- SLIDE 4: 第一站 關西分駐所（含子頁面） -->
+    <section>
+
+      <!-- 主頁 -->
+      <section class="slide-stop theme-brick" style="position:relative;">
+        <div class="stop-left">
+          <div class="stop-number">01</div>
+          <div class="stop-icon">🏛️</div>
+          <div class="stop-name">關西分駐所</div>
         </div>
-      </div>
+        <div class="stop-right">
+          <h2>第一站：關西分駐所</h2>
+          <p>
+            這座建築物有著<strong>古老的屋頂</strong>和漂亮的牆面，
+            像是一位威武又親切的守護者。
+            林老師帶著孩子們走進分駐所，
+            耐心地教大家練習<strong>客語</strong>。
+          </p>
+          <p>
+            阿明認真地張大嘴巴說著：<br>
+            <span class="hakka-tag">lo-kiê（老街）</span>
+            <span class="hakka-tag">fûn-chu-só（分駐所）</span>
+          </p>
+          <p>學會家鄉話，就像拿到了一把<strong>通往過去的鑰匙</strong>。</p>
+          <div>
+            <span class="activity-chip">🗣️ 客語學習</span>
+            <span class="activity-chip">🏗️ 建築觀察</span>
+            <span class="activity-chip">📖 歷史記錄</span>
+          </div>
+        </div>
+        <div class="down-hint">▼ 向下探索更多</div>
+      </section>
+
+      <!-- 子頁 1：客語學習 -->
+      <section class="slide-sub" style="background: #FEF9F0;">
+        <div class="sub-header">
+          <div class="sub-icon">🗣️</div>
+          <div class="sub-title">客語學習</div>
+        </div>
+        <div class="sub-divider"></div>
+        <div class="hakka-grid">
+          <div class="hakka-card">
+            <div class="hk-zh">老街</div>
+            <div class="hk-ro">lo-kiê</div>
+            <div class="hk-meaning">充滿歷史的街道</div>
+          </div>
+          <div class="hakka-card">
+            <div class="hk-zh">分駐所</div>
+            <div class="hk-ro">fûn-chu-só</div>
+            <div class="hk-meaning">警察派出所</div>
+          </div>
+          <div class="hakka-card">
+            <div class="hk-zh">你好</div>
+            <div class="hk-ro">ngí hó</div>
+            <div class="hk-meaning">問候語</div>
+          </div>
+          <div class="hakka-card">
+            <div class="hk-zh">謝謝</div>
+            <div class="hk-ro">chhia-chhia</div>
+            <div class="hk-meaning">表示感謝</div>
+          </div>
+          <div class="hakka-card">
+            <div class="hk-zh">關西</div>
+            <div class="hk-ro">Kôn-sî</div>
+            <div class="hk-meaning">我們的家鄉</div>
+          </div>
+          <div class="hakka-card">
+            <div class="hk-zh">守護</div>
+            <div class="hk-ro">sú-fu</div>
+            <div class="hk-meaning">保護珍貴的事物</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 子頁 2：建築觀察 -->
+      <section class="slide-sub" style="background: #F5EDD8;">
+        <div class="sub-header">
+          <div class="sub-icon">🏗️</div>
+          <div class="sub-title">建築觀察</div>
+        </div>
+        <div class="sub-divider"></div>
+        <div class="arch-grid">
+          <div class="arch-card">
+            <div class="arch-icon">🏠</div>
+            <div>
+              <div class="arch-name">日式屋頂</div>
+              <div class="arch-desc">採用日治時期建築風格，屋頂線條優美，展現和風特色。</div>
+            </div>
+          </div>
+          <div class="arch-card">
+            <div class="arch-icon">🧱</div>
+            <div>
+              <div class="arch-name">紅磚外牆</div>
+              <div class="arch-desc">使用傳統紅磚砌成，顏色鮮豔，歷經百年仍屹立不搖。</div>
+            </div>
+          </div>
+          <div class="arch-card">
+            <div class="arch-icon">🪟</div>
+            <div>
+              <div class="arch-name">拱形窗戶</div>
+              <div class="arch-desc">西洋風格的拱形窗設計，透光性佳，兼具美觀與實用。</div>
+            </div>
+          </div>
+          <div class="arch-card">
+            <div class="arch-icon">🚪</div>
+            <div>
+              <div class="arch-name">木造門廊</div>
+              <div class="arch-desc">入口採木造廊柱，散發溫暖質感，迎接每位到訪的民眾。</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 子頁 3：歷史記錄 -->
+      <section class="slide-sub" style="background: linear-gradient(180deg, #FEF9F0, #F5EDD8);">
+        <div class="sub-header">
+          <div class="sub-icon">📖</div>
+          <div class="sub-title">歷史記錄</div>
+        </div>
+        <div class="sub-divider"></div>
+        <div class="timeline">
+          <div class="timeline-item">
+            <div class="tl-dot"></div>
+            <div class="tl-content">
+              <div class="tl-year">日治時期（1895年後）</div>
+              <div class="tl-text">日本政府在關西設立警察分駐所，維護地方治安，建築融合和洋風格。</div>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="tl-dot"></div>
+            <div class="tl-content">
+              <div class="tl-year">光復後（1945年）</div>
+              <div class="tl-text">臺灣光復後，分駐所持續運作，成為關西鎮重要的行政與安全中心。</div>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="tl-dot"></div>
+            <div class="tl-content">
+              <div class="tl-year">近代保存</div>
+              <div class="tl-text">建築列為歷史文化資產，定期修繕維護，保留珍貴的日式建築風貌。</div>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="tl-dot"></div>
+            <div class="tl-content">
+              <div class="tl-year">現在</div>
+              <div class="tl-text">成為浪漫臺三線重要景點，吸引遊客認識關西的歷史文化之美。</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
     </section>
 
     <!-- SLIDE 5: 第二站 石爺亭 -->
