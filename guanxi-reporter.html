@@ -425,6 +425,138 @@
   .reveal .progress span { background: var(--brick); }
   .reveal .controls { color: var(--brick); }
   .reveal .slide-number { color: var(--earth); font-family: 'Noto Sans TC'; }
+
+  /* === POLL SLIDE === */
+  .slide-poll {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    height: 100% !important;
+    width: 100% !important;
+    overflow: hidden;
+  }
+  .poll-left {
+    width: 45% !important;
+    min-width: 45% !important;
+    max-width: 45% !important;
+    background: linear-gradient(160deg, #2C1810, #7B3F2A);
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 24px 22px;
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+  .poll-right {
+    width: 55% !important;
+    min-width: 55% !important;
+    max-width: 55% !important;
+    background: var(--cream);
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center;
+    align-items: center;
+    padding: 16px;
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+  .poll-badge {
+    color: var(--gold);
+    font-size: 0.65em;
+    letter-spacing: 3px;
+    margin-bottom: 10px;
+  }
+  .poll-question {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 1.3em;
+    font-weight: 900;
+    color: white;
+    line-height: 1.4;
+    margin-bottom: 4px;
+  }
+  .poll-sub {
+    color: rgba(255,255,255,0.5);
+    font-size: 0.62em;
+    margin-bottom: 16px;
+  }
+  .poll-options {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+    margin-bottom: 14px;
+  }
+  .poll-btn {
+    background: rgba(255,255,255,0.08);
+    border: 1.5px solid rgba(255,255,255,0.25);
+    color: white;
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 0.75em;
+    padding: 8px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s;
+  }
+  .poll-btn:hover { background: rgba(255,255,255,0.15); }
+  .poll-btn.selected {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: var(--ink);
+    font-weight: 700;
+  }
+  .poll-submit {
+    background: var(--brick);
+    color: white;
+    border: none;
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 0.75em;
+    font-weight: 700;
+    padding: 8px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .poll-submit:hover { opacity: 0.85; }
+  .poll-submit:disabled { opacity: 0.4; cursor: default; }
+  .poll-thanks {
+    color: #90EE90;
+    font-size: 0.68em;
+    margin-top: 8px;
+  }
+  .poll-count {
+    color: rgba(255,255,255,0.45);
+    font-size: 0.6em;
+    margin-top: 8px;
+  }
+  .poll-chart-title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 0.85em;
+    color: var(--earth);
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  .poll-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 12px;
+    justify-content: center;
+    margin-top: 10px;
+    max-width: 280px;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.62em;
+    color: var(--earth);
+  }
+  .legend-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
 </style>
 </head>
 <body>
@@ -441,7 +573,30 @@
       <div class="characters">🎒📓🗺️</div>
     </section>
 
-    <!-- SLIDE 2: 主角介紹 -->
+    <!-- SLIDE 2: 問卷投票 -->
+    <section class="slide-poll">
+      <div class="poll-left">
+        <div class="poll-badge">✦ 課前暖身 ✦</div>
+        <div class="poll-question">你曾去過關西<br>哪些景點？</div>
+        <div class="poll-sub">（可複選，點選後送出）</div>
+        <div class="poll-options" id="pollOptions">
+          <button class="poll-btn" data-val="東安橋" onclick="toggleOption(this)">🌉 東安橋</button>
+          <button class="poll-btn" data-val="潮音禪寺" onclick="toggleOption(this)">🛕 潮音禪寺</button>
+          <button class="poll-btn" data-val="羅屋書院" onclick="toggleOption(this)">📚 羅屋書院</button>
+          <button class="poll-btn" data-val="太和宮" onclick="toggleOption(this)">🏮 太和宮</button>
+        </div>
+        <button class="poll-submit" id="submitBtn" onclick="submitVote()">送出答案 ✔</button>
+        <div class="poll-thanks" id="pollThanks" style="display:none">✅ 已送出！謝謝你的回答</div>
+        <div class="poll-count" id="pollCount">目前回應：0 人</div>
+      </div>
+      <div class="poll-right">
+        <div class="poll-chart-title">📊 即時結果</div>
+        <canvas id="pollChart" width="260" height="260"></canvas>
+        <div class="poll-legend" id="pollLegend"></div>
+      </div>
+    </section>
+
+    <!-- SLIDE 3: 主角介紹 -->
     <section class="slide-intro">
       <div class="eyebrow">✦ 今天的任務 ✦</div>
       <h2>出發！挖掘家鄉的寶藏</h2>
@@ -800,6 +955,131 @@
   // 第一次點擊解鎖 AudioContext（瀏覽器安全限制）
   document.addEventListener('click', initAudio, { once: true });
   document.addEventListener('keydown', initAudio, { once: true });
+</script>
+
+<!-- Firebase + Chart.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getFirestore, doc, setDoc, onSnapshot, getDoc, updateDoc, increment }
+    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBwooMJ0vsEkQTFJ7HDRg8i4ex0nEPa2Tk",
+    authDomain: "web-login-dd626.firebaseapp.com",
+    projectId: "web-login-dd626",
+    storageBucket: "web-login-dd626.firebasestorage.app",
+    messagingSenderId: "128529685419",
+    appId: "1:128529685419:web:7dc95d7fd209bd877a90ee"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  const POLL_ID = "guanxi_poll_v1";
+  const OPTIONS = ["東安橋", "潮音禪寺", "羅屋書院", "太和宮"];
+  const COLORS = ["#C0392B", "#D4A017", "#4A7C59", "#5B8DB8"];
+
+  // 初始化 Firestore 文件（若不存在）
+  async function initPoll() {
+    const ref = doc(db, "polls", POLL_ID);
+    const snap = await getDoc(ref);
+    if (!snap.exists()) {
+      await setDoc(ref, {
+        東安橋: 0, 潮音禪寺: 0, 羅屋書院: 0, 太和宮: 0, totalVoters: 0
+      });
+    }
+  }
+  initPoll();
+
+  // 圓餅圖初始化
+  let pollChart = null;
+  function buildChart(data) {
+    const canvas = document.getElementById('pollChart');
+    if (!canvas) return;
+    const vals = OPTIONS.map(o => data[o] || 0);
+    const total = vals.reduce((a,b) => a+b, 0);
+
+    // legend
+    const legend = document.getElementById('pollLegend');
+    if (legend) {
+      legend.innerHTML = OPTIONS.map((o,i) =>
+        `<div class="legend-item">
+          <div class="legend-dot" style="background:${COLORS[i]}"></div>
+          <span>${o} ${total > 0 ? Math.round((data[o]||0)/total*100) : 0}%</span>
+        </div>`
+      ).join('');
+    }
+
+    if (pollChart) {
+      pollChart.data.datasets[0].data = vals;
+      pollChart.update('none');
+      return;
+    }
+    pollChart = new Chart(canvas, {
+      type: 'pie',
+      data: {
+        labels: OPTIONS,
+        datasets: [{
+          data: vals,
+          backgroundColor: COLORS,
+          borderColor: '#FEF9F0',
+          borderWidth: 3,
+        }]
+      },
+      options: {
+        responsive: false,
+        animation: { duration: 600 },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: ctx => {
+                const t = ctx.dataset.data.reduce((a,b)=>a+b,0);
+                const pct = t > 0 ? Math.round(ctx.parsed/t*100) : 0;
+                return ` ${ctx.label}：${ctx.parsed} 票 (${pct}%)`;
+              }
+            }
+          }
+        }
+      }
+    });
+  }
+
+  // 即時監聽 Firestore
+  const pollRef = doc(db, "polls", POLL_ID);
+  onSnapshot(pollRef, (snap) => {
+    if (!snap.exists()) return;
+    const data = snap.data();
+    buildChart(data);
+    const el = document.getElementById('pollCount');
+    if (el) el.textContent = `目前回應：${data.totalVoters || 0} 人`;
+  });
+
+  // 掛載到 window 讓 onclick 可以呼叫
+  window.toggleOption = function(btn) {
+    btn.classList.toggle('selected');
+  };
+
+  window.submitVote = async function() {
+    const selected = [...document.querySelectorAll('.poll-btn.selected')]
+      .map(b => b.dataset.val);
+    if (selected.length === 0) {
+      alert('請至少選擇一個景點！');
+      return;
+    }
+    const submitBtn = document.getElementById('submitBtn');
+    submitBtn.disabled = true;
+
+    const updates = { totalVoters: increment(1) };
+    selected.forEach(s => { updates[s] = increment(1); });
+
+    await updateDoc(pollRef, updates);
+
+    document.getElementById('pollThanks').style.display = 'block';
+    submitBtn.style.display = 'none';
+    document.querySelectorAll('.poll-btn').forEach(b => b.disabled = true);
+  };
 </script>
 </body>
 </html>
