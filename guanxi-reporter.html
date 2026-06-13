@@ -226,6 +226,17 @@
     margin: 3px 3px 0 0;
     font-weight: 700;
   }
+  .clickable-chip {
+    cursor: pointer;
+    transition: all 0.2s;
+    background: transparent;
+  }
+  .clickable-chip:hover {
+    background: var(--brick);
+    color: white !important;
+    transform: translateY(-2px);
+    box-shadow: 0 3px 8px rgba(192,57,43,0.35);
+  }
 
   /* Stop color themes */
   .theme-brick .stop-left { background: linear-gradient(160deg, #8B2315, #C0392B); }
@@ -714,6 +725,24 @@
     0%, 100% { transform: translateX(-50%) translateY(0); }
     50% { transform: translateX(-50%) translateY(4px); }
   }
+
+  .back-btn {
+    position: absolute;
+    top: 12px;
+    left: 16px;
+    font-size: 0.62em;
+    color: var(--brick);
+    font-weight: 700;
+    cursor: pointer;
+    border: 1.5px solid var(--brick);
+    padding: 3px 10px;
+    border-radius: 20px;
+    transition: all 0.2s;
+  }
+  .back-btn:hover {
+    background: var(--brick);
+    color: white;
+  }
 </style>
 </head>
 <body>
@@ -826,17 +855,18 @@
             <span class="hakka-tag">fûn-chu-só（分駐所）</span>
           </p>
           <p>學會家鄉話，就像拿到了一把<strong>通往過去的鑰匙</strong>。</p>
-          <div>
-            <span class="activity-chip">🗣️ 客語學習</span>
-            <span class="activity-chip">🏗️ 建築觀察</span>
-            <span class="activity-chip">📖 歷史記錄</span>
+          <div style="margin-top:6px;">
+            <span class="activity-chip clickable-chip" onclick="Reveal.slide(Reveal.getIndices().h, 1)">🗣️ 客語學習 ↓</span>
+            <span class="activity-chip clickable-chip" onclick="Reveal.slide(Reveal.getIndices().h, 2)">🏗️ 建築觀察 ↓</span>
+            <span class="activity-chip clickable-chip" onclick="Reveal.slide(Reveal.getIndices().h, 3)">📖 歷史記錄 ↓</span>
           </div>
         </div>
         <div class="down-hint">▼ 向下探索更多</div>
       </section>
 
       <!-- 子頁 1：客語學習 -->
-      <section class="slide-sub" style="background: #FEF9F0;">
+      <section class="slide-sub" style="background: #FEF9F0; position: relative;">
+        <div class="back-btn" onclick="Reveal.slide(Reveal.getIndices().h, 0)">↑ 回主頁</div>
         <div class="sub-header">
           <div class="sub-icon">🗣️</div>
           <div class="sub-title">客語學習</div>
@@ -877,7 +907,8 @@
       </section>
 
       <!-- 子頁 2：建築觀察 -->
-      <section class="slide-sub" style="background: #F5EDD8;">
+      <section class="slide-sub" style="background: #F5EDD8; position: relative;">
+        <div class="back-btn" onclick="Reveal.slide(Reveal.getIndices().h, 0)">↑ 回主頁</div>
         <div class="sub-header">
           <div class="sub-icon">🏗️</div>
           <div class="sub-title">建築觀察</div>
@@ -916,7 +947,8 @@
       </section>
 
       <!-- 子頁 3：歷史記錄 -->
-      <section class="slide-sub" style="background: linear-gradient(180deg, #FEF9F0, #F5EDD8);">
+      <section class="slide-sub" style="background: linear-gradient(180deg, #FEF9F0, #F5EDD8); position: relative;">
+        <div class="back-btn" onclick="Reveal.slide(Reveal.getIndices().h, 0)">↑ 回主頁</div>
         <div class="sub-header">
           <div class="sub-icon">📖</div>
           <div class="sub-title">歷史記錄</div>
