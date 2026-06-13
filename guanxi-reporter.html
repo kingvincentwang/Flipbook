@@ -22,11 +22,17 @@
 
   .reveal {
     font-family: 'Noto Sans TC', sans-serif;
+    font-size: 28px;
   }
 
   .reveal .slides section {
     height: 100%;
     padding: 0;
+    display: flex !important;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box;
   }
 
   /* === TITLE SLIDE === */
@@ -36,9 +42,11 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 100%;
+    height: 100% !important;
+    width: 100% !important;
     position: relative;
     overflow: hidden;
+    box-sizing: border-box;
   }
   .slide-title::before {
     content: '';
@@ -99,6 +107,9 @@
     justify-content: center;
     align-items: center;
     padding: 18px 36px !important;
+    height: 100% !important;
+    width: 100% !important;
+    box-sizing: border-box;
   }
   .slide-intro .eyebrow {
     color: var(--brick);
@@ -134,7 +145,8 @@
   .slide-stop {
     display: flex !important;
     flex-direction: row;
-    height: 100%;
+    height: 100% !important;
+    width: 100% !important;
   }
   .stop-left {
     width: 38%;
@@ -179,26 +191,28 @@
   }
   .stop-right h2 {
     font-family: 'Noto Serif TC', serif;
-    font-size: 1.2em !important;
+    font-size: 1.1em !important;
     color: var(--ink) !important;
-    margin-bottom: 10px !important;
+    margin-bottom: 8px !important;
     border-bottom: 2px solid var(--brick-light);
-    padding-bottom: 8px;
+    padding-bottom: 6px;
+    text-align: left !important;
   }
   .stop-right p {
-    font-size: 0.75em !important;
+    font-size: 0.72em !important;
     color: #4A3728;
-    line-height: 1.65;
-    margin-bottom: 8px !important;
+    line-height: 1.6;
+    margin-bottom: 6px !important;
+    text-align: left !important;
   }
   .hakka-tag {
     display: inline-block;
     background: var(--earth);
     color: white;
-    font-size: 0.75em;
-    padding: 4px 12px;
+    font-size: 0.68em;
+    padding: 3px 8px;
     border-radius: 2px;
-    margin-top: 8px;
+    margin-top: 4px;
     font-style: italic;
     letter-spacing: 1px;
   }
@@ -206,10 +220,10 @@
     display: inline-block;
     border: 1.5px solid var(--brick);
     color: var(--brick);
-    font-size: 0.72em;
-    padding: 3px 10px;
+    font-size: 0.62em;
+    padding: 2px 7px;
     border-radius: 20px;
-    margin: 4px 4px 0 0;
+    margin: 3px 3px 0 0;
     font-weight: 700;
   }
 
@@ -228,7 +242,10 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 40px !important;
+    padding: 24px 40px !important;
+    height: 100% !important;
+    width: 100% !important;
+    box-sizing: border-box;
   }
   .slide-activity h2 {
     font-family: 'Noto Serif TC', serif;
@@ -272,6 +289,9 @@
     justify-content: center;
     align-items: center;
     padding: 20px 40px !important;
+    height: 100% !important;
+    width: 100% !important;
+    box-sizing: border-box;
   }
   .slide-end h2 {
     font-family: 'Noto Serif TC', serif;
@@ -340,7 +360,10 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 30px !important;
+    padding: 24px !important;
+    height: 100% !important;
+    width: 100% !important;
+    box-sizing: border-box;
   }
   .slide-map h2 {
     font-family: 'Noto Serif TC', serif;
@@ -709,6 +732,74 @@
     maxScale: 2.0,
     center: true,
   });
+
+  // 換頁音效（Web Audio API，不需外部檔案）
+  const AudioCtx = window.AudioContext || window.webkitAudioContext;
+  let audioCtx = null;
+
+  function initAudio() {
+    if (!audioCtx) audioCtx = new AudioCtx();
+  }
+
+  function playPageSound(direction) {
+    initAudio();
+    if (!audioCtx) return;
+
+    const now = audioCtx.currentTime;
+
+    // 主音：短促的木魚/翻頁聲
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+
+    if (direction === 'next') {
+      // 向右翻頁：音調由高到低，像紙張滑過
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(880, now);
+      osc.frequency.exponentialRampToValueAtTime(440, now + 0.15);
+      gain.gain.setValueAtTime(0.18, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
+      osc.start(now);
+      osc.stop(now + 0.18);
+    } else {
+      // 向左翻頁：音調由低到高
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(440, now);
+      osc.frequency.exponentialRampToValueAtTime(880, now + 0.15);
+      gain.gain.setValueAtTime(0.18, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
+      osc.start(now);
+      osc.stop(now + 0.18);
+    }
+
+    // 附加細微的白噪音（模擬紙張質感）
+    const bufferSize = audioCtx.sampleRate * 0.1;
+    const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) data[i] = (Math.random() * 2 - 1) * 0.04;
+    const noise = audioCtx.createBufferSource();
+    noise.buffer = buffer;
+    const noiseGain = audioCtx.createGain();
+    noiseGain.gain.setValueAtTime(0.12, now);
+    noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+    noise.connect(noiseGain);
+    noiseGain.connect(audioCtx.destination);
+    noise.start(now);
+    noise.stop(now + 0.1);
+  }
+
+  // 監聽 Reveal 換頁事件
+  Reveal.on('slidechanged', event => {
+    const dir = event.indexh > (event.previousSlide
+      ? Reveal.getIndices(event.previousSlide).h
+      : -1) ? 'next' : 'prev';
+    playPageSound(dir);
+  });
+
+  // 第一次點擊解鎖 AudioContext（瀏覽器安全限制）
+  document.addEventListener('click', initAudio, { once: true });
+  document.addEventListener('keydown', initAudio, { once: true });
 </script>
 </body>
 </html>
