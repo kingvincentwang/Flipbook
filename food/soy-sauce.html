@@ -182,6 +182,20 @@
         }
         #intro-gate.is-hidden { opacity: 0; visibility: hidden; pointer-events: none; }
         #intro-gate h1 { text-shadow: 0 0 45px rgba(217,130,43,.5), 0 6px 30px rgba(0,0,0,.8); }
+
+        /* ==================== 分頁切換 ==================== */
+        .page-view { display: none; }
+        .page-view.is-active { display: block; animation: pageIn .45s ease both; }
+        @keyframes pageIn {
+            from { opacity: 0; transform: translateY(14px); }
+            to   { opacity: 1; transform: none; }
+        }
+        header [data-page].is-active {
+            background-color: #d9822b !important;
+            color: #fff !important;
+            box-shadow: inset 0 -2px 0 rgba(255,255,255,.35);
+        }
+        #pager button:disabled { opacity: .35; cursor: not-allowed; }
     </style>
 </head>
 <body class="antialiased selection:bg-soy-warm selection:text-white">
@@ -367,19 +381,19 @@
                         <i class="fa-solid fa-jar text-xl"></i>
                     </div>
                     <div>
-                        <a href="#top" class="text-xl sm:text-2xl font-black font-serif-title tracking-wider text-amber-200 hover:text-white transition">李記醬油教學館</a>
+                        <a href="#top" data-page="top" class="text-xl sm:text-2xl font-black font-serif-title tracking-wider text-amber-200 hover:text-white transition">李記醬油教學館</a>
                         <p class="text-xs text-amber-400/80 font-mono tracking-widest hidden sm:block">關西純釀黑豆醬油 ‧ 傳統工藝與孝心傳承</p>
                     </div>
                 </div>
 
                 <!-- Desktop Navigation -->
                 <nav class="hidden md:flex space-x-1 lg:space-x-6 font-medium text-sm">
-                    <a href="#story" class="px-3 py-2 rounded-lg hover:bg-soy-brown hover:text-amber-300 transition"><i class="fa-solid fa-heart text-red-400 mr-1.5"></i>孝心緣起</a>
-                    <a href="#process" class="px-3 py-2 rounded-lg hover:bg-soy-brown hover:text-amber-300 transition"><i class="fa-solid fa-hourglass-half text-amber-400 mr-1.5"></i>180天工藝</a>
-                    <a href="#themes" class="px-3 py-2 rounded-lg hover:bg-soy-brown hover:text-amber-300 transition"><i class="fa-solid fa-seedling text-emerald-400 mr-1.5"></i>核心精神</a>
-                    <a href="#innovation" class="px-3 py-2 rounded-lg hover:bg-soy-brown hover:text-amber-300 transition"><i class="fa-solid fa-leaf text-green-400 mr-1.5"></i>關西仙草</a>
+                    <a href="#story" data-page="story" class="px-3 py-2 rounded-lg hover:bg-soy-brown hover:text-amber-300 transition"><i class="fa-solid fa-heart text-red-400 mr-1.5"></i>孝心緣起</a>
+                    <a href="#process" data-page="process" class="px-3 py-2 rounded-lg hover:bg-soy-brown hover:text-amber-300 transition"><i class="fa-solid fa-hourglass-half text-amber-400 mr-1.5"></i>180天工藝</a>
+                    <a href="#themes" data-page="themes" class="px-3 py-2 rounded-lg hover:bg-soy-brown hover:text-amber-300 transition"><i class="fa-solid fa-seedling text-emerald-400 mr-1.5"></i>核心精神</a>
+                    <a href="#innovation" data-page="innovation" class="px-3 py-2 rounded-lg hover:bg-soy-brown hover:text-amber-300 transition"><i class="fa-solid fa-leaf text-green-400 mr-1.5"></i>關西仙草</a>
                     <button type="button" onclick="replayIntro()" class="px-3 py-2 rounded-lg hover:bg-soy-brown hover:text-amber-300 transition"><i class="fa-solid fa-film text-purple-300 mr-1.5"></i>重播片頭</button>
-                    <a href="#quiz" class="px-3 py-2 rounded-lg bg-soy-amber hover:bg-soy-warm text-white transition font-semibold"><i class="fa-solid fa-graduation-cap mr-1.5"></i>工藝會考</a>
+                    <a href="#quiz" data-page="quiz" class="px-3 py-2 rounded-lg bg-soy-amber hover:bg-soy-warm text-white transition font-semibold"><i class="fa-solid fa-graduation-cap mr-1.5"></i>工藝會考</a>
                 </nav>
 
                 <!-- Mobile menu button -->
@@ -391,17 +405,17 @@
 
         <!-- Mobile Menu Dropdown -->
         <div id="mobile-menu" class="hidden md:hidden bg-soy-brown border-b border-soy-amber/30 px-4 pt-2 pb-4 space-y-2 text-sm">
-            <a href="#story" class="block px-3 py-2 rounded-md hover:bg-soy-dark text-amber-100"><i class="fa-solid fa-heart text-red-400 mr-2"></i>孝心緣起：提琴師轉型</a>
-            <a href="#process" class="block px-3 py-2 rounded-md hover:bg-soy-dark text-amber-100"><i class="fa-solid fa-hourglass-half text-amber-400 mr-2"></i>180天古法工藝拆解</a>
-            <a href="#themes" class="block px-3 py-2 rounded-md hover:bg-soy-dark text-amber-100"><i class="fa-solid fa-seedling text-emerald-400 mr-2"></i>七大核心主題</a>
-            <a href="#innovation" class="block px-3 py-2 rounded-md hover:bg-soy-dark text-amber-100"><i class="fa-solid fa-leaf text-green-400 mr-2"></i>關西仙草創新特質</a>
+            <a href="#story" data-page="story" class="block px-3 py-2 rounded-md hover:bg-soy-dark text-amber-100"><i class="fa-solid fa-heart text-red-400 mr-2"></i>孝心緣起：提琴師轉型</a>
+            <a href="#process" data-page="process" class="block px-3 py-2 rounded-md hover:bg-soy-dark text-amber-100"><i class="fa-solid fa-hourglass-half text-amber-400 mr-2"></i>180天古法工藝拆解</a>
+            <a href="#themes" data-page="themes" class="block px-3 py-2 rounded-md hover:bg-soy-dark text-amber-100"><i class="fa-solid fa-seedling text-emerald-400 mr-2"></i>七大核心主題</a>
+            <a href="#innovation" data-page="innovation" class="block px-3 py-2 rounded-md hover:bg-soy-dark text-amber-100"><i class="fa-solid fa-leaf text-green-400 mr-2"></i>關西仙草創新特質</a>
             <button type="button" onclick="replayIntro()" class="w-full text-left block px-3 py-2 rounded-md hover:bg-soy-dark text-amber-100"><i class="fa-solid fa-film text-purple-300 mr-2"></i>重播 180 日熟成片頭</button>
-            <a href="#quiz" class="block px-3 py-2 rounded-md bg-soy-amber text-white font-bold"><i class="fa-solid fa-graduation-cap mr-2"></i>醬油學堂互動測驗</a>
+            <a href="#quiz" data-page="quiz" class="block px-3 py-2 rounded-md bg-soy-amber text-white font-bold"><i class="fa-solid fa-graduation-cap mr-2"></i>醬油學堂互動測驗</a>
         </div>
     </header>
 
     <!-- Hero Section -->
-    <section id="top" class="relative wood-texture text-soy-cream py-16 lg:py-24 overflow-hidden border-b-4 border-soy-warm">
+    <section id="top" class="page-view relative wood-texture text-soy-cream py-16 lg:py-24 overflow-hidden border-b-4 border-soy-warm">
         <div class="absolute inset-0 opacity-20 pointer-events-none">
             <div class="absolute top-10 left-10 text-8xl text-amber-700/20 font-serif">醬</div>
             <div class="absolute bottom-10 right-10 text-9xl text-amber-700/20 font-serif">熟</div>
@@ -445,10 +459,10 @@
                     </div>
 
                     <div class="pt-2 flex flex-wrap gap-4">
-                        <a href="#process" class="inline-flex items-center px-6 py-3 bg-soy-warm hover:bg-amber-600 text-white font-bold rounded-xl shadow-lg transition transform hover:-translate-y-0.5">
+                        <a href="#process" data-page="process" class="inline-flex items-center px-6 py-3 bg-soy-warm hover:bg-amber-600 text-white font-bold rounded-xl shadow-lg transition transform hover:-translate-y-0.5">
                             <i class="fa-solid fa-play mr-2 text-sm"></i> 探索釀造工藝
                         </a>
-                        <a href="#story" class="inline-flex items-center px-6 py-3 bg-soy-brown hover:bg-soy-dark text-amber-200 font-medium rounded-xl border border-soy-amber/50 transition">
+                        <a href="#story" data-page="story" class="inline-flex items-center px-6 py-3 bg-soy-brown hover:bg-soy-dark text-amber-200 font-medium rounded-xl border border-soy-amber/50 transition">
                             <i class="fa-solid fa-book-open mr-2"></i> 閱讀創辦故事
                         </a>
                     </div>
@@ -500,7 +514,7 @@
     </section>
 
     <!-- Section 1: Founder Origin Story -->
-    <section id="story" class="py-16 bg-white border-b border-amber-100">
+    <section id="story" class="page-view py-16 bg-white border-b border-amber-100">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center max-w-3xl mx-auto mb-12">
                 <span class="text-soy-amber text-sm font-bold tracking-widest uppercase bg-amber-50 px-3 py-1 rounded-full border border-amber-200">跨界職人的孝心轉變</span>
@@ -579,7 +593,7 @@
     </section>
 
     <!-- Section 2: Interactive Craftsmanship Timeline (180 Days Process) -->
-    <section id="process" class="py-16 bg-soy-cream border-b border-amber-200">
+    <section id="process" class="page-view py-16 bg-soy-cream border-b border-amber-200">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center max-w-3xl mx-auto mb-12">
                 <span class="text-soy-amber text-sm font-bold tracking-widest uppercase bg-amber-100 px-3 py-1 rounded-full border border-amber-200">慢工出細活 ‧ 古法釀造</span>
@@ -629,7 +643,7 @@
     </section>
 
     <!-- Section 3: The 7 Core Educational Themes -->
-    <section id="themes" class="py-16 bg-white border-b border-amber-100">
+    <section id="themes" class="page-view py-16 bg-white border-b border-amber-100">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center max-w-3xl mx-auto mb-12">
                 <span class="text-soy-amber text-sm font-bold tracking-widest uppercase bg-amber-50 px-3 py-1 rounded-full border border-amber-200">教學核心概念總覽</span>
@@ -756,7 +770,7 @@
     </section>
 
     <!-- Section 4: Product Innovation & Science Secrets -->
-    <section id="innovation" class="py-16 bg-soy-cream border-b border-amber-200">
+    <section id="innovation" class="page-view py-16 bg-soy-cream border-b border-amber-200">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center max-w-3xl mx-auto mb-12">
                 <span class="text-soy-amber text-sm font-bold tracking-widest uppercase bg-amber-100 px-3 py-1 rounded-full border border-amber-200">產品特色與料理奧秘</span>
@@ -873,7 +887,7 @@
 
     <!-- Section 5: Interactive Soy Sauce Aging Simulator -->
     <!-- Section 6: Knowledge Quiz & Certificate -->
-    <section id="quiz" class="py-16 bg-white border-b border-amber-100">
+    <section id="quiz" class="page-view py-16 bg-white border-b border-amber-100">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center max-w-3xl mx-auto mb-12">
                 <span class="text-soy-amber text-sm font-bold tracking-widest uppercase bg-amber-50 px-3 py-1 rounded-full border border-amber-200">學習成果檢測</span>
@@ -938,6 +952,28 @@
     </section>
 
     <!-- Footer Section -->
+
+    <!-- ==================== 底部換頁列 ==================== -->
+    <div id="pager" class="bg-soy-cream border-t-2 border-soy-amber/40">
+        <div class="max-w-5xl mx-auto px-4 py-5 flex items-center justify-between gap-3">
+            <button id="pager-prev" type="button" class="flex items-center gap-2 px-5 py-3 bg-white hover:bg-amber-50 text-soy-dark font-bold rounded-xl border border-amber-200 shadow-sm transition">
+                <i class="fa-solid fa-chevron-left text-soy-amber"></i>
+                <span class="hidden sm:inline" id="pager-prev-label">上一頁</span>
+            </button>
+
+            <div class="text-center">
+                <div id="pager-title" class="font-serif-title font-black text-soy-dark text-base sm:text-lg">首頁</div>
+                <div id="pager-count" class="text-xs font-mono text-soy-brown/70 mt-0.5">第 1 / 6 頁</div>
+                <div id="pager-dots" class="flex justify-center gap-1.5 mt-2"></div>
+            </div>
+
+            <button id="pager-next" type="button" class="flex items-center gap-2 px-5 py-3 bg-soy-amber hover:bg-soy-warm text-white font-bold rounded-xl shadow-md transition">
+                <span class="hidden sm:inline" id="pager-next-label">下一頁</span>
+                <i class="fa-solid fa-chevron-right"></i>
+            </button>
+        </div>
+    </div>
+
     <footer class="bg-soy-dark text-soy-cream py-12 border-t-4 border-soy-warm">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
             <div class="grid md:grid-cols-12 gap-8 items-center border-b border-soy-amber/30 pb-8">
@@ -1101,6 +1137,97 @@
 
         // Initialize Step 1 on load
         selectStep(1);
+
+        /* ==========================================================
+           分頁切換（純 JS 控制 display，不捲動長頁）
+           ========================================================== */
+        const PAGES = [
+            { id: 'top',        title: '首頁' },
+            { id: 'story',      title: '孝心緣起' },
+            { id: 'process',    title: '180天工藝' },
+            { id: 'themes',     title: '核心精神' },
+            { id: 'innovation', title: '關西仙草' },
+            { id: 'quiz',       title: '工藝會考' }
+        ];
+        let currentPage = 'top';
+
+        function goPage(id, updateHash) {
+            const idx = PAGES.findIndex(p => p.id === id);
+            if (idx < 0) return;
+            currentPage = id;
+
+            document.querySelectorAll('.page-view').forEach(el => {
+                el.classList.toggle('is-active', el.id === id);
+            });
+
+            document.querySelectorAll('header [data-page]').forEach(el => {
+                el.classList.toggle('is-active', el.dataset.page === id);
+            });
+
+            // 換頁列狀態
+            document.getElementById('pager-title').textContent = PAGES[idx].title;
+            document.getElementById('pager-count').textContent = '第 ' + (idx + 1) + ' / ' + PAGES.length + ' 頁';
+            const prevBtn = document.getElementById('pager-prev');
+            const nextBtn = document.getElementById('pager-next');
+            prevBtn.disabled = (idx === 0);
+            nextBtn.disabled = (idx === PAGES.length - 1);
+            document.getElementById('pager-prev-label').textContent = idx > 0 ? PAGES[idx - 1].title : '上一頁';
+            document.getElementById('pager-next-label').textContent = idx < PAGES.length - 1 ? PAGES[idx + 1].title : '最後一頁';
+
+            document.querySelectorAll('#pager-dots span').forEach((d, i) => {
+                d.className = 'w-2 h-2 rounded-full transition ' + (i === idx ? 'bg-soy-amber scale-125' : 'bg-amber-300/50');
+            });
+
+            // 收起手機選單、回到頂端
+            const mm = document.getElementById('mobile-menu');
+            if (mm) mm.classList.add('hidden');
+            window.scrollTo({ top: 0, behavior: 'auto' });
+
+            if (updateHash !== false) {
+                history.replaceState(null, '', '#' + id);
+            }
+        }
+
+        function stepPage(delta) {
+            const idx = PAGES.findIndex(p => p.id === currentPage);
+            const next = PAGES[idx + delta];
+            if (next) goPage(next.id);
+        }
+
+        // 產生頁碼小圓點
+        (function buildDots() {
+            const box = document.getElementById('pager-dots');
+            PAGES.forEach(() => {
+                const d = document.createElement('span');
+                d.className = 'w-2 h-2 rounded-full bg-amber-300/50';
+                box.appendChild(d);
+            });
+        })();
+
+        // 所有帶 data-page 的連結（導覽列、手機選單、頁面內按鈕）都改為切換分頁
+        document.querySelectorAll('[data-page]').forEach(el => {
+            el.addEventListener('click', (e) => {
+                e.preventDefault();
+                goPage(el.dataset.page);
+            });
+        });
+
+        document.getElementById('pager-prev').addEventListener('click', () => stepPage(-1));
+        document.getElementById('pager-next').addEventListener('click', () => stepPage(1));
+
+        // 鍵盤左右鍵換頁（片頭播放中或正在打字時不作用）
+        document.addEventListener('keydown', (e) => {
+            if (introRunning) return;
+            const tag = (e.target.tagName || '').toLowerCase();
+            if (tag === 'input' || tag === 'textarea') return;
+            if (e.key === 'ArrowRight') stepPage(1);
+            if (e.key === 'ArrowLeft')  stepPage(-1);
+        });
+
+        window.addEventListener('hashchange', () => {
+            const id = location.hash.replace('#', '');
+            if (id && id !== currentPage) goPage(id, false);
+        });
 
         /* ==========================================================
            片頭配樂（Web Audio 即時合成，五聲音階；亦可改用自備 mp3）
@@ -1533,8 +1660,11 @@
             }
         });
 
-        // 帶有錨點網址（例如直接連到 #quiz）時不播片頭
-        if (window.location.hash && window.location.hash !== '#top') {
+        // 帶有錨點網址（例如直接連到 #quiz）時不播片頭，直接開在那一頁
+        const bootPage = location.hash.replace('#', '');
+        goPage(PAGES.some(p => p.id === bootPage) ? bootPage : 'top', false);
+
+        if (bootPage && bootPage !== 'top') {
             introOverlay.style.display = 'none';
         } else {
             document.documentElement.classList.add('intro-lock');
