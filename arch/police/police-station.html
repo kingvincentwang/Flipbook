@@ -1,0 +1,1432 @@
+<!DOCTYPE html>
+<!--
+  守護與守戶｜關西分駐所前世今生 — 時光偵探事務所
+  ------------------------------------------------------------
+  ★ 圖片使用相對路徑，請把 guanxi.jpg 與本檔案放在「同一個資料夾」。
+    要換檔名或改放子資料夾，只需全檔搜尋取代 "guanxi.jpg"
+    （例如改成 "images/guanxi.jpg" 或完整網址 https://...）。
+  ------------------------------------------------------------
+-->
+<html lang="zh-TW" class="dark scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>守護與守戶｜關西分駐所前世今生 - 時光偵探事務所</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // 圖片載入失敗時，於畫面留下可辨識的提示（而非一片空白）
+        window.addEventListener('error', function (e) {
+            const el = e.target;
+            if (el && el.tagName === 'IMG' && !el.dataset.warned) {
+                el.dataset.warned = '1';
+                el.alt = '找不到圖片：' + el.getAttribute('src') + '（請確認與 HTML 放在同一層）';
+                el.style.background = 'repeating-linear-gradient(45deg,#0b1f33,#0b1f33 12px,#123049 12px,#123049 24px)';
+                console.warn('[圖片載入失敗]', el.getAttribute('src'), '→ 請確認檔案與 HTML 在同一個資料夾');
+            }
+        }, true);
+
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        cyber: {
+                            50: '#e6ffff',
+                            100: '#b3ffff',
+                            400: '#00f3ff',
+                            500: '#00d8e6',
+                            600: '#00a3b0',
+                            800: '#082538',
+                            900: '#030d18',
+                            dark: '#050a12'
+                        },
+                        alert: {
+                            500: '#ff3366',
+                            600: '#cc0033'
+                        }
+                    },
+                    fontFamily: {
+                        tech: ['Courier New', 'monospace', 'sans-serif']
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'glow': 'glow 2s infinite alternate',
+                        'scanline': 'scanline 8s linear infinite'
+                    },
+                    keyframes: {
+                        glow: {
+                            '0%': { 'box-shadow': '0 0 10px rgba(0, 243, 255, 0.3), inset 0 0 10px rgba(0, 243, 255, 0.2)' },
+                            '100%': { 'box-shadow': '0 0 25px rgba(0, 243, 255, 0.8), inset 0 0 15px rgba(0, 243, 255, 0.5)' }
+                        },
+                        scanline: {
+                            '0%': { transform: 'translateY(-100%)' },
+                            '100%': { transform: 'translateY(1000%)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;600;700;900&family=Orbitron:wght@400;600;800;900&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #030d18;
+            color: #e2e8f0;
+            overflow-x: hidden;
+        }
+
+        .orbitron {
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        /* Glassmorphism cyber style */
+        .cyber-glass {
+            background: rgba(8, 37, 56, 0.65);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(0, 243, 255, 0.25);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        .cyber-glass-alert {
+            background: rgba(40, 10, 20, 0.75);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 51, 102, 0.5);
+            box-shadow: 0 0 20px rgba(255, 51, 102, 0.2);
+        }
+
+        /* Cyberpunk corners */
+        .cyber-corner {
+            position: relative;
+        }
+        .cyber-corner::before, .cyber-corner::after {
+            content: '';
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border-color: #00f3ff;
+            border-style: solid;
+        }
+        .cyber-corner::before {
+            top: -2px;
+            left: -2px;
+            border-width: 2px 0 0 2px;
+        }
+        .cyber-corner::after {
+            bottom: -2px;
+            right: -2px;
+            border-width: 0 2px 2px 0;
+        }
+
+        /* Grid Background Pattern */
+        .bg-grid-pattern {
+            background-size: 40px 40px;
+            background-image: 
+                linear-gradient(to right, rgba(0, 243, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(0, 243, 255, 0.05) 1px, transparent 1px);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #030d18;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #00a3b0;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #00f3ff;
+        }
+
+        /* === 日出片頭：動畫與無障礙 === */
+        @keyframes introSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes introTwinkle { 0%,100% { opacity:.25; } 50% { opacity:1; } }
+        #introPhoto { transform-origin: 50% 42%; }
+        #introOverlay .intro-star {
+            position:absolute; border-radius:9999px; background:#dbeafe;
+            animation: introTwinkle 3s ease-in-out infinite;
+        }
+        @media (prefers-reduced-motion: reduce) {
+            #introRays { animation: none !important; }
+            #introPhoto { transform: none !important; }
+            #introOverlay .intro-star { animation: none !important; }
+        }
+
+        /* === 片尾靜賞：收掉太陽與光效，只留照片全貌 === */
+        #introOverlay.intro-revealing #introSun,
+        #introOverlay.intro-revealing #introGlow,
+        #introOverlay.intro-revealing #introRays,
+        #introOverlay.intro-revealing #introDawn,
+        #introOverlay.intro-revealing #introBloom,
+        #introOverlay.intro-revealing #introVignette {
+            opacity: 0 !important;
+            transition: opacity 1.1s ease-out;
+        }
+        #introOverlay.intro-revealing #introPhoto {
+            transform: scale(1.035) !important;
+            transition: transform 4.2s ease-out;
+        }
+        @media (prefers-reduced-motion: reduce) {
+            #introOverlay.intro-revealing #introPhoto { transition: none; transform: none !important; }
+        }
+    </style>
+</head>
+<body class="bg-grid-pattern min-h-screen relative flex flex-col selection:bg-cyber-400 selection:text-cyber-dark">
+
+    <!-- 12 秒日出片頭動畫（關西分駐所實景） -->
+    <div id="introOverlay" class="fixed inset-0 z-[100] flex flex-col items-center justify-center p-5 sm:p-6 select-none overflow-hidden transition-opacity duration-1000" style="background:#02060f;--acc:#00f3ff;">
+
+        <!-- 實景照片（會由暗轉亮 + 緩慢推近） -->
+        <img id="introPhoto" src="guanxi.jpg" alt="關西分駐所日出" class="absolute inset-0 w-full h-full object-cover will-change-transform">
+
+        <!-- 夜色層：深藍黑，逐漸退去 -->
+        <div id="introNight" class="absolute inset-0 pointer-events-none" style="background:linear-gradient(180deg,#01040d 0%,#040a1c 45%,#07132b 100%);"></div>
+
+        <!-- 星空（天亮前消失） -->
+        <div id="introStars" class="absolute inset-x-0 top-0 h-[42%] pointer-events-none overflow-hidden"></div>
+
+        <!-- 天空區：太陽由此區底緣（屋脊高度）升起 -->
+        <div class="absolute inset-x-0 top-0 h-[40%] pointer-events-none overflow-hidden">
+            <div id="introSun" class="absolute left-1/2 rounded-full" style="width:20vmin;height:20vmin;transform:translate(-50%,-50%);background:radial-gradient(circle,#fffdf2 0%,#ffe9a8 30%,#ffb347 48%,#ff9a3c 62%,rgba(255,140,50,0) 72%);"></div>
+        </div>
+
+        <!-- 陽光暈染（不裁切，灑滿全場） -->
+        <div id="introGlow" class="absolute inset-0 pointer-events-none" style="mix-blend-mode:screen;background:radial-gradient(ellipse 70% 55% at 50% 14%,rgba(255,206,120,.85) 0%,rgba(255,150,60,.35) 35%,rgba(255,110,40,0) 70%);"></div>
+
+        <!-- 晨曦光束 -->
+        <div id="introRays" class="absolute pointer-events-none" style="inset:-60%;mix-blend-mode:screen;background:repeating-conic-gradient(from 0deg at 50% 44%,rgba(255,222,160,.20) 0deg 1.6deg,rgba(255,222,160,0) 1.6deg 11deg);-webkit-mask-image:radial-gradient(circle at 50% 44%,#000 0%,rgba(0,0,0,.55) 32%,transparent 62%);mask-image:radial-gradient(circle at 50% 44%,#000 0%,rgba(0,0,0,.55) 32%,transparent 62%);animation:introSpin 60s linear infinite;"></div>
+
+        <!-- 朝霞暖色調 -->
+        <div id="introDawn" class="absolute inset-0 pointer-events-none" style="background:linear-gradient(180deg,rgba(255,120,150,.30) 0%,rgba(255,160,70,.42) 40%,rgba(255,196,120,.10) 100%);"></div>
+
+        <!-- 破曉閃光 -->
+        <div id="introBloom" class="absolute inset-0 pointer-events-none" style="background:radial-gradient(circle at 50% 16%,rgba(255,255,255,.95) 0%,rgba(255,236,190,.5) 25%,transparent 60%);"></div>
+
+        <!-- 下方壓暗，讓文字可讀（片尾靜賞時會一併淡出） -->
+        <div id="introVignette" class="absolute inset-0 pointer-events-none" style="background:linear-gradient(180deg,rgba(0,0,0,.15) 0%,rgba(0,0,0,0) 30%,rgba(0,0,0,.55) 78%,rgba(0,0,0,.75) 100%);"></div>
+
+        <!-- 片尾靜賞提示 -->
+        <div id="introHint" class="absolute inset-x-0 bottom-6 text-center text-xs tracking-widest text-white/70 pointer-events-none opacity-0 transition-opacity duration-700"
+             style="text-shadow:0 1px 10px rgba(0,0,0,.9)">
+            點擊任意處進入
+        </div>
+
+        <div class="relative z-10 max-w-2xl w-full text-center space-y-5 p-5 sm:p-8 rounded-2xl"
+             id="introCard"
+             style="background:rgba(4,10,20,.55);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(0,243,255,.35);box-shadow:0 8px 40px rgba(0,0,0,.55);">
+
+            <!-- 上方狀態列 -->
+            <div class="flex items-center justify-between text-[11px] sm:text-xs orbitron border-b pb-3" style="color:var(--acc);border-color:rgba(255,255,255,.15);">
+                <span class="flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full animate-ping" style="background:var(--acc)"></span>
+                    TIME-DETECTIVE PROTOCOL v3.9
+                </span>
+                <span id="introTimerText" class="font-bold text-white px-2.5 py-1 rounded border" style="background:rgba(0,0,0,.45);border-color:rgba(255,255,255,.2)">12.0s</span>
+            </div>
+
+            <!-- 中央：日出計時環 -->
+            <div class="relative w-24 h-24 sm:w-28 sm:h-28 mx-auto flex items-center justify-center">
+                <div class="absolute inset-0 rounded-full border-2 border-dashed animate-[spin_10s_linear_infinite]" style="border-color:var(--acc);opacity:.55"></div>
+                <div class="absolute inset-2 rounded-full border animate-[spin_5s_linear_infinite_reverse]" style="border-color:var(--acc);opacity:.35"></div>
+                <div id="introIconWrap" class="w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center text-2xl sm:text-3xl"
+                     style="background:rgba(255,255,255,.08);border:1px solid var(--acc);color:var(--acc);box-shadow:0 0 25px rgba(0,243,255,.5)">
+                    <i id="introIcon" class="fa-solid fa-moon transition-all duration-300"></i>
+                </div>
+            </div>
+
+            <!-- 標題與動態日誌 -->
+            <div class="space-y-2 min-h-[92px] flex flex-col justify-center">
+                <h2 id="introTitle" class="text-2xl sm:text-3xl font-black text-white tracking-wider" style="text-shadow:0 2px 18px rgba(0,0,0,.8)">
+                    天未亮：時光偵探事務所待命
+                </h2>
+                <p id="introSubtitle" class="text-[11px] sm:text-sm orbitron tracking-widest uppercase font-semibold" style="color:var(--acc)">
+                    [PHASE 1] PRE-DAWN · SYSTEM STANDBY
+                </p>
+                <p class="text-[11px] sm:text-xs text-slate-200 font-mono h-5 flex items-center justify-center gap-1.5 pt-1">
+                    <i class="fa-solid fa-terminal text-[10px]" style="color:var(--acc)"></i>
+                    <span id="introLogText">加載關西國小校本建築傳說課程資料庫...</span>
+                </p>
+            </div>
+
+            <!-- 日出進度 -->
+            <div class="space-y-2">
+                <div class="w-full h-3 rounded-full overflow-hidden relative p-0.5" style="background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.2)">
+                    <div id="introProgressBar" class="h-full rounded-full w-0 transition-all duration-100 ease-linear" style="background:linear-gradient(90deg,#0b2b4a,#00d8e6,#ffd27a,#fff6de)"></div>
+                </div>
+                <div class="flex justify-between items-center text-[10px] sm:text-[11px] orbitron text-slate-300">
+                    <span>日出進度 SUNRISE: <span id="introPercent" class="font-bold" style="color:var(--acc)">0%</span></span>
+                    <span>TARGET: 關西分駐所 [1920-2026]</span>
+                </div>
+            </div>
+
+            <!-- 跳過 -->
+            <div class="pt-1 flex justify-center">
+                <button onclick="skipIntro()" class="px-5 py-2 rounded-lg text-xs orbitron tracking-wider transition-all flex items-center gap-2 group cursor-pointer hover:text-white"
+                        style="border:1px solid var(--acc);background:rgba(0,0,0,.35);color:var(--acc)">
+                    <span>SKIP INTRO 跳過片頭</span>
+                    <i class="fa-solid fa-forward text-xs group-hover:translate-x-1 transition-transform"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="pointer-events-none fixed inset-0 z-50 overflow-hidden opacity-20">
+        <div class="w-full h-2 bg-gradient-to-r from-transparent via-cyber-400 to-transparent animate-scanline"></div>
+    </div>
+    
+    <!-- Background Animated Canvas -->
+    <canvas id="bgCanvas" class="fixed inset-0 pointer-events-none z-0"></canvas>
+
+    <header class="sticky top-0 z-40 cyber-glass border-b border-cyber-400/30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <button onclick="replayIntro()" class="p-2 rounded-lg border border-cyber-400/40 hover:border-cyber-400 bg-cyber-800/50 text-cyber-400 hover:text-white text-xs flex items-center gap-1.5 transition-all" title="重播 12 秒片頭動畫">
+                    <i class="fa-solid fa-play text-xs"></i>
+                    <span class="hidden sm:inline">重播片頭</span>
+                </button>
+                <button onclick="toggleAudioSFX()" id="sfxBtn" class="p-2 rounded-lg border border-cyber-400/40 hover:border-cyber-400 bg-cyber-800/50 text-cyber-400 text-xs flex items-center gap-1.5 transition-all">
+                    <i class="fa-solid fa-volume-high"></i>
+                    <span class="hidden sm:inline">音效 [開]</span>
+                </button>
+                <a href="#quizModal" onclick="openQuiz()" class="px-3.5 py-1.5 text-xs orbitron font-bold text-cyber-dark bg-cyber-400 hover:bg-cyber-500 rounded transition-all shadow-[0_0_15px_rgba(0,243,255,0.5)]">
+                    解密測驗
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-16 relative z-10">
+
+        <section class="relative rounded-2xl cyber-glass border border-cyber-400/40 p-6 md:p-12 overflow-hidden cyber-corner shadow-[0_0_30px_rgba(0,243,255,0.15)]">
+            <div class="absolute top-0 right-0 p-4 opacity-10 pointer-events-none">
+                <i class="fa-solid fa-building-columns text-9xl text-cyber-400"></i>
+            </div>
+            
+            <div class="max-w-3xl space-y-4">
+                <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-cyber-400/10 border border-cyber-400/30 text-cyber-400 text-xs orbitron">
+                    <i class="fa-solid fa-archway"></i>
+                    <span>ARCHIVE: KUANHSI_POLICE_STATION</span>
+                </div>
+                <h1 class="text-3xl sm:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white via-cyber-100 to-cyber-400 tracking-tight leading-tight">
+                    守護與守戶 <span class="text-cyber-400 font-light">|</span> 關西分駐所前世今生
+                </h1>
+                <p class="text-lg text-slate-300 font-medium">
+                    時光偵探事務所 —— 關西國小三年級校本建築傳說課程
+                </p>
+                <p class="text-sm text-slate-400 leading-relaxed pt-2">
+                    結合數位科技、AI 繪本解碼、社區實地走讀與藝術創作，帶領孩子化身時光偵探，解開百年古蹟關西分駐所的建築構造密碼與時代演變，並思索文化資產的真正價值。
+                </p>
+
+                <div class="flex flex-wrap gap-4 pt-4">
+                    <a href="#blueprint" class="px-5 py-2.5 rounded-lg bg-cyber-400 text-cyber-dark font-bold text-sm hover:bg-cyber-500 transition-all shadow-[0_0_20px_rgba(0,243,255,0.4)] flex items-center gap-2">
+                        <i class="fa-solid fa-eye"></i> 啟動建築密碼透視
+                    </a>
+                    <a href="#framework" class="px-5 py-2.5 rounded-lg border border-cyber-400/50 hover:border-cyber-400 bg-cyber-800/40 text-cyber-100 font-medium text-sm transition-all flex items-center gap-2">
+                        <i class="fa-solid fa-sitemap"></i> 瀏覽 T.E.A.M. 課程架構
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <section id="profile" class="space-y-6 scroll-mt-20">
+            <div class="flex items-center space-x-3 border-l-4 border-cyber-400 pl-4">
+                <div>
+                    <h2 class="text-2xl font-bold text-white tracking-wide">標的檔案 (Target Profile)</h2>
+                    <p class="text-xs text-cyber-400 orbitron">CENTURY-OLD HERITAGE DIGITAL IDENTITY</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+                <!-- Visual Display Window -->
+                <div class="lg:col-span-5 relative rounded-xl overflow-hidden border border-cyber-400/40 cyber-glass group">
+                    <div class="absolute inset-0 bg-gradient-to-t from-cyber-dark via-transparent to-transparent z-10"></div>
+                    <img src="guanxi.jpg" alt="關西分駐所外觀" class="w-full h-80 object-cover group-hover:scale-105 transition-transform duration-500 opacity-80">
+                    <div class="absolute bottom-4 left-4 right-4 z-20">
+                        <span class="text-xs bg-cyber-400/20 text-cyber-400 border border-cyber-400/40 px-2.5 py-1 rounded orbitron">HISTORIC SITE #01</span>
+                        <h3 class="text-xl font-bold text-white mt-1">新竹縣定古蹟 關西分駐所</h3>
+                        <p class="text-xs text-slate-300">關西鎮唯一保留完整的日式官署與警察宿舍聚落</p>
+                    </div>
+                </div>
+
+                <!-- Digital ID Attributes Grid -->
+                <div class="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="p-4 rounded-xl cyber-glass border border-cyber-400/30 hover:border-cyber-400 transition-all space-y-2">
+                        <div class="flex items-center space-x-3 text-cyber-400">
+                            <i class="fa-solid fa-hourglass-start text-2xl"></i>
+                            <span class="text-xs orbitron tracking-wider text-slate-400">[ 建置年份 ]</span>
+                        </div>
+                        <p class="text-xl font-bold text-white">大正 9 年 (1920年)</p>
+                        <p class="text-xs text-slate-400">歷經逾百年的歷史歲月變遷，陪伴關西鎮民數世代。</p>
+                    </div>
+
+                    <div class="p-4 rounded-xl cyber-glass border border-cyber-400/30 hover:border-cyber-400 transition-all space-y-2">
+                        <div class="flex items-center space-x-3 text-cyber-400">
+                            <i class="fa-solid fa-shield-halved text-2xl"></i>
+                            <span class="text-xs orbitron tracking-wider text-slate-400">[ 建築級別 ]</span>
+                        </div>
+                        <p class="text-xl font-bold text-white">新竹縣定古蹟（衙署類）</p>
+                        <p class="text-xs text-slate-400">具備極高之文化資產價值與歷史保存地位。</p>
+                    </div>
+
+                    <div class="p-4 rounded-xl cyber-glass border border-cyber-400/30 hover:border-cyber-400 transition-all space-y-2">
+                        <div class="flex items-center space-x-3 text-cyber-400">
+                            <i class="fa-solid fa-monument text-2xl"></i>
+                            <span class="text-xs orbitron tracking-wider text-slate-400">[ 建築樣式 ]</span>
+                        </div>
+                        <p class="text-xl font-bold text-white">興亞樣式</p>
+                        <p class="text-xs text-slate-400">融合西洋幾何柱飾、門廊與日式傳統黑瓦構造。</p>
+                    </div>
+
+                    <div class="p-4 rounded-xl cyber-glass border border-cyber-400/30 hover:border-cyber-400 transition-all space-y-2">
+                        <div class="flex items-center space-x-3 text-cyber-400">
+                            <i class="fa-solid fa-map-location-dot text-2xl"></i>
+                            <span class="text-xs orbitron tracking-wider text-slate-400">[ 歷史地位 ]</span>
+                        </div>
+                        <p class="text-xl font-bold text-white">警察辦公及住宿聚落</p>
+                        <p class="text-xs text-slate-400">新竹縣唯一完整保留分駐所與後方所長/員警宿舍群之建築聚落。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Interactive Guanxi Police Station Photo Slide Showcase -->
+        <section id="slideshow" class="space-y-6 scroll-mt-20">
+            <div class="flex items-center justify-between border-l-4 border-cyber-400 pl-4">
+                <div>
+                    <h2 class="text-2xl font-bold text-white tracking-wide">時光影像藝廊 (Photo Slide Showcase)</h2>
+                    <p class="text-xs text-cyber-400 orbitron">HISTORICAL VISUAL ARCHIVE SLIDESHOW</p>
+                </div>
+                <!-- Controls Header -->
+                <div class="flex items-center space-x-2">
+                    <button onclick="toggleSlideAutoPlay()" id="slideAutoBtn" class="px-3 py-1.5 rounded-lg border border-cyber-400/40 hover:border-cyber-400 bg-cyber-800/60 text-cyber-400 text-xs orbitron flex items-center gap-1.5 transition-all">
+                        <i class="fa-solid fa-pause" id="slideAutoIcon"></i>
+                        <span id="slideAutoText">自動播放中</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Main Slideshow Container -->
+            <div class="relative rounded-2xl cyber-glass border border-cyber-400/50 overflow-hidden shadow-[0_0_40px_rgba(0,243,255,0.2)] group">
+                <!-- Slide Display Area -->
+                <div class="relative h-[320px] sm:h-[450px] md:h-[520px] w-full overflow-hidden bg-cyber-900">
+                    
+                    <!-- Slide 1: Main Front view -->
+                    <div class="slide-item absolute inset-0 opacity-100 transition-opacity duration-700 ease-in-out flex flex-col justify-end">
+                        <img src="guanxi.jpg" alt="關西分駐所主體" class="absolute inset-0 w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-gradient-to-t from-cyber-dark via-cyber-dark/40 to-transparent"></div>
+                        <div class="relative z-10 p-6 md:p-8 space-y-2">
+                            <div class="flex flex-wrap items-center gap-2">
+                                <span class="px-2.5 py-0.5 rounded bg-cyber-400 text-cyber-dark text-xs font-bold orbitron">SLIDE 01/05</span>
+                                <span class="px-2.5 py-0.5 rounded bg-cyber-800/80 text-cyber-400 border border-cyber-400/40 text-xs">興亞樣式門廊</span>
+                            </div>
+                            <h3 class="text-2xl sm:text-3xl font-bold text-white">關西分駐所 正面官署建築</h3>
+                            <p class="text-xs sm:text-sm text-slate-300 max-w-3xl leading-relaxed">
+                                大正九年（1920年）建置，融合西洋古典幾何門柱與日式傳統黑瓦屋頂，彰顯治安守護者的嚴肅威嚴與時代工藝美學。
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Slide 2: Chief Quarters -->
+                    <div class="slide-item absolute inset-0 opacity-0 transition-opacity duration-700 ease-in-out flex flex-col justify-end pointer-events-none">
+                        <img src="guanxi2.jpg" alt="所長宿舍與黑瓦" class="absolute inset-0 w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-gradient-to-t from-cyber-dark via-cyber-dark/40 to-transparent"></div>
+                        <div class="relative z-10 p-6 md:p-8 space-y-2">
+                            <div class="flex flex-wrap items-center gap-2">
+                                <span class="px-2.5 py-0.5 rounded bg-cyber-400 text-cyber-dark text-xs font-bold orbitron">SLIDE 02/05</span>
+                                <span class="px-2.5 py-0.5 rounded bg-cyber-800/80 text-emerald-400 border border-emerald-400/40 text-xs">所長宿舍</span>
+                            </div>
+                            <h3 class="text-2xl sm:text-3xl font-bold text-white">日式木造所長宿舍與「會呼吸的屋瓦」</h3>
+                            <p class="text-xs sm:text-sm text-slate-300 max-w-3xl leading-relaxed">
+                                後方所長宿舍採用高腳防潮木造結構與日式傳統黑瓦，具備優異的通風散熱效能，呈現「家的溫潤」生活氣息。
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Slide 3: Police Hostel Cluster -->
+                    <div class="slide-item absolute inset-0 opacity-0 transition-opacity duration-700 ease-in-out flex flex-col justify-end pointer-events-none">
+                        <img src="guanxi3.jpg" alt="員警宿舍聚落" class="absolute inset-0 w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-gradient-to-t from-cyber-dark via-cyber-dark/40 to-transparent"></div>
+                        <div class="relative z-10 p-6 md:p-8 space-y-2">
+                            <div class="flex flex-wrap items-center gap-2">
+                                <span class="px-2.5 py-0.5 rounded bg-cyber-400 text-cyber-dark text-xs font-bold orbitron">SLIDE 03/05</span>
+                                <span class="px-2.5 py-0.5 rounded bg-cyber-800/80 text-cyber-400 border border-cyber-400/40 text-xs">宿舍聚落</span>
+                            </div>
+                            <h3 class="text-2xl sm:text-3xl font-bold text-white">全縣唯一保留完整之警察宿舍聚落</h3>
+                            <p class="text-xs sm:text-sm text-slate-300 max-w-3xl leading-relaxed">
+                                結合前棟辦公廳舍與後方多棟員警眷舍，形成兼具治安勤務與眷屬生活的豐富歷史聚落景觀。
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Slide 4: Architectural Details -->
+                    <div class="slide-item absolute inset-0 opacity-0 transition-opacity duration-700 ease-in-out flex flex-col justify-end pointer-events-none">
+                        <img src="guanxi4.jpg" alt="鬼瓦與破風" class="absolute inset-0 w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-gradient-to-t from-cyber-dark via-cyber-dark/40 to-transparent"></div>
+                        <div class="relative z-10 p-6 md:p-8 space-y-2">
+                            <div class="flex flex-wrap items-center gap-2">
+                                <span class="px-2.5 py-0.5 rounded bg-cyber-400 text-cyber-dark text-xs font-bold orbitron">SLIDE 04/05</span>
+                                <span class="px-2.5 py-0.5 rounded bg-cyber-800/80 text-cyber-400 border border-cyber-400/40 text-xs">建築細密碼</span>
+                            </div>
+                            <h3 class="text-2xl sm:text-3xl font-bold text-white">破風構造與鬼瓦辟邪密碼</h3>
+                            <p class="text-xs sm:text-sm text-slate-300 max-w-3xl leading-relaxed">
+                                屋頂中央的「破風」三角幾何構造象徵官署權威，屋脊端點的「鬼瓦」則蘊含避邪鎮宅的傳統建築工藝巧思。
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Slide 5: Street Walk & Heritage -->
+                    <div class="slide-item absolute inset-0 opacity-0 transition-opacity duration-700 ease-in-out flex flex-col justify-end pointer-events-none">
+                        <img src="guanxi5.jpg" alt="老街與太和宮" class="absolute inset-0 w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-gradient-to-t from-cyber-dark via-cyber-dark/40 to-transparent"></div>
+                        <div class="relative z-10 p-6 md:p-8 space-y-2">
+                            <div class="flex flex-wrap items-center gap-2">
+                                <span class="px-2.5 py-0.5 rounded bg-cyber-400 text-cyber-dark text-xs font-bold orbitron">SLIDE 05/05</span>
+                                <span class="px-2.5 py-0.5 rounded bg-cyber-800/80 text-amber-400 border border-amber-400/40 text-xs">走讀歷史</span>
+                            </div>
+                            <h3 class="text-2xl sm:text-3xl font-bold text-white">穿越老街與太和宮的時空散策</h3>
+                            <p class="text-xs sm:text-sm text-slate-300 max-w-3xl leading-relaxed">
+                                關西國小師生走出教室，從關西傳統菜市場踏查至太和宮與分駐所，串聯起關西鎮百年的人文脈絡與共同記憶。
+                            </p>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Navigation Arrow Buttons -->
+                <button onclick="prevSlide()" class="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full cyber-glass border border-cyber-400/50 hover:border-cyber-400 text-cyber-400 hover:text-white flex items-center justify-center transition-all hover:scale-110 shadow-lg cursor-pointer">
+                    <i class="fa-solid fa-chevron-left text-lg"></i>
+                </button>
+                <button onclick="nextSlide()" class="absolute right-4 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full cyber-glass border border-cyber-400/50 hover:border-cyber-400 text-cyber-400 hover:text-white flex items-center justify-center transition-all hover:scale-110 shadow-lg cursor-pointer">
+                    <i class="fa-solid fa-chevron-right text-lg"></i>
+                </button>
+
+                <!-- Timer Progress Bar -->
+                <div class="w-full h-1 bg-cyber-900 border-t border-cyber-400/20 relative">
+                    <div id="slideProgressBar" class="h-full bg-gradient-to-r from-cyber-600 via-cyber-400 to-white w-0 transition-all duration-100 ease-linear"></div>
+                </div>
+
+                <!-- Thumbnails Nav & Indicator Dots Bar -->
+                <div class="p-4 bg-cyber-900/90 border-t border-cyber-400/30 flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <!-- Dots -->
+                    <div class="flex items-center space-x-2" id="slideDotsContainer">
+                        <button onclick="goToSlide(0)" class="slide-dot w-3 h-3 rounded-full bg-cyber-400 transition-all scale-125 shadow-[0_0_8px_rgba(0,243,255,0.8)]"></button>
+                        <button onclick="goToSlide(1)" class="slide-dot w-3 h-3 rounded-full bg-slate-600 hover:bg-cyber-400/60 transition-all"></button>
+                        <button onclick="goToSlide(2)" class="slide-dot w-3 h-3 rounded-full bg-slate-600 hover:bg-cyber-400/60 transition-all"></button>
+                        <button onclick="goToSlide(3)" class="slide-dot w-3 h-3 rounded-full bg-slate-600 hover:bg-cyber-400/60 transition-all"></button>
+                        <button onclick="goToSlide(4)" class="slide-dot w-3 h-3 rounded-full bg-slate-600 hover:bg-cyber-400/60 transition-all"></button>
+                    </div>
+
+                    <!-- Mini Thumbnail Strip -->
+                    <div class="flex items-center space-x-2 overflow-x-auto max-w-full pb-1">
+                        <img onclick="goToSlide(0)" src="guanxi.jpg" class="slide-thumb w-12 h-9 object-cover rounded border-2 border-cyber-400 cursor-pointer opacity-100 transition-all">
+                        <img onclick="goToSlide(1)" src="https://images.unsplash.com/photo-1578632767115-351597cf2477?auto=format&fit=crop&w=150&q=80" class="slide-thumb w-12 h-9 object-cover rounded border border-cyber-400/30 hover:border-cyber-400 cursor-pointer opacity-50 hover:opacity-100 transition-all">
+                        <img onclick="goToSlide(2)" src="https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=150&q=80" class="slide-thumb w-12 h-9 object-cover rounded border border-cyber-400/30 hover:border-cyber-400 cursor-pointer opacity-50 hover:opacity-100 transition-all">
+                        <img onclick="goToSlide(3)" src="https://images.unsplash.com/photo-1545569341-9eb8b30979d9?auto=format&fit=crop&w=150&q=80" class="slide-thumb w-12 h-9 object-cover rounded border border-cyber-400/30 hover:border-cyber-400 cursor-pointer opacity-50 hover:opacity-100 transition-all">
+                        <img onclick="goToSlide(4)" src="https://images.unsplash.com/photo-1480796927426-f609979314bd?auto=format&fit=crop&w=150&q=80" class="slide-thumb w-12 h-9 object-cover rounded border border-cyber-400/30 hover:border-cyber-400 cursor-pointer opacity-50 hover:opacity-100 transition-all">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="framework" class="space-y-6 scroll-mt-20">
+            <div class="flex items-center justify-between border-l-4 border-cyber-400 pl-4">
+                <div>
+                    <h2 class="text-2xl font-bold text-white tracking-wide">任務框架 (Mission Framework)</h2>
+                    <p class="text-xs text-cyber-400 orbitron">T.E.A.M. MODULE MATRIX</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <!-- T -->
+                <div class="p-5 rounded-xl cyber-glass border border-cyber-400/30 hover:border-cyber-400 transition-all hover:-translate-y-1 cursor-pointer group" onclick="highlightPhase(1)">
+                    <div class="w-12 h-12 rounded-lg bg-cyber-400/10 border border-cyber-400/40 flex items-center justify-center text-cyber-400 text-xl font-black orbitron mb-3 group-hover:scale-110 transition-transform">
+                        T
+                    </div>
+                    <h3 class="text-lg font-bold text-white group-hover:text-cyber-400 transition-colors">T (Tour) 遊關西</h3>
+                    <p class="text-xs text-cyber-400 font-semibold mt-1">數位先導</p>
+                    <p class="text-xs text-slate-300 leading-relaxed mt-2">
+                        透過多媒體與 AI 繪本引導，建立學童對分駐所歷史軌跡與建築樣式的認知基礎。
+                    </p>
+                </div>
+
+                <!-- E -->
+                <div class="p-5 rounded-xl cyber-glass border border-cyber-400/30 hover:border-cyber-400 transition-all hover:-translate-y-1 cursor-pointer group" onclick="highlightPhase(2)">
+                    <div class="w-12 h-12 rounded-lg bg-cyber-400/10 border border-cyber-400/40 flex items-center justify-center text-cyber-400 text-xl font-black orbitron mb-3 group-hover:scale-110 transition-transform">
+                        E
+                    </div>
+                    <h3 class="text-lg font-bold text-white group-hover:text-cyber-400 transition-colors">E (Explore) 探關西</h3>
+                    <p class="text-xs text-cyber-400 font-semibold mt-1">實地搜查</p>
+                    <p class="text-xs text-slate-300 leading-relaxed mt-2">
+                        走出教室走讀老街與分駐所周邊，記錄歷史紋理與生活軌跡，連結在地記憶。
+                    </p>
+                </div>
+
+                <!-- A -->
+                <div class="p-5 rounded-xl cyber-glass border border-cyber-400/30 hover:border-cyber-400 transition-all hover:-translate-y-1 cursor-pointer group" onclick="highlightPhase(3)">
+                    <div class="w-12 h-12 rounded-lg bg-cyber-400/10 border border-cyber-400/40 flex items-center justify-center text-cyber-400 text-xl font-black orbitron mb-3 group-hover:scale-110 transition-transform">
+                        A
+                    </div>
+                    <h3 class="text-lg font-bold text-white group-hover:text-cyber-400 transition-colors">A (Art) 藝關西</h3>
+                    <p class="text-xs text-cyber-400 font-semibold mt-1">統整匯出</p>
+                    <p class="text-xs text-slate-300 leading-relaxed mt-2">
+                        小組深度討論、老街散策觀察，重構視覺記憶與空間密碼之意象。
+                    </p>
+                </div>
+
+                <!-- M -->
+                <div class="p-5 rounded-xl cyber-glass border border-cyber-400/30 hover:border-cyber-400 transition-all hover:-translate-y-1 cursor-pointer group" onclick="highlightPhase(4)">
+                    <div class="w-12 h-12 rounded-lg bg-cyber-400/10 border border-cyber-400/40 flex items-center justify-center text-cyber-400 text-xl font-black orbitron mb-3 group-hover:scale-110 transition-transform">
+                        M
+                    </div>
+                    <h3 class="text-lg font-bold text-white group-hover:text-cyber-400 transition-colors">M (Make) 愛關西</h3>
+                    <p class="text-xs text-cyber-400 font-semibold mt-1">成果展現</p>
+                    <p class="text-xs text-slate-300 leading-relaxed mt-2">
+                        繪製偵探寫生簿、口頭發表並進行文化資產保存反思，成為真正的時代守護者。
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section id="blueprint" class="space-y-6 scroll-mt-20">
+            <div class="flex items-center justify-between border-l-4 border-cyber-400 pl-4">
+                <div>
+                    <h2 class="text-2xl font-bold text-white tracking-wide">建築密碼透視圖 (Architectural Blueprint)</h2>
+                    <p class="text-xs text-cyber-400 orbitron">PHASE 1 : DIGITAL GUIDANCE & ARCHITECTURAL CODES</p>
+                </div>
+            </div>
+
+            <!-- AI Picture Book Guidance Banner -->
+            <div class="p-4 rounded-xl cyber-glass border border-cyber-400/30 flex flex-col md:flex-row items-center justify-between gap-4">
+                <div class="flex items-center space-x-3">
+                    <div class="p-3 bg-cyber-400/10 rounded-lg text-cyber-400">
+                        <i class="fa-solid fa-book-open-reader text-2xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-white text-base">【Phase 1】數位先導：AI 繪本與多媒體解碼</h3>
+                        <p class="text-xs text-slate-300">老師運用 AI 電子繪本與動態影片，解析日式老屋「會呼吸的屋瓦」與「客廳泡茶文化」。</p>
+                    </div>
+                </div>
+                <div class="flex gap-2">
+                    <span class="px-3 py-1 bg-cyber-800 text-cyber-400 text-xs rounded border border-cyber-400/30">會呼吸的屋瓦</span>
+                    <span class="px-3 py-1 bg-cyber-800 text-cyber-400 text-xs rounded border border-cyber-400/30">客廳泡茶文化</span>
+                </div>
+            </div>
+
+            <!-- Blueprint Interactive Blueprint Viewer -->
+            <div class="relative rounded-2xl cyber-glass border border-cyber-400/50 p-6 overflow-hidden min-h-[420px] flex flex-col justify-between">
+                <!-- Blueprint Header info -->
+                <div class="flex justify-between items-start z-10">
+                    <div>
+                        <span class="text-xs orbitron text-cyber-400 tracking-widest">[INTERACTIVE BLUEPRINT SCANNER]</span>
+                        <h3 class="text-xl font-bold text-white">點擊透視點解開建築密碼</h3>
+                    </div>
+                    <div class="text-right">
+                        <span id="activeHotspotTag" class="text-xs orbitron bg-cyber-400/20 text-cyber-400 border border-cyber-400 px-3 py-1 rounded">
+                            SELECT A HOTSPOT
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Simulated Blueprint SVG Diagram -->
+                <div class="relative my-6 w-full h-64 bg-cyber-900/80 rounded-xl border border-cyber-400/30 flex items-center justify-center overflow-hidden">
+                    <!-- SVG Roof / Building Outline Graphics -->
+                    <svg class="w-full h-full max-w-2xl text-cyber-400 opacity-60" viewBox="0 0 800 300" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <!-- Roof triangle (Hafu) -->
+                        <path d="M 150 180 L 400 60 L 650 180 Z" stroke-dasharray="4 4" />
+                        <path d="M 200 180 L 400 80 L 600 180" />
+                        <!-- Roof Tile lines -->
+                        <line x1="250" y1="150" x2="550" y2="150" stroke-opacity="0.3" />
+                        <line x1="300" y1="120" x2="500" y2="120" stroke-opacity="0.3" />
+                        <!-- Pillars and Floor -->
+                        <rect x="180" y="180" width="440" height="90" rx="4" />
+                        <line x1="240" y1="180" x2="240" y2="270" />
+                        <line x1="320" y1="180" x2="320" y2="270" />
+                        <line x1="480" y1="180" x2="480" y2="270" />
+                        <line x1="560" y1="180" x2="560" y2="270" />
+                    </svg>
+
+                    <!-- Hotspot 1: Onigawara (鬼瓦) -->
+                    <button onclick="selectHotspot('oni')" class="absolute top-[18%] left-[50%] -translate-x-1/2 p-2 rounded-full bg-cyber-400 text-cyber-dark font-black text-xs hover:scale-125 transition-transform animate-pulse shadow-[0_0_15px_rgba(0,243,255,1)] flex items-center gap-1">
+                        <i class="fa-solid fa-mask"></i> 鬼瓦
+                    </button>
+
+                    <!-- Hotspot 2: Hafu (破風) -->
+                    <button onclick="selectHotspot('hafu')" class="absolute top-[38%] left-[40%] p-2 rounded-full bg-cyber-400 text-cyber-dark font-black text-xs hover:scale-125 transition-transform animate-pulse shadow-[0_0_15px_rgba(0,243,255,1)] flex items-center gap-1">
+                        <i class="fa-solid fa-vihara"></i> 破風
+                    </button>
+
+                    <!-- Hotspot 3: Nightingale Floor (鶯聲地板) -->
+                    <button onclick="selectHotspot('nightingale')" class="absolute bottom-[20%] left-[62%] p-2 rounded-full bg-cyber-400 text-cyber-dark font-black text-xs hover:scale-125 transition-transform animate-pulse shadow-[0_0_15px_rgba(0,243,255,1)] flex items-center gap-1">
+                        <i class="fa-solid fa-shoe-prints"></i> 鶯聲地板
+                    </button>
+                </div>
+
+                <!-- Hotspot Detail Output Box -->
+                <div id="hotspotDetailBox" class="p-4 rounded-xl bg-cyber-800/80 border border-cyber-400/40">
+                    <h4 class="text-lg font-bold text-cyber-400 flex items-center gap-2" id="hotspotTitle">
+                        <i class="fa-solid fa-circle-info"></i> 請點擊上方圖表熱點以檢視密碼說明
+                    </h4>
+                    <p class="text-sm text-slate-300 mt-1" id="hotspotDesc">
+                        點選「鬼瓦」、「破風」或「鶯聲地板」，探索分駐所結合西洋與日式防衛與權威象徵的建築技術。
+                    </p>
+                </div>
+            </div>
+
+            <!-- Dual Personality Card Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
+                <div class="p-6 rounded-xl cyber-glass border border-cyber-400/40 space-y-3">
+                    <div class="flex items-center space-x-3 text-cyber-400">
+                        <i class="fa-solid fa-gavel text-2xl"></i>
+                        <h3 class="text-xl font-bold text-white">官方的威嚴 (The Authority)</h3>
+                    </div>
+                    <ul class="text-sm space-y-2 text-slate-300">
+                        <li class="flex items-start gap-2"><i class="fa-solid fa-check text-cyber-400 mt-1"></i> <span><strong>建築特徵：</strong>嚴肅的「破風」三角構造設計與正面西洋古典幾何柱飾。</span></li>
+                        <li class="flex items-start gap-2"><i class="fa-solid fa-check text-cyber-400 mt-1"></i> <span><strong>空間功能：</strong>位於地理戰略核心，展現官方權威，維護地方治安與守護邊界。</span></li>
+                    </ul>
+                </div>
+
+                <div class="p-6 rounded-xl cyber-glass border border-emerald-400/40 space-y-3">
+                    <div class="flex items-center space-x-3 text-emerald-400">
+                        <i class="fa-solid fa-house-chimney-window text-2xl"></i>
+                        <h3 class="text-xl font-bold text-white">家的溫潤 (The Home)</h3>
+                    </div>
+                    <ul class="text-sm space-y-2 text-slate-300">
+                        <li class="flex items-start gap-2"><i class="fa-solid fa-check text-emerald-400 mt-1"></i> <span><strong>建築特徵：</strong>後半部傳統日式木造結構、榻榻米房間與長長的「緣側走廊」。</span></li>
+                        <li class="flex items-start gap-2"><i class="fa-solid fa-check text-emerald-400 mt-1"></i> <span><strong>空間功能：</strong>提供駐守警員與家屬日常休憩安心放鬆的質樸歸屬感。</span></li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="investigation" class="space-y-6 scroll-mt-20">
+            <div class="flex items-center justify-between border-l-4 border-cyber-400 pl-4">
+                <div>
+                    <h2 class="text-2xl font-bold text-white tracking-wide">【Phase 2】實地搜查與時空對比</h2>
+                    <p class="text-xs text-cyber-400 orbitron">FIELD INVESTIGATION & TIME-SPACE COMPARISON</p>
+                </div>
+            </div>
+
+            <!-- Field Trip Story Card -->
+            <div class="p-6 rounded-xl cyber-glass border border-cyber-400/30 grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+                <div class="md:col-span-8 space-y-3">
+                    <span class="text-xs bg-cyber-400/20 text-cyber-400 border border-cyber-400/30 px-2.5 py-1 rounded">連結社區歷史軌跡</span>
+                    <h3 class="text-xl font-bold text-white">菜市場穿梭、太和宮走讀與專家引路</h3>
+                    <p class="text-sm text-slate-300 leading-relaxed">
+                        即使天公不作美，學童實地踏查的熱情不減！孩子們從關西菜市場一路穿梭走讀至太和宮。在地學者<strong class="text-cyber-400">巫俊明老師</strong>神救援引經據典，穿透人文巷弄的古樸氣質，讓百年歷史在孩童眼前鮮活重現。
+                    </p>
+                </div>
+                <div class="md:col-span-4 bg-cyber-900/60 p-4 rounded-xl border border-cyber-400/20 text-center space-y-2">
+                    <i class="fa-solid fa-person-walking-luggage text-3xl text-cyber-400"></i>
+                    <h4 class="font-bold text-white text-sm">實地踏查路線</h4>
+                    <p class="text-xs text-slate-400">關西國小 ➔ 傳統菜市場 ➔ 太和宮 ➔ 關西老街 ➔ 關西分駐所</p>
+                </div>
+            </div>
+
+            <!-- Time-Space Comparison Matrix (時空對比矩陣) -->
+            <div class="space-y-4">
+                <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-arrows-split-up-and-left text-cyber-400"></i> 時空對比矩陣 (Time-Space Comparison Matrix)
+                </h3>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Past Matrix -->
+                    <div class="p-6 rounded-xl cyber-glass border border-cyber-400/40 space-y-4">
+                        <div class="flex justify-between items-center border-b border-cyber-400/20 pb-3">
+                            <span class="text-lg font-bold text-cyber-400 flex items-center gap-2">
+                                <i class="fa-solid fa-user-ninja"></i> 過去［日治時期警察大人］
+                            </span>
+                            <span class="text-xs orbitron bg-cyber-400/10 text-cyber-400 px-2.5 py-0.5 rounded">HISTORIC ROLE</span>
+                        </div>
+                        <ul class="space-y-3 text-sm text-slate-300">
+                            <li class="p-3 bg-cyber-900/50 rounded-lg border border-cyber-400/20">
+                                <span class="font-bold text-white block mb-0.5">1. 治安守護：</span>
+                                抓小偷、緝捕罪犯與維護地方安全治安。
+                            </li>
+                            <li class="p-3 bg-cyber-900/50 rounded-lg border border-cyber-400/20">
+                                <span class="font-bold text-white block mb-0.5">2. 行政管理：</span>
+                                戶口調查（查戶口）、管理動態人口登記。
+                            </li>
+                            <li class="p-3 bg-cyber-900/50 rounded-lg border border-cyber-400/20">
+                                <span class="font-bold text-white block mb-0.5">3. 公衛推動：</span>
+                                衛生檢查、管理環境整潔與傳染病防治宣導。
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Present Matrix -->
+                    <div class="p-6 rounded-xl cyber-glass border border-emerald-400/40 space-y-4">
+                        <div class="flex justify-between items-center border-b border-emerald-400/20 pb-3">
+                            <span class="text-lg font-bold text-emerald-400 flex items-center gap-2">
+                                <i class="fa-solid fa-mug-saucer"></i> 現在［古蹟藝術園區］
+                            </span>
+                            <span class="text-xs orbitron bg-emerald-400/10 text-emerald-400 px-2.5 py-0.5 rounded">MODERN ROLE</span>
+                        </div>
+                        <ul class="space-y-3 text-sm text-slate-300">
+                            <li class="p-3 bg-cyber-900/50 rounded-lg border border-emerald-400/20">
+                                <span class="font-bold text-white block mb-0.5">1. 文化傳承：</span>
+                                提供品茶與觀賞展覽的在地文化「客廳」。
+                            </li>
+                            <li class="p-3 bg-cyber-900/50 rounded-lg border border-emerald-400/20">
+                                <span class="font-bold text-white block mb-0.5">2. 空間體驗：</span>
+                                開放給大眾住宿體驗與歷史教育導覽之「古蹟旅館」。
+                            </li>
+                            <li class="p-3 bg-cyber-900/50 rounded-lg border border-emerald-400/20">
+                                <span class="font-bold text-white block mb-0.5">3. 地方創生：</span>
+                                轉化為推動客家文化、老街散策與觀光的新據點。
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="sketchbook" class="space-y-6 scroll-mt-20">
+            <div class="flex items-center justify-between border-l-4 border-cyber-400 pl-4">
+                <div>
+                    <h2 class="text-2xl font-bold text-white tracking-wide">【Phase 3 & 4】偵探寫生簿：童眼中的建築密碼</h2>
+                    <p class="text-xs text-cyber-400 orbitron">STUDENT DETECTIVE SKETCHBOOK GALLERY</p>
+                </div>
+            </div>
+
+            <p class="text-sm text-slate-300">
+                透過細緻的觀察與畫筆，關西國小學生將實地踏查與數位媒材吸收的知識進行重構。這不僅是學習單的完成，更是屬於孩童自己的關西分駐所記憶內化。
+            </p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Drawing 1 -->
+                <div class="p-5 rounded-xl cyber-glass border border-cyber-400/30 space-y-3 group hover:border-cyber-400 transition-all">
+                    <div class="relative overflow-hidden rounded-lg bg-cyber-900 h-64 border border-cyber-400/20 flex items-center justify-center">
+                        <img src="p1.jpg">
+                        <div class="absolute top-3 left-3 bg-cyber-dark/80 px-2.5 py-1 rounded text-xs text-cyber-400 border border-cyber-400/30">
+                            寫生作品 #01
+                        </div>
+                    </div>
+                    <h3 class="font-bold text-white text-base">正門與破風結構觀察繪圖</h3>
+                    <p class="text-xs text-slate-400">著重描繪分駐所門廊三角破風與入口左右對稱之西洋式幾何柱飾。</p>
+                </div>
+
+                <!-- Drawing 2 -->
+                <div class="p-5 rounded-xl cyber-glass border border-cyber-400/30 space-y-3 group hover:border-cyber-400 transition-all">
+                    <div class="relative overflow-hidden rounded-lg bg-cyber-900 h-64 border border-cyber-400/20 flex items-center justify-center">
+                        <img src="p2.jpg">
+                        <div class="absolute top-3 left-3 bg-cyber-dark/80 px-2.5 py-1 rounded text-xs text-cyber-400 border border-cyber-400/30">
+                            寫生作品 #02
+                        </div>
+                    </div>
+                    <h3 class="font-bold text-white text-base">所長宿舍與日式黑瓦細節繪製</h3>
+                    <p class="text-xs text-slate-400">描繪後方日式木造宿舍群、緣側木廊與屋頂鬼瓦等守護象徵細節。</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <div id="quizModal" class="fixed inset-0 z-50 bg-cyber-dark/80 backdrop-blur-md hidden items-center justify-center p-4">
+        <div class="cyber-glass border border-cyber-400 max-w-xl w-full rounded-2xl p-6 relative space-y-4">
+            <button onclick="closeQuiz()" class="absolute top-4 right-4 text-slate-400 hover:text-white p-2">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+
+            <div class="flex items-center space-x-2 text-cyber-400">
+                <i class="fa-solid fa-graduation-cap text-xl"></i>
+                <h3 class="font-bold text-white text-lg">關西分駐所時光解密小測驗</h3>
+            </div>
+
+            <div id="quizContent" class="space-y-4">
+                <!-- Dynamic Quiz Question -->
+                <div class="p-4 bg-cyber-900/80 rounded-xl border border-cyber-400/30">
+                    <span class="text-xs text-cyber-400 orbitron">[QUESTION 1/3]</span>
+                    <p class="text-sm font-bold text-white mt-1" id="quizQuestionText">
+                        關西分駐所屬於哪一種建築樣式？
+                    </p>
+                </div>
+
+                <div class="space-y-2" id="quizOptionsContainer">
+                    <!-- Options populated via JS -->
+                </div>
+            </div>
+
+            <div id="quizResult" class="hidden text-center space-y-4 py-4">
+                <i class="fa-solid fa-award text-5xl text-cyber-400 animate-pulse"></i>
+                <h4 class="text-xl font-bold text-white">恭喜獲得「關西古蹟時代守護者」勳章！</h4>
+                <p class="text-xs text-slate-300">您已完全解開關西分駐所的前世今生與建築密碼。</p>
+                <button onclick="closeQuiz()" class="px-5 py-2 bg-cyber-400 text-cyber-dark font-bold text-xs rounded-lg">完成領取</button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="cyber-glass border-t border-cyber-400/20 py-8 mt-12 relative z-10">
+        <div class="max-w-7xl mx-auto px-4 text-center space-y-2">
+            <p class="text-xs text-slate-400">
+                新竹縣關西國小三年級校本建築傳說課程 ── 時光偵探事務所
+            </p>
+            <p class="text-xs text-cyber-600 orbitron">
+                © 2026 KUANHSI ELEMENTARY SCHOOL | LOCAL CULTURAL HERITAGE PROJECT
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // Global Audio Context for SFX
+        let audioCtx = null;
+        let sfxEnabled = true;
+
+        function playBeep(freq = 600, duration = 0.08) {
+            if (!sfxEnabled) return;
+            try {
+                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + duration);
+            } catch (e) {}
+        }
+
+        function toggleAudioSFX() {
+            sfxEnabled = !sfxEnabled;
+            const btn = document.getElementById('sfxBtn');
+            btn.innerHTML = `<i class="fa-solid fa-volume-${sfxEnabled ? 'high' : 'xmark'}"></i><span class="hidden sm:inline">音效 [${sfxEnabled ? '開' : '關'}]</span>`;
+            if (sfxEnabled) playBeep(800, 0.1);
+        }
+
+        // Blueprint Hotspot Information Data
+        const hotspotsData = {
+            oni: {
+                tag: 'HOTSPOT: ONIGAWARA (鬼瓦)',
+                title: '鬼瓦 (Onigawara) - 屋脊端的空間守護',
+                desc: '位於屋脊兩端的鬼臉或紋飾屋瓦，傳統上具備威嚇避邪與空間守護之功能，是日式官署屋頂顯著的特徵之一。'
+            },
+            hafu: {
+                tag: 'HOTSPOT: HAFU (破風)',
+                title: '破風 (Hafu) - 彰顯官署威儀的構造',
+                desc: '辦公廳正上方屋頂之嚴肅三角形幾何構造，結合入口前方西洋幾何柱飾，彰顯日治時期官署治安維護者的威嚴意象。'
+            },
+            nightingale: {
+                tag: 'HOTSPOT: NIGHTINGALE FLOOR (鶯聲地板)',
+                title: '鶯聲地板 (Nightingale Floor) - 走廊防盜機關',
+                desc: '緣側走廊下方特殊的防盜木造結構，當人員行走踩踏時會牽動底層金屬發出聲響，防範刺客潛入。'
+            }
+        };
+
+        function selectHotspot(key) {
+            playBeep(900, 0.12);
+            const data = hotspotsData[key];
+            if (!data) return;
+            document.getElementById('activeHotspotTag').textContent = data.tag;
+            document.getElementById('hotspotTitle').innerHTML = `<i class="fa-solid fa-shield-halved"></i> ${data.title}`;
+            document.getElementById('hotspotDesc').textContent = data.desc;
+        }
+
+        function highlightPhase(phaseNum) {
+            playBeep(500, 0.08);
+            const targets = {
+                1: '#blueprint',
+                2: '#investigation',
+                3: '#sketchbook',
+                4: '#sketchbook'
+            };
+            const el = document.querySelector(targets[phaseNum]);
+            if (el) el.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Interactive Quiz Data
+        const quizQuestions = [
+            {
+                q: "關西分駐所主要融合了西洋幾何柱飾與日式黑瓦，屬於哪種建築樣式？",
+                options: ["唐破風樣式", "興亞樣式", "巴洛克樣式", "哥德樣式"],
+                answer: 1
+            },
+            {
+                q: "走廊下方的特殊防盜機關，行走踩踏時會發出聲響的是？",
+                options: ["鬼瓦", "破風", "鶯聲地板", "榻榻米"],
+                answer: 2
+            },
+            {
+                q: "過去日治時期警察大人的主要職責不包含下列哪一項？",
+                options: ["治安抓小偷", "經營私人咖啡廳", "查戶口管理", "推動環境衛生"],
+                answer: 1
+            }
+        ];
+
+        let currentQ = 0;
+
+
+        /* === 日出片頭：星空產生 + 逐格上色 === */
+        function buildIntroStars() {
+            const box = document.getElementById('introStars');
+            if (!box || box.dataset.ready) return;
+            let html = '';
+            for (let i = 0; i < 46; i++) {
+                const s = (Math.random() * 1.8 + 0.8).toFixed(2);
+                html += `<span class="intro-star" style="left:${(Math.random()*100).toFixed(2)}%;top:${(Math.random()*88).toFixed(2)}%;width:${s}px;height:${s}px;animation-delay:${(Math.random()*3).toFixed(2)}s"></span>`;
+            }
+            box.innerHTML = html;
+            box.dataset.ready = '1';
+        }
+
+        const clamp01 = v => v < 0 ? 0 : v > 1 ? 1 : v;
+        const smooth  = t => { t = clamp01(t); return t * t * (3 - 2 * t); };
+        const bell    = (t, c, w) => Math.exp(-Math.pow((t - c) / w, 2));
+        function mixHex(a, b, t) {
+            const p = h => [parseInt(h.slice(1,3),16), parseInt(h.slice(3,5),16), parseInt(h.slice(5,7),16)];
+            const [r1,g1,b1] = p(a), [r2,g2,b2] = p(b);
+            const c = (x,y) => Math.round(x + (y - x) * t);
+            return `rgb(${c(r1,r2)}, ${c(g1,g2)}, ${c(b1,b2)})`;
+        }
+
+        // p = 0 → 1（片頭進度）
+        function renderSunriseFrame(p) {
+            const overlay = document.getElementById('introOverlay');
+            if (!overlay) return;
+
+            const rise = smooth((p - 0.04) / 0.74);   // 太陽升起
+            const day  = smooth((p - 0.08) / 0.86);   // 整體天亮
+
+            // 照片：由極暗、低彩度 → 明亮飽和，並緩緩推近
+            const photo = document.getElementById('introPhoto');
+            if (photo) {
+                photo.style.filter =
+                    `brightness(${(0.15 + 0.95 * day).toFixed(3)}) ` +
+                    `contrast(${(1.30 - 0.26 * day).toFixed(3)}) ` +
+                    `saturate(${(0.15 + 1.05 * day).toFixed(3)})`;
+                photo.style.transform = `scale(${(1.14 - 0.14 * day).toFixed(4)})`;
+            }
+
+            // 夜色退去
+            const night = document.getElementById('introNight');
+            if (night) night.style.opacity = (0.84 * (1 - smooth(p / 0.80))).toFixed(3);
+
+            // 星星在天亮前隱去
+            const stars = document.getElementById('introStars');
+            if (stars) stars.style.opacity = clamp01(1 - p / 0.38).toFixed(3);
+
+            // 太陽：自屋脊後方升起，光暈同步增強
+            const sun = document.getElementById('introSun');
+            if (sun) {
+                sun.style.top = `${(116 - 86 * rise).toFixed(2)}%`;
+                sun.style.opacity = clamp01(rise * 3).toFixed(3);
+                sun.style.boxShadow =
+                    `0 0 ${(30 + 130 * rise).toFixed(0)}px ${(8 + 46 * rise).toFixed(0)}px rgba(255,178,80,${(0.30 + 0.35 * rise).toFixed(2)})`;
+            }
+
+            // 陽光灑落
+            const glow = document.getElementById('introGlow');
+            if (glow) glow.style.opacity = (rise * 0.72).toFixed(3);
+
+            // 光束（中段最明顯）
+            const rays = document.getElementById('introRays');
+            if (rays) rays.style.opacity = (bell(p, 0.58, 0.26) * 0.75 * rise).toFixed(3);
+
+            // 朝霞暖色（中段最濃，天亮後轉淡）
+            const dawn = document.getElementById('introDawn');
+            if (dawn) dawn.style.opacity = (bell(p, 0.52, 0.30) * 0.60).toFixed(3);
+
+            // 破曉閃光
+            const bloom = document.getElementById('introBloom');
+            if (bloom) bloom.style.opacity = (bell(p, 0.93, 0.055) * 0.55).toFixed(3);
+
+            // 介面主色：夜的青藍 → 晨的暖金
+            const acc = mixHex('#00f3ff', '#ffc46b', smooth((p - 0.25) / 0.55));
+            overlay.style.setProperty('--acc', acc);
+            const card = document.getElementById('introCard');
+            if (card) card.style.borderColor = acc.replace('rgb(', 'rgba(').replace(')', ', 0.45)');
+            const iconWrap = document.getElementById('introIconWrap');
+            if (iconWrap) iconWrap.style.boxShadow = `0 0 25px ${acc.replace('rgb(', 'rgba(').replace(')', ', 0.5)')}`;
+
+            // 最後 10%：資訊卡上浮淡出，把畫面讓給照片
+            if (card) {
+                const fade = 1 - smooth((p - 0.90) / 0.10);
+                card.style.opacity = fade.toFixed(3);
+                card.style.transform = `translateY(${(-16 * (1 - fade)).toFixed(1)}px) scale(${(1 - 0.03 * (1 - fade)).toFixed(4)})`;
+                card.style.pointerEvents = fade < 0.05 ? 'none' : '';
+            }
+        }
+
+        // 日出跑完 → 收掉資訊卡與光效，靜賞照片全貌
+        function startIntroReveal() {
+            const overlay = document.getElementById('introOverlay');
+            if (!overlay) return;
+
+            renderSunriseFrame(1);
+            overlay.classList.add('intro-revealing');
+
+            const card = document.getElementById('introCard');
+            if (card) { card.style.opacity = '0'; card.style.pointerEvents = 'none'; }
+
+            const hint = document.getElementById('introHint');
+            if (hint) setTimeout(() => { hint.style.opacity = '1'; }, 1200);
+
+            clearTimeout(introHoldTimer);
+            introHoldTimer = setTimeout(dismissIntro, INTRO_HOLD_MS);
+        }
+
+        // 12-Second Intro Animation Controller Logic
+        const INTRO_DURATION_MS = 12000;   // 日出動畫長度
+        const INTRO_HOLD_MS     = 4500;    // 日出結束後，資訊卡消失、靜賞照片全貌的時間
+        let introHoldTimer = null;
+        let introDismissed = false;
+        let introInterval = null;
+        let introStartTime = null;
+        let currentIntroPhase = -1;
+
+        const introPhases = [
+            {
+                startPct: 0,
+                icon: "fa-moon",
+                title: "天未亮：時光偵探事務所待命",
+                subtitle: "[PHASE 1] PRE-DAWN · SYSTEM STANDBY",
+                log: "加載關西國小校本建築傳說課程資料庫...",
+                freq: 320
+            },
+            {
+                startPct: 25,
+                icon: "fa-cloud-sun",
+                title: "第一道光：掃描古蹟檔案",
+                subtitle: "[PHASE 2] FIRST LIGHT · SCANNING ARCHIVE #1920",
+                log: "檢索日治大正九年（1920）興亞樣式與黑瓦構造...",
+                freq: 480
+            },
+            {
+                startPct: 50,
+                icon: "fa-sun",
+                title: "晨光灑落：載入 T.E.A.M. 四大矩陣",
+                subtitle: "[PHASE 3] SUNRISE · LOADING T.E.A.M. MODULES",
+                log: "遊關西、探關西、藝關西、愛關西 模組載入完畢...",
+                freq: 660
+            },
+            {
+                startPct: 75,
+                icon: "fa-shield-halved",
+                title: "守護與守戶：偵探任務即將展開",
+                subtitle: "[PHASE 4] DAYBREAK · DECRYPTING ARCHITECTURAL CODES",
+                log: "建築密碼：鬼瓦、破風、鶯聲地板 準備透視...",
+                freq: 840
+            },
+            {
+                startPct: 96,
+                icon: "fa-circle-check",
+                title: "天光大亮，歡迎進入！",
+                subtitle: "[SYSTEM READY] ACCESS GRANTED",
+                log: "解碼關西分駐所前世今生...",
+                freq: 1050
+            }
+        ];
+
+        function startIntroAnimation() {
+            const overlay = document.getElementById('introOverlay');
+            if (!overlay) return;
+
+            overlay.style.display = 'flex';
+            overlay.classList.remove('opacity-0', 'pointer-events-none');
+
+            // 重設靜賞階段的狀態（重播時要能回到深夜）
+            clearTimeout(introHoldTimer);
+            introDismissed = false;
+            overlay.classList.remove('intro-revealing');
+            overlay.style.cursor = 'pointer';
+            const cardEl = document.getElementById('introCard');
+            if (cardEl) { cardEl.style.opacity = '1'; cardEl.style.transform = 'none'; cardEl.style.pointerEvents = ''; }
+            const hintEl = document.getElementById('introHint');
+            if (hintEl) hintEl.style.opacity = '0';
+
+            // 片頭任何時候點擊畫面都能跳過
+            if (!overlay.dataset.clickBound) {
+                overlay.addEventListener('click', skipIntro);
+                overlay.dataset.clickBound = '1';
+            }
+
+            buildIntroStars();
+            renderSunriseFrame(0);   // 從最深的夜開始
+
+            introStartTime = Date.now();
+            currentIntroPhase = -1;
+
+            if (introInterval) clearInterval(introInterval);
+
+            introInterval = setInterval(() => {
+                const elapsed = Date.now() - introStartTime;
+                const progressPct = Math.min(100, (elapsed / INTRO_DURATION_MS) * 100);
+                const remainingSec = Math.max(0, ((INTRO_DURATION_MS - elapsed) / 1000)).toFixed(1);
+
+                // Update Progress UI
+                document.getElementById('introProgressBar').style.width = `${progressPct}%`;
+                document.getElementById('introPercent').textContent = `${Math.floor(progressPct)}%`;
+                document.getElementById('introTimerText').textContent = `${remainingSec}s`;
+
+                // 依進度渲染日出（照片由暗而亮、太陽升起）
+                renderSunriseFrame(progressPct / 100);
+
+                // Phase logic update
+                for (let i = introPhases.length - 1; i >= 0; i--) {
+                    if (progressPct >= introPhases[i].startPct) {
+                        if (currentIntroPhase !== i) {
+                            currentIntroPhase = i;
+                            const p = introPhases[i];
+                            document.getElementById('introIcon').className = `fa-solid ${p.icon} transition-all duration-300`;
+                            document.getElementById('introTitle').textContent = p.title;
+                            document.getElementById('introSubtitle').textContent = p.subtitle;
+                            document.getElementById('introLogText').textContent = p.log;
+                            playBeep(p.freq, 0.15);
+                        }
+                        break;
+                    }
+                }
+
+                if (elapsed >= INTRO_DURATION_MS) {
+                    clearInterval(introInterval);
+                    startIntroReveal();
+                }
+            }, 80);
+        }
+
+        function dismissIntro() {
+            if (introDismissed) return;          // 防止重複觸發（按鈕 + 畫面點擊會同時冒泡）
+            introDismissed = true;
+
+            if (introInterval) clearInterval(introInterval);
+            clearTimeout(introHoldTimer);
+
+            const overlay = document.getElementById('introOverlay');
+            if (!overlay) return;
+
+            playBeep(1400, 0.25);
+            overlay.classList.add('opacity-0', 'pointer-events-none');
+            overlay.style.cursor = '';
+            setTimeout(() => {
+                overlay.style.display = 'none';
+            }, 1000);
+        }
+
+        function skipIntro() {
+            dismissIntro();
+        }
+
+        function replayIntro() {
+            startIntroAnimation();
+        }
+
+        function openQuiz() {
+            playBeep(700, 0.1);
+            currentQ = 0;
+            document.getElementById('quizModal').classList.remove('hidden');
+            document.getElementById('quizModal').classList.add('flex');
+            document.getElementById('quizContent').classList.remove('hidden');
+            document.getElementById('quizResult').classList.add('hidden');
+            renderQuestion();
+        }
+
+        function closeQuiz() {
+            document.getElementById('quizModal').classList.add('hidden');
+            document.getElementById('quizModal').classList.remove('flex');
+        }
+
+        function renderQuestion() {
+            const data = quizQuestions[currentQ];
+            document.getElementById('quizQuestionText').textContent = data.q;
+            const container = document.getElementById('quizOptionsContainer');
+            container.innerHTML = '';
+            
+            data.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = "w-full text-left p-3 rounded-lg bg-cyber-900 border border-cyber-400/30 hover:border-cyber-400 text-sm text-slate-200 transition-all flex items-center justify-between";
+                btn.innerHTML = `<span>${idx + 1}. ${opt}</span> <i class="fa-solid fa-chevron-right text-xs text-cyber-400"></i>`;
+                btn.onclick = () => answerQuestion(idx);
+                container.appendChild(btn);
+            });
+        }
+
+        function answerQuestion(idx) {
+            playBeep(1000, 0.1);
+            if (idx === quizQuestions[currentQ].answer) {
+                currentQ++;
+                if (currentQ < quizQuestions.length) {
+                    renderQuestion();
+                } else {
+                    document.getElementById('quizContent').classList.add('hidden');
+                    document.getElementById('quizResult').classList.remove('hidden');
+                }
+            } else {
+                alert('答案不正確，請再試一次！');
+            }
+        }
+
+        // Animated Background Canvas Particles
+        window.onload = function() {
+            const canvas = document.getElementById('bgCanvas');
+            const ctx = canvas.getContext('2d');
+
+            function resize() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            resize();
+            window.addEventListener('resize', resize);
+
+            const particles = Array.from({ length: 45 }, () => ({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                radius: Math.random() * 1.5 + 0.5,
+                vx: (Math.random() - 0.5) * 0.4,
+                vy: (Math.random() - 0.5) * 0.4,
+                alpha: Math.random() * 0.5 + 0.2
+            }));
+
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                particles.forEach(p => {
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    if (p.x < 0) p.x = canvas.width;
+                    if (p.x > canvas.width) p.x = 0;
+                    if (p.y < 0) p.y = canvas.height;
+                    if (p.y > canvas.height) p.y = 0;
+
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(0, 243, 255, ${p.alpha})`;
+                    ctx.fill();
+                });
+                requestAnimationFrame(animate);
+            }
+            animate();
+
+            // Auto-start intro on window load
+        startIntroAnimation();
+    };
+
+    let currentSlide = 0;
+    const totalSlides = 5;
+    const slideIntervalDuration = 5000; // 5 seconds per slide
+    let slideTimer = null;
+    let slideProgressTimer = null;
+    let slideProgressStartTime = 0;
+    let isSlideAutoPlaying = true;
+
+    function updateSlidesUI() {
+        const slides = document.querySelectorAll('.slide-item');
+        const dots = document.querySelectorAll('.slide-dot');
+        const thumbs = document.querySelectorAll('.slide-thumb');
+
+        slides.forEach((slide, index) => {
+            if (index === currentSlide) {
+                slide.classList.remove('opacity-0', 'pointer-events-none');
+                slide.classList.add('opacity-100');
+            } else {
+                slide.classList.remove('opacity-100');
+                slide.classList.add('opacity-0', 'pointer-events-none');
+            }
+        });
+
+        dots.forEach((dot, index) => {
+            if (index === currentSlide) {
+                dot.className = "slide-dot w-3 h-3 rounded-full bg-cyber-400 transition-all scale-125 shadow-[0_0_8px_rgba(0,243,255,0.8)]";
+            } else {
+                dot.className = "slide-dot w-3 h-3 rounded-full bg-slate-600 hover:bg-cyber-400/60 transition-all";
+            }
+        });
+
+        thumbs.forEach((thumb, index) => {
+            if (index === currentSlide) {
+                thumb.className = "slide-thumb w-12 h-9 object-cover rounded border-2 border-cyber-400 cursor-pointer opacity-100 transition-all";
+            } else {
+                thumb.className = "slide-thumb w-12 h-9 object-cover rounded border border-cyber-400/30 hover:border-cyber-400 cursor-pointer opacity-50 hover:opacity-100 transition-all";
+            }
+        });
+
+        resetSlideProgressBar();
+    }
+
+    function resetSlideProgressBar() {
+        const bar = document.getElementById('slideProgressBar');
+        if (!bar) return;
+        
+        if (slideProgressTimer) clearInterval(slideProgressTimer);
+        bar.style.width = '0%';
+
+        if (!isSlideAutoPlaying) return;
+
+        slideProgressStartTime = Date.now();
+        slideProgressTimer = setInterval(() => {
+            const elapsed = Date.now() - slideProgressStartTime;
+            const pct = Math.min(100, (elapsed / slideIntervalDuration) * 100);
+            bar.style.width = `${pct}%`;
+
+            if (elapsed >= slideIntervalDuration) {
+                clearInterval(slideProgressTimer);
+            }
+        }, 50);
+    }
+
+    function goToSlide(index) {
+        playBeep(750, 0.08);
+        currentSlide = (index + totalSlides) % totalSlides;
+        updateSlidesUI();
+        restartSlideAutoPlayTimer();
+    }
+
+    function nextSlide() {
+        goToSlide(currentSlide + 1);
+    }
+
+    function prevSlide() {
+        goToSlide(currentSlide - 1);
+    }
+
+    function restartSlideAutoPlayTimer() {
+        if (slideTimer) clearInterval(slideTimer);
+        if (isSlideAutoPlaying) {
+            slideTimer = setInterval(() => {
+                currentSlide = (currentSlide + 1) % totalSlides;
+                updateSlidesUI();
+            }, slideIntervalDuration);
+        }
+    }
+
+    function toggleSlideAutoPlay() {
+        isSlideAutoPlaying = !isSlideAutoPlaying;
+        playBeep(900, 0.1);
+
+        const btnIcon = document.getElementById('slideAutoIcon');
+        const btnText = document.getElementById('slideAutoText');
+
+        if (isSlideAutoPlaying) {
+            btnIcon.className = "fa-solid fa-pause";
+            btnText.textContent = "自動播放中";
+            restartSlideAutoPlayTimer();
+            resetSlideProgressBar();
+        } else {
+            btnIcon.className = "fa-solid fa-play";
+            btnText.textContent = "已暫停";
+            if (slideTimer) clearInterval(slideTimer);
+            if (slideProgressTimer) clearInterval(slideProgressTimer);
+            document.getElementById('slideProgressBar').style.width = '0%';
+        }
+    }
+
+    // Initialize slideshow auto play
+    restartSlideAutoPlayTimer();
+    resetSlideProgressBar();
+    </script>
+</body>
+</html>
