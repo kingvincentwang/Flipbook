@@ -282,6 +282,40 @@
                 </button>
             </div>
         </div>
+
+        <!-- 片頭內的靜音鈕：遮罩期間唯一能關音效的入口 -->
+        <button id="introSfxBtn" onclick="toggleAudioSFX(event)" aria-label="關閉音效"
+                class="absolute top-4 right-4 z-30 w-10 h-10 rounded-full flex items-center justify-center cursor-pointer transition-all hover:scale-105 focus:outline-none focus-visible:ring-4 focus-visible:ring-cyber-400/60"
+                style="background:rgba(2,6,15,.6);border:1px solid rgba(255,255,255,.35);color:#fff;backdrop-filter:blur(6px)">
+        </button>
+
+        <!-- 片頭啟動閘門：點擊後才播放日出動畫 -->
+        <div id="introGate" class="absolute inset-0 z-20 flex flex-col items-center justify-center gap-6 p-6 transition-opacity duration-500"
+             style="background:radial-gradient(ellipse 80% 60% at 50% 45%,rgba(2,6,15,.55) 0%,rgba(2,6,15,.88) 70%,rgba(2,6,15,.96) 100%);">
+
+            <button onclick="beginIntroFromGate(event)" aria-label="播放日出片頭"
+                    class="group relative w-24 h-24 sm:w-28 sm:h-28 rounded-full flex items-center justify-center cursor-pointer transition-transform hover:scale-105 focus:outline-none focus-visible:ring-4 focus-visible:ring-cyber-400/60"
+                    style="background:rgba(0,243,255,.08);border:1px solid rgba(0,243,255,.7);box-shadow:0 0 40px rgba(0,243,255,.35),inset 0 0 25px rgba(0,243,255,.15)">
+                <span class="absolute inset-0 rounded-full border border-cyber-400/50 animate-ping" style="animation-duration:2.6s"></span>
+                <svg viewBox="0 0 24 24" class="w-9 h-9 sm:w-10 sm:h-10 translate-x-0.5" fill="currentColor" style="color:#7fe9f5">
+                    <path d="M8 5.14v13.72a1 1 0 0 0 1.52.86l11.14-6.86a1 1 0 0 0 0-1.72L9.52 4.28A1 1 0 0 0 8 5.14z"/>
+                </svg>
+            </button>
+
+            <div class="text-center space-y-2">
+                <p class="text-lg sm:text-xl font-bold text-white tracking-wide" style="text-shadow:0 2px 16px rgba(0,0,0,.9)">
+                    點擊開始
+                </p>
+                <p class="text-[11px] sm:text-xs orbitron tracking-widest text-cyber-400/90">
+                    18 SEC SUNRISE INTRO · 關西分駐所
+                </p>
+            </div>
+
+            <button onclick="skipIntroFromGate(event)"
+                    class="text-xs text-slate-300/70 hover:text-white underline underline-offset-4 decoration-slate-500 hover:decoration-white transition-colors cursor-pointer">
+                直接進入網站
+            </button>
+        </div>
     </div>
 
     <div class="pointer-events-none fixed inset-0 z-50 overflow-hidden opacity-20">
@@ -505,6 +539,8 @@
                     </div>
 
                 </div>
+
+
 
                 <!-- Navigation Arrow Buttons -->
                 <button onclick="prevSlide()" class="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full cyber-glass border border-cyber-400/50 hover:border-cyber-400 text-cyber-400 hover:text-white flex items-center justify-center transition-all hover:scale-110 shadow-lg cursor-pointer">
@@ -881,34 +917,126 @@
     </footer>
 
     <script>
-        // Global Audio Context for SFX
-        let audioCtx = null;
+        /* ============================================================
+           音效：MP3（音效檔與本 HTML 放同一層）
+           需要三個檔案：sfx-click.mp3 / sfx-confirm.mp3 / sfx-enter.mp3
+           只有一個音效檔的話，三行填同一個檔名即可
+           ============================================================ */
+        const SFX_SRC = {
+            click:   'policebg1.mp3',    // 一般點擊、輪播切換、片頭階段推進
+            //confirm: 'policebg3.mp3',  // 作答、開啟測驗、切換自動播放
+            //enter:   'policebg3.mp3'     // 片頭結束、正式進場
+        };
+        const SFX_VOLUME  = 0.45;   // 音量 0 ~ 1
+        const SFX_MAX_SEC = 12;     // 每個音檔最長只播這麼久，之後自動淡出
+        const SFX_OVERLAP = true;  // false = 播新音效前先停掉舊的（長音檔建議關閉）
         let sfxEnabled = true;
 
-        function playBeep(freq = 600, duration = 0.08) {
-            if (!sfxEnabled) return;
-            try {
-                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                if (audioCtx.state === 'suspended') audioCtx.resume();
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-                gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-                osc.start();
-                osc.stop(audioCtx.currentTime + duration);
-            } catch (e) {}
+        // 先載入備用，播放時複製一份
+        const sfxPool = {};
+        for (const [key, src] of Object.entries(SFX_SRC)) {
+            const a = new Audio(src);
+            a.preload = 'auto';
+            a.volume = SFX_VOLUME;
+            a.addEventListener('error', () => console.warn(`[音效載入失敗] ${src} — 請確認與 HTML 放在同一層`));
+            sfxPool[key] = a;
         }
 
-        function toggleAudioSFX() {
-            sfxEnabled = !sfxEnabled;
-            const btn = document.getElementById('sfxBtn');
-            btn.innerHTML = `<i class="fa-solid fa-volume-${sfxEnabled ? 'high' : 'xmark'}"></i><span class="hidden sm:inline">音效 [${sfxEnabled ? '開' : '關'}]</span>`;
-            if (sfxEnabled) playBeep(800, 0.1);
+        let activeSfx = [];   // 目前正在播放的音效，關閉音效時要能全部停掉
+
+        function stopOneSfx(a) {
+            clearTimeout(a._capTimer);
+            clearInterval(a._fadeTimer);
+            try { a.pause(); a.currentTime = 0; } catch (e) {}
+            activeSfx = activeSfx.filter(x => x !== a);
         }
+
+        function fadeOutSfx(a, ms = 350) {
+            clearInterval(a._fadeTimer);
+            const step = 40;
+            const dec = a.volume / Math.max(1, ms / step);
+            a._fadeTimer = setInterval(() => {
+                a.volume = Math.max(0, a.volume - dec);
+                if (a.volume <= 0.005) stopOneSfx(a);
+            }, step);
+        }
+
+        function stopAllSfx(fade = true) {
+            [...activeSfx].forEach(a => fade ? fadeOutSfx(a, 250) : stopOneSfx(a));
+        }
+
+        function playSfx(key) {
+            if (!sfxEnabled) return;
+            const base = sfxPool[key] || sfxPool.click;
+            if (!base) return;
+
+            if (!SFX_OVERLAP) stopAllSfx(false);   // 不疊播，先收掉前一個
+
+            const a = base.cloneNode();
+            a.volume = SFX_VOLUME;
+            a.addEventListener('ended', () => stopOneSfx(a), { once: true });
+
+            // 播到上限就淡出，避免長音檔一直響
+            a._capTimer = setTimeout(() => fadeOutSfx(a, 500), SFX_MAX_SEC * 1000);
+
+            activeSfx.push(a);
+            a.play().catch(() => stopOneSfx(a));   // 使用者還沒互動前瀏覽器會擋
+        }
+
+        // 保留原本的 playBeep(頻率, 長度) 介面，依頻率挑對應的 mp3
+        // → 頁面其他 10 處呼叫完全不用改；第二個參數現在沒作用，長度由 mp3 決定
+        function playBeep(freq = 600, duration = 0) {
+            if (freq >= 1200)      playSfx('enter');
+            else if (freq >= 950)  playSfx('confirm');
+            else                   playSfx('click');
+        }
+
+        // 音效按鈕圖示用內嵌 SVG，Font Awesome 掛掉也不會變空白方框
+        function sfxIconSvg(on) {
+            const wave = on
+                ? '<path d="M16 9a4 4 0 0 1 0 6" /><path d="M18.5 6.5a7.5 7.5 0 0 1 0 11" />'
+                : '<path d="M17 10l4 4" /><path d="M21 10l-4 4" />';
+            return `<svg viewBox="0 0 24 24" class="w-4 h-4 shrink-0" fill="none" stroke="currentColor"
+                        stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+                        <path d="M4 9.5h3L12 6v12L7 14.5H4z" fill="currentColor" stroke="none"/>${wave}
+                    </svg>`;
+        }
+
+        function updateSfxButtons() {
+            const label = sfxEnabled ? '開' : '關';
+            const head = document.getElementById('sfxBtn');
+            if (head) head.innerHTML = `${sfxIconSvg(sfxEnabled)}<span class="hidden sm:inline">音效 [${label}]</span>`;
+
+            const intro = document.getElementById('introSfxBtn');
+            if (intro) {
+                intro.innerHTML = sfxIconSvg(sfxEnabled);
+                intro.setAttribute('aria-label', sfxEnabled ? '關閉音效' : '開啟音效');
+                intro.style.opacity = sfxEnabled ? '1' : '0.55';
+            }
+        }
+
+        // ev 參數是給片頭那顆按鈕用的：擋掉冒泡，才不會順手跳過片頭
+        function toggleAudioSFX(ev) {
+            if (ev) ev.stopPropagation();
+            sfxEnabled = !sfxEnabled;
+            if (!sfxEnabled) stopAllSfx();   // 關閉時立刻停掉正在播的，不必等它播完
+            updateSfxButtons();
+            if (sfxEnabled) playSfx('click');
+        }
+
+        // 瀏覽器規定：使用者互動前不得自動播放音訊，第一次點擊或按鍵時靜音解鎖
+        function unlockSfx() {
+            Object.values(sfxPool).forEach(a => {
+                const v = a.volume;
+                a.volume = 0;
+                a.play()
+                    .then(() => { a.pause(); a.currentTime = 0; a.volume = v; })
+                    .catch(() => { a.volume = v; });
+            });
+        }
+        document.addEventListener('pointerdown', unlockSfx, { once: true });
+        document.addEventListener('keydown', unlockSfx, { once: true });
+        document.addEventListener('DOMContentLoaded', updateSfxButtons);
 
         // Blueprint Hotspot Information Data
         const hotspotsData = {
@@ -1223,6 +1351,7 @@
         }
 
         function replayIntro() {
+            hideIntroGate();              // 重播時不再出現閘門，音效早已解鎖
             startIntroAnimation();
         }
 
@@ -1311,9 +1440,54 @@
             }
             animate();
 
-            // Auto-start intro on window load
-        startIntroAnimation();
+            // 片頭改為點擊啟動：載入時只把畫面停在深夜狀態，等使用者按下開始
+        prepareIntroGate();
     };
+
+    // 顯示起始畫面，畫面停在最深的夜
+    function prepareIntroGate() {
+        const overlay = document.getElementById('introOverlay');
+        const gate = document.getElementById('introGate');
+        if (!overlay) return;
+
+        overlay.style.display = 'flex';
+        overlay.classList.remove('opacity-0', 'pointer-events-none', 'intro-revealing');
+        introDismissed = false;
+
+        buildIntroStars();
+        renderSunriseFrame(0);
+
+        const card = document.getElementById('introCard');
+        if (card) { card.style.opacity = '0'; card.style.pointerEvents = 'none'; }
+
+        if (gate) { gate.style.display = 'flex'; gate.style.opacity = '1'; gate.style.pointerEvents = ''; }
+    }
+
+    // 按下播放鍵：解鎖音效 → 收起閘門 → 開始日出
+    function beginIntroFromGate(ev) {
+        if (ev) ev.stopPropagation();   // 避免這一下點擊冒泡到「點畫面跳過」
+        unlockSfx();
+        hideIntroGate();
+        const card = document.getElementById('introCard');
+        if (card) { card.style.opacity = '1'; card.style.pointerEvents = ''; }
+        startIntroAnimation();
+    }
+
+    // 直接進入網站
+    function skipIntroFromGate(ev) {
+        if (ev) ev.stopPropagation();
+        unlockSfx();
+        hideIntroGate();
+        dismissIntro();
+    }
+
+    function hideIntroGate() {
+        const gate = document.getElementById('introGate');
+        if (!gate) return;
+        gate.style.opacity = '0';
+        gate.style.pointerEvents = 'none';
+        setTimeout(() => { gate.style.display = 'none'; }, 500);
+    }
 
     let currentSlide = 0;
     const totalSlides = 5;
