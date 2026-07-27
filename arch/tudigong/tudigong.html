@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>一年級校本課程：校園旁的土地守護神</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap');
+        
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #fdfbf7;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23f0e6d2' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        /* 擲杯動畫 */
+        @keyframes toss {
+            0% { transform: translateY(0) rotate(0deg) scale(1); }
+            50% { transform: translateY(-80px) rotate(360deg) scale(1.2); }
+            100% { transform: translateY(0) rotate(720deg) scale(1); }
+        }
+        .tossing {
+            animation: toss 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+        }
+
+        .tab-btn.active {
+            background-color: #f59e0b; /* amber-500 */
+            color: white;
+            border-color: #f59e0b;
+        }
+        
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        /* ===================== 片頭動畫 ===================== */
+        #introOverlay {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            overflow: hidden;
+            background:
+                radial-gradient(ellipse at 50% 62%, #5a3315 0%, #331b09 45%, #170c04 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity .9s ease, visibility .9s ease;
+        }
+        #introOverlay.is-hiding { opacity: 0; visibility: hidden; }
+
+        /* 夜色中的暖光暈 */
+        .iw-halo {
+            position: absolute;
+            width: 78vmin; height: 78vmin;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(245,196,81,.34) 0%, rgba(245,196,81,.10) 42%, transparent 70%);
+            animation: iwHalo 1.6s ease both, iwBreath 5s ease-in-out 1.6s infinite;
+        }
+        @keyframes iwHalo { from { opacity: 0; transform: scale(.55); } to { opacity: 1; transform: scale(1); } }
+        @keyframes iwBreath { 0%,100% { transform: scale(1); } 50% { transform: scale(1.07); } }
+
+        /* 飄浮的光點（香火餘燼） */
+        .iw-ember {
+            position: absolute;
+            bottom: -6vh;
+            width: 5px; height: 5px;
+            border-radius: 50%;
+            background: #f5c451;
+            box-shadow: 0 0 10px 2px rgba(245,196,81,.75);
+            opacity: 0;
+            animation: iwEmber 9s linear infinite;
+        }
+        @keyframes iwEmber {
+            0%   { opacity: 0; transform: translateY(0) translateX(0) scale(.6); }
+            12%  { opacity: .85; }
+            80%  { opacity: .5; }
+            100% { opacity: 0; transform: translateY(-88vh) translateX(28px) scale(1.1); }
+        }
+
+        .iw-stage {
+            position: relative;
+            width: 100%;
+            max-width: 940px;
+            padding: 0 20px;
+            text-align: center;
+            color: #fdf6e6;
+        }
+        .iw-layer { position: absolute; left: 0; right: 0; top: 50%; transform: translateY(-50%); }
+
+        /* 開場字句 */
+        .iw-opening {
+            font-size: clamp(1.05rem, 3.6vw, 1.6rem);
+            font-weight: 500;
+            letter-spacing: .28em;
+            color: #f0dfba;
+            animation: iwSoft 4.6s ease .4s both;
+        }
+        @keyframes iwSoft {
+            0%   { opacity: 0; transform: translateY(16px); filter: blur(6px); }
+            18%  { opacity: 1; transform: none; filter: blur(0); }
+            78%  { opacity: 1; }
+            100% { opacity: 0; transform: translateY(-12px); filter: blur(4px); }
+        }
+
+        /* 伯公廟（照片） */
+        .iw-shrine {
+            position: relative;
+            width: clamp(230px, 48vmin, 400px);
+            margin: 0 auto;
+            filter: drop-shadow(0 20px 38px rgba(0,0,0,.6));
+            animation: iwRise 1.5s cubic-bezier(.2,.9,.28,1) 4.3s both,
+                       iwRecede 1.1s ease 7.3s forwards;
+        }
+        .iw-shrine img {
+            width: 100%;
+            height: auto;
+            display: block;
+            /* 邊緣柔化，讓照片自然融進夜色背景 */
+            -webkit-mask-image: radial-gradient(ellipse at 50% 52%, #000 56%, rgba(0,0,0,.35) 82%, transparent 97%);
+            mask-image: radial-gradient(ellipse at 50% 52%, #000 56%, rgba(0,0,0,.35) 82%, transparent 97%);
+        }
+        /* 照片上的暖色燈光 */
+        .iw-shrine::after {
+            content: "";
+            position: absolute; inset: 0;
+            pointer-events: none;
+            background: radial-gradient(ellipse at 50% 45%, rgba(245,196,81,.22) 0%, transparent 68%);
+        }
+        @keyframes iwRise {
+            from { opacity: 0; transform: translateY(70px) scale(.86); }
+            to   { opacity: 1; transform: none; }
+        }
+        @keyframes iwRecede {
+            from { opacity: 1; transform: none; }
+            to   { opacity: .16; transform: scale(1.4); }
+        }
+        /* 香煙（浮在照片上方，left/bottom 可依照片香爐位置微調） */
+        .iw-smoke {
+            position: absolute;
+            left: 50%; bottom: 14%;
+            width: 16px; height: 16px;
+            border-radius: 50%;
+            background: rgba(253,246,230,.55);
+            filter: blur(5px);
+            opacity: 0;
+            animation: iwSmoke 3.6s ease-in-out infinite;
+        }
+        .iw-smoke:nth-of-type(2) { left: 44%; animation-delay: 1.2s; }
+        .iw-smoke:nth-of-type(3) { left: 56%; animation-delay: 2.4s; }
+        @keyframes iwSmoke {
+            0%   { opacity: 0; transform: translate(-50%, 0) scale(.5); }
+            25%  { opacity: .5; }
+            100% { opacity: 0; transform: translate(-110%, -130px) scale(2.4); }
+        }
+
+        /* 主標題 */
+        .iw-titlewrap { animation: iwTitleIn 1.1s ease 5.5s both, iwTitleOut .8s ease 7.4s forwards; }
+        @keyframes iwTitleIn {
+            from { opacity: 0; letter-spacing: .6em; transform: translateY(14px); }
+            to   { opacity: 1; letter-spacing: .12em; transform: none; }
+        }
+        @keyframes iwTitleOut { from { opacity: 1; } to { opacity: 0; transform: translateY(-18px); } }
+        .iw-eyebrow {
+            display: inline-block;
+            font-size: clamp(.72rem, 2.4vw, .9rem);
+            letter-spacing: .34em;
+            color: #f5c451;
+            border: 1px solid rgba(245,196,81,.45);
+            border-radius: 999px;
+            padding: 5px 16px;
+            margin-bottom: 18px;
+        }
+        .iw-title {
+            font-size: clamp(1.9rem, 7.4vw, 3.6rem);
+            font-weight: 900;
+            color: #fff6e0;
+            text-shadow: 0 0 26px rgba(245,196,81,.55), 0 6px 20px rgba(0,0,0,.5);
+        }
+        .iw-sub {
+            margin-top: 14px;
+            font-size: clamp(.86rem, 3vw, 1.1rem);
+            letter-spacing: .22em;
+            color: #e3c99a;
+        }
+
+        /* 四大核心 */
+        .iw-corewrap { animation: iwCoreIn .7s ease 7.7s both, iwFadeOut .7s ease 11.9s forwards; }
+        @keyframes iwCoreIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes iwFadeOut { from { opacity: 1; } to { opacity: 0; transform: translateY(-14px); } }
+        .iw-coretitle {
+            font-size: clamp(.95rem, 3.2vw, 1.3rem);
+            font-weight: 700;
+            letter-spacing: .3em;
+            color: #f5c451;
+            margin-bottom: 26px;
+        }
+        .iw-cards {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px;
+            max-width: 880px;
+            margin: 0 auto;
+        }
+        @media (min-width: 768px) { .iw-cards { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px; } }
+        .iw-card {
+            background: rgba(255, 248, 233, .07);
+            border: 1px solid rgba(245,196,81,.22);
+            border-radius: 18px;
+            padding: 18px 12px 20px;
+            backdrop-filter: blur(3px);
+            animation: iwPop .75s cubic-bezier(.2,1.25,.4,1) both;
+        }
+        .iw-card:nth-child(1) { animation-delay: 8.05s; }
+        .iw-card:nth-child(2) { animation-delay: 8.6s; }
+        .iw-card:nth-child(3) { animation-delay: 9.15s; }
+        .iw-card:nth-child(4) { animation-delay: 9.7s; }
+        @keyframes iwPop {
+            from { opacity: 0; transform: translateY(26px) scale(.9); }
+            to   { opacity: 1; transform: none; }
+        }
+        .iw-icon {
+            width: 52px; height: 52px;
+            margin: 0 auto 12px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.35rem;
+        }
+        .iw-card h4 {
+            font-size: clamp(1rem, 3.4vw, 1.15rem);
+            font-weight: 800;
+            color: #fff6e0;
+            letter-spacing: .08em;
+        }
+        .iw-card p {
+            margin-top: 6px;
+            font-size: clamp(.74rem, 2.6vw, .84rem);
+            color: #dcc59a;
+            line-height: 1.6;
+        }
+
+        /* 收尾 */
+        .iw-closing { animation: iwSoft2 3.2s ease 12.2s both; }
+        @keyframes iwSoft2 {
+            0%   { opacity: 0; transform: scale(.94); }
+            18%  { opacity: 1; transform: none; }
+            100% { opacity: 1; }
+        }
+        .iw-closing .zh {
+            font-size: clamp(1.4rem, 5.6vw, 2.5rem);
+            font-weight: 900;
+            color: #fff6e0;
+            text-shadow: 0 0 24px rgba(245,196,81,.5);
+        }
+        .iw-closing .hak {
+            margin-top: 14px;
+            font-size: clamp(.9rem, 3.2vw, 1.15rem);
+            letter-spacing: .2em;
+            color: #f5c451;
+        }
+
+        /* 跳過 / 重播 */
+        #introSkip {
+            position: absolute;
+            top: 22px; right: 22px;
+            padding: 8px 18px;
+            border: 1px solid rgba(253,246,230,.35);
+            border-radius: 999px;
+            color: #fdf6e6;
+            font-size: .85rem;
+            letter-spacing: .1em;
+            background: rgba(0,0,0,.2);
+            cursor: pointer;
+            transition: background .25s, border-color .25s;
+        }
+        #introSkip:hover { background: rgba(245,196,81,.2); border-color: #f5c451; }
+        #introSkip:focus-visible { outline: 2px solid #f5c451; outline-offset: 3px; }
+
+        .replay-btn {
+            position: absolute; top: 16px; right: 16px;
+            z-index: 20;
+            background: rgba(255,255,255,.18);
+            border: 1px solid rgba(255,255,255,.4);
+            color: #fff;
+            border-radius: 999px;
+            padding: 6px 14px;
+            font-size: .8rem;
+            cursor: pointer;
+            transition: background .25s;
+        }
+        .replay-btn:hover { background: rgba(255,255,255,.32); }
+
+        @media (prefers-reduced-motion: reduce) {
+            #introOverlay *, #introOverlay { animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
+        }
+    </style>
+</head>
+<body class="text-gray-800 antialiased min-h-screen flex flex-col">
+
+    <!-- ===================== 片頭動畫 ===================== -->
+    <div id="introOverlay" aria-label="課程片頭動畫">
+        <div class="iw-halo"></div>
+        <span class="iw-ember" style="left:12%; animation-delay:0.2s"></span>
+        <span class="iw-ember" style="left:28%; animation-delay:4s"></span>
+        <span class="iw-ember" style="left:46%; animation-delay:3s"></span>
+        <span class="iw-ember" style="left:63%; animation-delay:5s"></span>
+        <span class="iw-ember" style="left:79%; animation-delay:3.1s"></span>
+        <span class="iw-ember" style="left:91%; animation-delay:8s"></span>
+
+        <button id="introSkip" onclick="skipIntro(this)">跳過片頭 <i class="fas fa-angle-right ml-1"></i></button>
+
+        <div class="iw-stage" style="min-height:74vh; display:flex; align-items:center; justify-content:center;">
+
+            <!-- 幕一：開場 -->
+            <div class="iw-layer">
+                <p class="iw-opening">關西國小的旁邊<br class="sm:hidden">，住著一位老朋友……</p>
+            </div>
+
+            <!-- 幕二：伯公廟 + 主標題（伯公廟隨後淡成背景） -->
+            <div class="iw-layer" style="display:flex; flex-direction:column; align-items:center; gap:22px;">
+                <!-- ↓↓↓ 片頭照片：把圖片檔和本 HTML 放在同一資料夾，改這行的檔名即可 ↓↓↓ -->
+                <div class="iw-shrine">
+                    <img src="tudigong.png" alt="關西國小旁的伯公廟"
+                         onerror="this.style.display='none'">
+                    <span class="iw-smoke"></span>
+                    <span class="iw-smoke"></span>
+                    <span class="iw-smoke"></span>
+                </div>
+
+                <div class="iw-titlewrap">
+                    <span class="iw-eyebrow">新竹縣關西國小 ‧ 一年級校本課程</span>
+                    <h2 class="iw-title">校園旁的土地守護神</h2>
+                    <p class="iw-sub">伯公，就住在我們上學的路上</p>
+                </div>
+            </div>
+
+            <!-- 幕三：課程四大核心重點 -->
+            <div class="iw-layer iw-corewrap">
+                <p class="iw-coretitle">課程四大核心重點</p>
+                <div class="iw-cards">
+                    <div class="iw-card">
+                        <div class="iw-icon" style="background:rgba(16,185,129,.16); color:#6ee7b7;"><i class="fas fa-map-marked-alt"></i></div>
+                        <h4>空間連結</h4>
+                        <p>在地圖上，<br>找到伯公的家</p>
+                    </div>
+                    <div class="iw-card">
+                        <div class="iw-icon" style="background:rgba(59,130,246,.16); color:#93c5fd;"><i class="fas fa-book-reader"></i></div>
+                        <h4>融入閱讀</h4>
+                        <p>翻開《田頭田尾<br>土地公》</p>
+                    </div>
+                    <div class="iw-card">
+                        <div class="iw-icon" style="background:rgba(244,63,94,.16); color:#fda4af;"><i class="fas fa-hands-helping"></i></div>
+                        <h4>手作與體驗</h4>
+                        <p>寫祈福小卡，<br>擲一次筊杯</p>
+                    </div>
+                    <div class="iw-card">
+                        <div class="iw-icon" style="background:rgba(168,85,247,.16); color:#d8b4fe;"><i class="fas fa-comments"></i></div>
+                        <h4>客語啟蒙</h4>
+                        <p>用客家話說<br>「伯公、伯婆」</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 幕四：收尾 -->
+            <div class="iw-layer iw-closing">
+                <p class="zh">走吧，去跟伯公問好</p>
+                <p class="hak">伯公好！伯婆好！</p>
+            </div>
+
+        </div>
+    </div>
+
+
+    <header class="bg-gradient-to-r from-amber-500 to-orange-400 text-white shadow-md relative overflow-hidden">
+        <button class="replay-btn" onclick="replayIntro()"><i class="fas fa-redo-alt mr-1"></i>重播片頭</button>
+        <div class="absolute -top-10 -right-10 opacity-20">
+            <i class="fas fa-tree text-9xl"></i>
+        </div>
+        <div class="absolute -bottom-10 -left-10 opacity-20">
+            <i class="fas fa-sun text-9xl"></i>
+        </div>
+        <div class="max-w-5xl mx-auto px-6 py-16 relative z-10 text-center">
+            <span class="inline-block py-1 px-3 rounded-full bg-orange-200 text-orange-800 font-bold text-sm mb-4 shadow-sm">
+                新竹縣關西國小 ‧ 一年級校本課程
+            </span>
+            <h1 class="text-4xl md:text-5xl font-black mb-4 tracking-wider text-shadow">
+                校園旁的土地守護神
+            </h1>
+            <p class="text-lg md:text-xl font-medium max-w-2xl mx-auto text-amber-50">
+                以「伯公」為起點，結合地圖意象、繪本閱讀與客語啟蒙，帶領孩子認識守護地方的溫暖力量。
+            </p>
+        </div>
+        <svg class="w-full h-12 text-amber-50 fill-current -mb-1" viewBox="0 0 1200 120" preserveAspectRatio="none">
+            <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V120H0V95.8C59.71,118,137.9,122.9,199.1,104.91,240.23,92.83,281.42,75.25,321.39,56.44Z"></path>
+        </svg>
+    </header>
+
+    <main class="flex-grow max-w-5xl mx-auto w-full px-4 sm:px-6 py-12">
+        
+        <section class="mb-16">
+            <h2 class="text-3xl font-bold text-center text-amber-800 mb-8">
+                <i class="fas fa-star text-amber-500 mr-2"></i>課程四大核心重點
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Card 1 -->
+                <div class="bg-white rounded-2xl p-6 shadow-lg border-b-4 border-emerald-500 hover:-translate-y-1 transition-transform">
+                    <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center text-2xl mb-4">
+                        <i class="fas fa-map-marked-alt"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">空間連結</h3>
+                    <p class="text-gray-600 text-sm">從入學開始，透過<strong class="text-emerald-700">關西國小地圖</strong>建立空間感，讓孩子知道「伯公」就住在學校旁守護大家。</p>
+                </div>
+                <!-- Card 2 -->
+                <div class="bg-white rounded-2xl p-6 shadow-lg border-b-4 border-blue-500 hover:-translate-y-1 transition-transform">
+                    <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-2xl mb-4">
+                        <i class="fas fa-book-reader"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">融入閱讀</h3>
+                    <p class="text-gray-600 text-sm">將繪本<strong class="text-blue-700">《田頭田尾土地公》</strong>列為正式閱讀課，實地踏查前先建立深厚文化知識。</p>
+                </div>
+                <!-- Card 3 -->
+                <div class="bg-white rounded-2xl p-6 shadow-lg border-b-4 border-rose-500 hover:-translate-y-1 transition-transform">
+                    <div class="w-12 h-12 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center text-2xl mb-4">
+                        <i class="fas fa-hands-helping"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">手作與體驗</h3>
+                    <p class="text-gray-600 text-sm">結合祈福小卡、環境打掃與<strong class="text-rose-700">模擬擲杯</strong>，符合一年級學生好動、喜歡感官體驗的特性。</p>
+                </div>
+                <!-- Card 4 -->
+                <div class="bg-white rounded-2xl p-6 shadow-lg border-b-4 border-purple-500 hover:-translate-y-1 transition-transform">
+                    <div class="w-12 h-12 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center text-2xl mb-4">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">客語啟蒙</h3>
+                    <p class="text-gray-600 text-sm">將客家語淺易生活用語（如<strong class="text-purple-700">伯公、伯婆</strong>）自然融入歌謠與生活對話中。</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-16 bg-white rounded-3xl p-6 sm:p-10 shadow-xl border border-amber-100">
+            <h2 class="text-3xl font-bold text-center text-amber-800 mb-8">
+                <i class="fas fa-calendar-alt text-amber-500 mr-2"></i>八節課程架構 (共 4 單元)
+            </h2>
+            
+            <!-- Tab Buttons -->
+            <div class="flex flex-wrap justify-center gap-2 mb-8">
+                <button onclick="openTab('unit1')" class="tab-btn active px-5 py-2.5 rounded-full border-2 border-amber-200 text-amber-800 font-bold hover:bg-amber-100 transition-colors">單元一：地圖上的伯公</button>
+                <button onclick="openTab('unit2')" class="tab-btn px-5 py-2.5 rounded-full border-2 border-amber-200 text-amber-800 font-bold hover:bg-amber-100 transition-colors">單元二：閱讀守護神</button>
+                <button onclick="openTab('unit3')" class="tab-btn px-5 py-2.5 rounded-full border-2 border-amber-200 text-amber-800 font-bold hover:bg-amber-100 transition-colors">單元三：心願保庇</button>
+                <button onclick="openTab('unit4')" class="tab-btn px-5 py-2.5 rounded-full border-2 border-amber-200 text-amber-800 font-bold hover:bg-amber-100 transition-colors">單元四：小小巡守員</button>
+            </div>
+
+            <!-- Tab Content (內容保持不變) -->
+            <div id="unit1" class="tab-content active">
+                <div class="space-y-6">
+                    <div class="bg-amber-50 p-6 rounded-2xl border-l-8 border-amber-400">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-xl font-bold text-amber-900">第一節：位置大搜尋</h3>
+                            <span class="bg-amber-200 text-amber-800 text-xs px-2 py-1 rounded font-bold">🗺️ 空間辨識</span>
+                        </div>
+                        <p class="mb-2 text-gray-700"><strong>課程內容：</strong>透過新竹縣關西國小地圖意象，找出學校與住家周邊的伯公廟。</p>
+                        <ul class="list-disc list-inside text-gray-600 mb-3 space-y-1">
+                            <li>能在地圖上辨識學校位置。</li>
+                            <li>認識生活環境中的伯公廟。</li>
+                        </ul>
+                        <div class="bg-white inline-block px-3 py-1 rounded border border-gray-200 text-sm">
+                            <span class="text-purple-600 font-bold"><i class="fas fa-language"></i> 客語元素：</span>學習「伯公廟」的稱呼。
+                        </div>
+                    </div>
+                    
+                    <div class="bg-amber-50 p-6 rounded-2xl border-l-8 border-amber-400">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-xl font-bold text-amber-900">第二節：伯公律動</h3>
+                            <span class="bg-amber-200 text-amber-800 text-xs px-2 py-1 rounded font-bold">🎵 音樂律動</span>
+                        </div>
+                        <p class="mb-2 text-gray-700"><strong>課程內容：</strong>學習客語歌謠<strong>「伯公伯婆」</strong>，透過視聽媒材進行唱跳律動。</p>
+                        <ul class="list-disc list-inside text-gray-600 mb-3 space-y-1">
+                            <li>能熟悉歌謠旋律並配合節奏活動。</li>
+                        </ul>
+                        <div class="bg-white inline-block px-3 py-1 rounded border border-gray-200 text-sm">
+                            <span class="text-purple-600 font-bold"><i class="fas fa-child"></i> 成果展現：</span>唱跳「伯公伯婆」歌謠。
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="unit2" class="tab-content">
+                <div class="space-y-6">
+                    <div class="bg-blue-50 p-6 rounded-2xl border-l-8 border-blue-400">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-xl font-bold text-blue-900">第三節：伯公傳說 (閱讀課一)</h3>
+                            <span class="bg-blue-200 text-blue-800 text-xs px-2 py-1 rounded font-bold">📖 繪本閱讀</span>
+                        </div>
+                        <p class="mb-2 text-gray-700"><strong>課程內容：</strong>透過繪本<strong>《田頭田尾土地公》</strong>引導學生閱讀，認識土地公的由來與傳說。</p>
+                        <ul class="list-disc list-inside text-gray-600 mb-3 space-y-1">
+                            <li>能理解繪本內容並感受信仰中的善念。</li>
+                        </ul>
+                        <div class="bg-white inline-block px-3 py-1 rounded border border-gray-200 text-sm">
+                            <span class="text-blue-600 font-bold"><i class="fas fa-search"></i> 文化探究：</span>了解客家宗教信仰與土地連結。
+                        </div>
+                    </div>
+                    
+                    <div class="bg-blue-50 p-6 rounded-2xl border-l-8 border-blue-400">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-xl font-bold text-blue-900">第四節：伯公幫幫忙 (閱讀課二)</h3>
+                            <span class="bg-blue-200 text-blue-800 text-xs px-2 py-1 rounded font-bold">🗣️ 聆聽發表</span>
+                        </div>
+                        <p class="mb-2 text-gray-700"><strong>課程內容：</strong>閱讀關於伯公助人的故事短文，並觀看客家電視台相關影片進行討論。</p>
+                        <ul class="list-disc list-inside text-gray-600 mb-3 space-y-1">
+                            <li>能展現聆聽態度並摘要閱讀心得。</li>
+                        </ul>
+                        <div class="bg-white inline-block px-3 py-1 rounded border border-gray-200 text-sm">
+                            <span class="text-blue-600 font-bold"><i class="fas fa-bullhorn"></i> 口頭發表：</span>分享閱讀故事後的感想與體會。
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="unit3" class="tab-content">
+                <div class="space-y-6">
+                    <div class="bg-rose-50 p-6 rounded-2xl border-l-8 border-rose-400">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-xl font-bold text-rose-900">第五節：祈福小卡製作</h3>
+                            <span class="bg-rose-200 text-rose-800 text-xs px-2 py-1 rounded font-bold">✍️ 美勞手作</span>
+                        </div>
+                        <p class="mb-2 text-gray-700"><strong>課程內容：</strong>引導學生思考家人祭拜時的祈福內容，轉化為自己的心願並裝飾卡片。</p>
+                        <ul class="list-disc list-inside text-gray-600 mb-3 space-y-1">
+                            <li>能寫出或畫出個人心願的祈福小卡。</li>
+                        </ul>
+                        <div class="bg-white inline-block px-3 py-1 rounded border border-gray-200 text-sm">
+                            <span class="text-purple-600 font-bold"><i class="fas fa-language"></i> 客語應用：</span>練習用客語唸讀出「祈福小卡」的願望。
+                        </div>
+                    </div>
+                    
+                    <div class="bg-rose-50 p-6 rounded-2xl border-l-8 border-rose-400">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-xl font-bold text-rose-900">第六節：習俗對話練習</h3>
+                            <span class="bg-rose-200 text-rose-800 text-xs px-2 py-1 rounded font-bold">💬 情境模擬</span>
+                        </div>
+                        <p class="mb-2 text-gray-700"><strong>課程內容：</strong>模擬跟著家長拜土地公的情境，練習簡單的客語日常對話。</p>
+                        <ul class="list-disc list-inside text-gray-600 mb-3 space-y-1">
+                            <li>能以客家語回應日常生活對話。</li>
+                        </ul>
+                        <div class="bg-white inline-block px-3 py-1 rounded border border-gray-200 text-sm">
+                            <span class="text-purple-600 font-bold"><i class="fas fa-comments"></i> 語言目標：</span>學習「簡易表達」與「招呼用語」。
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="unit4" class="tab-content">
+                <div class="space-y-6">
+                    <div class="bg-emerald-50 p-6 rounded-2xl border-l-8 border-emerald-400">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-xl font-bold text-emerald-900">第七節：伯公廟巡禮</h3>
+                            <span class="bg-emerald-200 text-emerald-800 text-xs px-2 py-1 rounded font-bold">🚶 戶外踏查</span>
+                        </div>
+                        <p class="mb-2 text-gray-700"><strong>課程內容：</strong>實地走訪學校側門旁邊的伯公廟，學習參拜禮儀並動手撿拾附近垃圾。</p>
+                        <ul class="list-disc list-inside text-gray-600 mb-3 space-y-1">
+                            <li>掌握參拜規則與禮貌。</li>
+                            <li>養成愛護環境的習慣。</li>
+                        </ul>
+                        <div class="bg-white inline-block px-3 py-1 rounded border border-gray-200 text-sm">
+                            <span class="text-emerald-600 font-bold"><i class="fas fa-check-circle"></i> 態度檢核：</span>實踐「環境保護」與「社會關懷」。
+                        </div>
+                    </div>
+                    
+                    <div class="bg-emerald-50 p-6 rounded-2xl border-l-8 border-emerald-400">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-xl font-bold text-emerald-900">第八節：我會擲杯</h3>
+                            <span class="bg-emerald-200 text-emerald-800 text-xs px-2 py-1 rounded font-bold">🎲 民俗實作</span>
+                        </div>
+                        <p class="mb-2 text-gray-700"><strong>課程內容：</strong>學習拜拜習俗（如放祭品、擲杯）；利用橡皮擦或教具模擬擲杯並紀錄結果。</p>
+                        <ul class="list-disc list-inside text-gray-600 mb-3 space-y-1">
+                            <li>能具體操作擲杯並記錄結果。</li>
+                        </ul>
+                        <div class="bg-white inline-block px-3 py-1 rounded border border-gray-200 text-sm">
+                            <span class="text-rose-600 font-bold"><i class="fas fa-pen"></i> 成果紀錄：</span>紀錄「聖杯、無杯、笑杯」。
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-8">
+            <div class="bg-gradient-to-br from-red-50 to-orange-100 rounded-3xl p-8 shadow-lg border border-red-100 text-center relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-4 opacity-10 pointer-events-none">
+                    <i class="fas fa-yin-yang text-8xl"></i>
+                </div>
+                
+                <h2 class="text-2xl font-bold text-red-800 mb-2">互動體驗：模擬擲杯 (第八節實作)</h2>
+                <p class="text-gray-600 mb-8 max-w-lg mx-auto">讓孩子在網頁上練習辨認擲杯的結果！點擊下方按鈕，看看伯公給你什麼回應吧！</p>
+                
+                <!-- 筊杯顯示區 -->
+                <div class="flex justify-center items-center gap-8 mb-8 h-40" id="moon-blocks-container">
+                    <!-- 左杯 (預設：平坦面/陽) -->
+                    <div id="block-left" class="w-24 h-32 transition-transform duration-300 drop-shadow-xl">
+                        <svg viewBox="0 0 100 150" class="w-full h-full">
+                            <g>
+                                <!-- 底部厚度陰影 -->
+                                <path d="M 32 15 C 102 45, 102 105, 32 135 C 57 100, 57 50, 32 15 Z" fill="#7a0000"/>
+                                <!-- 平坦面主體 -->
+                                <path d="M 25 10 C 95 40, 95 110, 25 140 C 50 105, 50 45, 25 10 Z" fill="#e53935"/>
+                                <!-- 邊緣亮線 -->
+                                <path d="M 28 14 C 91 42, 91 108, 28 136 C 51 102, 51 48, 28 14 Z" fill="none" stroke="#ff8a80" stroke-width="2" opacity="0.9"/>
+                                <!-- 木紋 -->
+                                <path d="M 35 30 Q 65 75 35 120" fill="none" stroke="#b71c1c" stroke-width="1.5" opacity="0.5"/>
+                                <path d="M 45 50 Q 60 75 45 100" fill="none" stroke="#b71c1c" stroke-width="1" opacity="0.5"/>
+                            </g>
+                        </svg>
+                    </div>
+                    <!-- 右杯 (預設：凸起面/陰) -->
+                    <div id="block-right" class="w-24 h-32 transition-transform duration-300 drop-shadow-xl">
+                        <svg viewBox="0 0 100 150" class="w-full h-full">
+                            <defs>
+                                <radialGradient id="roundGrad_right_init" cx="65%" cy="50%" r="55%" fx="65%" fy="50%">
+                                    <stop offset="0%" stop-color="#ff7b7b" />
+                                    <stop offset="20%" stop-color="#e53935" />
+                                    <stop offset="70%" stop-color="#8e0000" />
+                                    <stop offset="100%" stop-color="#330000" />
+                                </radialGradient>
+                            </defs>
+                            <g transform="translate(100, 0) scale(-1, 1)">
+                                <!-- 圓凸面主體 -->
+                                <path d="M 25 10 C 95 40, 95 110, 25 140 C 50 105, 50 45, 25 10 Z" fill="url(#roundGrad_right_init)"/>
+                                <!-- 內側邊緣陰影 -->
+                                <path d="M 25 10 C 55 45, 55 105, 25 140 C 40 105, 40 45, 25 10 Z" fill="#220000" opacity="0.5"/>
+                                <!-- 圓潤高光線 -->
+                                <path d="M 52 35 C 78 60, 78 90, 52 115" fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round" opacity="0.4"/>
+                            </g>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- 結果文字區 -->
+                <div id="toss-result-box" class="h-20 mb-6 flex flex-col items-center justify-center opacity-100 transition-opacity duration-300">
+                    <h3 id="toss-result-title" class="text-3xl font-black text-red-700 mb-1">聖杯 (Sheng Bei)</h3>
+                    <p id="toss-result-desc" class="text-gray-700 font-medium bg-white/60 px-4 py-1 rounded-full">一平一凸：神明答應、贊同你的祈求！</p>
+                </div>
+
+                <!-- 操作按鈕 -->
+                <button onclick="tossBlocks()" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-8 rounded-full shadow-lg transform transition hover:scale-105 active:scale-95 text-lg">
+                    <i class="fas fa-hand-sparkles mr-2"></i> 誠心擲杯
+                </button>
+
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-gray-800 text-gray-400 text-center py-6">
+        <p>© 2026 關西國小 土地守護神 校本課程設計參考</p>
+    </footer>
+
+    <script>
+        // 頁籤切換功能
+        function openTab(tabId) {
+            const btns = document.querySelectorAll('.tab-btn');
+            btns.forEach(btn => {
+                btn.classList.remove('active', 'bg-amber-500', 'text-white');
+                btn.classList.add('text-amber-800');
+            });
+
+            const contents = document.querySelectorAll('.tab-content');
+            contents.forEach(content => {
+                content.classList.remove('active');
+            });
+
+            const clickedBtn = event.currentTarget;
+            clickedBtn.classList.add('active');
+            
+            const targetContent = document.getElementById(tabId);
+            targetContent.classList.add('active');
+        }
+
+        // 動態生成帶有極高辨識度的筊杯 SVG
+        function getJiaoBeiSvg(type, side) {
+            const isRight = side === 'right';
+            // 右杯需要水平翻轉圖形，以達到左右對稱的彎月感
+            const groupTransform = isRight ? 'transform="translate(100, 0) scale(-1, 1)"' : '';
+            
+            if (type === 'flat') {
+                return `
+                <svg viewBox="0 0 100 150" class="w-full h-full">
+                    <g ${groupTransform}>
+                        <!-- 底部厚度陰影 -->
+                        <path d="M 32 15 C 102 45, 102 105, 32 135 C 57 100, 57 50, 32 15 Z" fill="#7a0000"/>
+                        <!-- 平坦面主體 -->
+                        <path d="M 25 10 C 95 40, 95 110, 25 140 C 50 105, 50 45, 25 10 Z" fill="#e53935"/>
+                        <!-- 邊緣亮線 (強調平面) -->
+                        <path d="M 28 14 C 91 42, 91 108, 28 136 C 51 102, 51 48, 28 14 Z" fill="none" stroke="#ff8a80" stroke-width="2" opacity="0.9"/>
+                        <!-- 木紋/使用痕跡 -->
+                        <path d="M 35 30 Q 65 75 35 120" fill="none" stroke="#b71c1c" stroke-width="1.5" opacity="0.5"/>
+                        <path d="M 45 50 Q 60 75 45 100" fill="none" stroke="#b71c1c" stroke-width="1" opacity="0.5"/>
+                    </g>
+                </svg>`;
+            } else {
+                return `
+                <svg viewBox="0 0 100 150" class="w-full h-full">
+                    <defs>
+                        <radialGradient id="roundGrad_${side}" cx="65%" cy="50%" r="55%" fx="65%" fy="50%">
+                            <stop offset="0%" stop-color="#ff7b7b" />
+                            <stop offset="20%" stop-color="#e53935" />
+                            <stop offset="70%" stop-color="#8e0000" />
+                            <stop offset="100%" stop-color="#330000" />
+                        </radialGradient>
+                    </defs>
+                    <g ${groupTransform}>
+                        <!-- 圓凸面主體 -->
+                        <path d="M 25 10 C 95 40, 95 110, 25 140 C 50 105, 50 45, 25 10 Z" fill="url(#roundGrad_${side})"/>
+                        <!-- 內側邊緣陰影 (貼地處) -->
+                        <path d="M 25 10 C 55 45, 55 105, 25 140 C 40 105, 40 45, 25 10 Z" fill="#220000" opacity="0.5"/>
+                        <!-- 圓潤的高光線 -->
+                        <path d="M 52 35 C 78 60, 78 90, 52 115" fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round" opacity="0.4"/>
+                    </g>
+                </svg>`;
+            }
+        }
+
+        let isTossing = false;
+
+        function tossBlocks() {
+            if (isTossing) return;
+            isTossing = true;
+
+            const blockLeft = document.getElementById('block-left');
+            const blockRight = document.getElementById('block-right');
+            const resultBox = document.getElementById('toss-result-box');
+            const titleEl = document.getElementById('toss-result-title');
+            const descEl = document.getElementById('toss-result-desc');
+
+            // 隱藏舊結果
+            resultBox.style.opacity = '0';
+
+            // 加入動畫 class
+            blockLeft.classList.add('tossing');
+            blockRight.classList.add('tossing');
+            
+            // 稍微錯開右邊的動畫時間增加真實感
+            blockRight.style.animationDelay = '0.1s';
+
+            // 隨機決定結果 (0: 平面/陽, 1: 凸面/陰)
+            setTimeout(() => {
+                const leftSide = Math.floor(Math.random() * 2);
+                const rightSide = Math.floor(Math.random() * 2);
+
+                // 更新 SVG 圖像
+                blockLeft.innerHTML = getJiaoBeiSvg(leftSide === 0 ? 'flat' : 'round', 'left');
+                blockRight.innerHTML = getJiaoBeiSvg(rightSide === 0 ? 'flat' : 'round', 'right');
+
+                // 隨機旋轉一點角度看起來比較自然
+                const rotLeft = (Math.random() * 40 - 20) + "deg";
+                const rotRight = (Math.random() * 40 - 20) + "deg";
+                blockLeft.style.transform = `rotate(${rotLeft})`;
+                blockRight.style.transform = `rotate(${rotRight})`;
+
+                // 判斷結果
+                let resultTitle = "";
+                let resultDesc = "";
+                let titleColor = "";
+
+                if (leftSide !== rightSide) {
+                    resultTitle = "聖杯 (Sheng Bei)";
+                    resultDesc = "一平一凸：神明答應、贊同你的祈求！";
+                    titleColor = "text-red-700";
+                } else if (leftSide === 0 && rightSide === 0) {
+                    resultTitle = "笑杯 (Xiao Bei)";
+                    resultDesc = "兩面皆平：神明在笑，可能覺得不清楚或時機未到。";
+                    titleColor = "text-amber-600";
+                } else {
+                    resultTitle = "無杯 / 陰杯 (Wu Bei)";
+                    resultDesc = "兩面皆凸：神明不贊同，或者這件事不適合。";
+                    titleColor = "text-gray-700";
+                }
+
+                // 移除動畫並顯示新結果
+                blockLeft.classList.remove('tossing');
+                blockRight.classList.remove('tossing');
+                blockRight.style.animationDelay = '0s';
+
+                titleEl.textContent = resultTitle;
+                titleEl.className = `text-3xl font-black mb-1 ${titleColor}`;
+                descEl.textContent = resultDesc;
+                
+                resultBox.style.opacity = '1';
+                isTossing = false;
+
+            }, 900); // 配合動畫長度
+        }
+    </script>
+    <script>
+        /* ===================== 片頭動畫控制 ===================== */
+        (function () {
+            const INTRO_MS = 16800;               // 片頭總長度
+            const original = document.getElementById('introOverlay');
+            if (!original) return;
+            window.__introTemplate = original.cloneNode(true);   // 保留一份給「重播片頭」
+            runIntro(original);
+        })();
+
+        function runIntro(overlay) {
+            document.body.style.overflow = 'hidden';
+            overlay.__timer = setTimeout(() => closeIntro(overlay), 16800);
+        }
+
+        function closeIntro(overlay) {
+            clearTimeout(overlay.__timer);
+            overlay.classList.add('is-hiding');
+            document.body.style.overflow = '';
+            setTimeout(() => overlay.remove(), 950);
+        }
+
+        function skipIntro(btn) {
+            closeIntro(btn.closest('#introOverlay'));
+        }
+
+        function replayIntro() {
+            if (!window.__introTemplate) return;
+            const existing = document.getElementById('introOverlay');
+            if (existing) existing.remove();
+            const clone = window.__introTemplate.cloneNode(true);
+            document.body.appendChild(clone);
+            runIntro(clone);
+        }
+    </script>
+</body>
+</html>
