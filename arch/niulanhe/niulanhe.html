@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>戀戀牛欄河｜關西國小五年級校訂課程</title>
+<meta name="description" content="新竹縣關西國小五年級校訂課程「戀戀牛欄河」互動教學網——牛欄河親水公園與縣定古蹟東安古橋。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;900&family=Noto+Sans+TC:wght@300;400;500;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+:root{
+  --ink:#0C1C1A;
+  --river-deep:#0F3835;
+  --river:#1C6058;
+  --river-mid:#2E8377;
+  --river-light:#5FB3A3;
+  --glow:#9EDCCB;
+  --stone:#C4B08C;
+  --stone-light:#E9DFC7;
+  --paper:#F4EEDD;
+  --hakka:#A8452F;
+  --gold:#C98A2E;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  background:var(--ink);
+  color:var(--stone-light);
+  font-family:"Noto Sans TC",sans-serif;
+  font-weight:300;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+.serif{font-family:"Noto Serif TC",serif}
+.latin{font-family:"Cormorant Garamond",serif;letter-spacing:.18em}
+
+/* ---------- 片頭 ---------- */
+#intro{
+  position:fixed;inset:0;z-index:100;
+  background:radial-gradient(ellipse at 50% 70%, #10322F 0%, #05100F 70%);
+  display:flex;align-items:center;justify-content:center;
+  transition:opacity 1.1s ease, visibility 1.1s;
+}
+#intro.gone{opacity:0;visibility:hidden;pointer-events:none}
+#startScreen{text-align:center;padding:24px}
+#startScreen h1{
+  font-family:"Noto Serif TC",serif;font-weight:900;
+  font-size:clamp(30px,7vw,52px);letter-spacing:.3em;
+  color:var(--stone-light);margin:0 0 10px;text-indent:.3em;
+}
+#startScreen p{color:var(--river-light);letter-spacing:.25em;font-size:13px;margin:0 0 40px}
+.start-btn{
+  border:1px solid var(--river-light);background:transparent;color:var(--glow);
+  padding:14px 40px;letter-spacing:.35em;font-size:14px;cursor:pointer;
+  transition:.4s;text-indent:.35em;border-radius:2px;
+}
+.start-btn:hover{background:var(--river);color:#fff;border-color:var(--glow)}
+@keyframes softPulse{0%,100%{opacity:.55}50%{opacity:1}}
+.pulse{animation:softPulse 2.6s ease-in-out infinite}
+
+#introStage{display:none;width:100%;height:100%;position:relative}
+#introStage.on{display:block}
+#introPhoto{position:absolute;inset:0;overflow:hidden;opacity:0;z-index:1}
+#introPhoto img{
+  width:100%;height:100%;object-fit:contain;display:block;
+  filter:brightness(.06) saturate(.35);transform:scale(1.06);
+}
+#introScrim{
+  position:absolute;inset:0;z-index:2;opacity:0;
+  background:linear-gradient(to bottom,rgba(5,16,15,.7) 0%,rgba(5,16,15,.1) 42%,rgba(5,16,15,.8) 100%);
+}
+.intro-line{
+  position:absolute;left:0;right:0;text-align:center;
+  font-family:"Noto Serif TC",serif;font-size:clamp(17px,3.4vw,27px);
+  letter-spacing:.22em;color:var(--stone-light);opacity:0;
+  padding:0 20px;text-indent:.22em;z-index:4;
+}
+#l1{top:26%}
+#l2{top:26%}
+#introTitle{
+  position:absolute;left:0;right:0;top:20%;text-align:center;opacity:0;z-index:4;
+}
+#introTitle .big{
+  display:block;font-family:"Noto Serif TC",serif;font-weight:900;
+  font-size:clamp(40px,10vw,84px);letter-spacing:.22em;color:#fff;
+  text-indent:.22em;text-shadow:0 0 40px rgba(95,179,163,.5);
+}
+#introTitle .sub{
+  display:block;margin-top:18px;color:var(--river-light);
+  letter-spacing:.5em;font-size:clamp(11px,2.4vw,14px);text-indent:.5em;
+}
+@keyframes fadeIn{to{opacity:1}}
+@keyframes fadeOut{to{opacity:0}}
+#introBridge{
+  position:absolute;bottom:14%;left:50%;transform:translateX(-50%);
+  width:min(1000px,94vw);opacity:0;z-index:3;
+}
+.draw path,.draw line{
+  stroke:var(--glow);fill:none;stroke-width:2;
+  stroke-dasharray:2600;stroke-dashoffset:2600;
+}
+.skip{
+  position:absolute;right:22px;bottom:22px;z-index:5;
+  background:none;border:none;color:rgba(233,223,199,.5);
+  letter-spacing:.2em;font-size:12px;cursor:pointer;font-family:inherit;
+}
+.skip:hover{color:var(--glow)}
+
+/* ---------- 主體 ---------- */
+.wrap{max-width:1120px;margin:0 auto;padding:0 22px}
+.eyebrow{
+  font-family:"Cormorant Garamond",serif;font-style:italic;
+  color:var(--river-light);font-size:17px;letter-spacing:.14em;
+}
+h2.sec{
+  font-family:"Noto Serif TC",serif;font-weight:900;
+  font-size:clamp(24px,4.6vw,38px);letter-spacing:.14em;
+  color:var(--stone-light);margin:6px 0 6px;text-indent:.14em;
+}
+.rule{width:56px;height:2px;background:var(--gold);margin:18px 0 30px}
+
+header.hero{padding:74px 0 24px;text-align:center;position:relative}
+header.hero h1{
+  font-family:"Noto Serif TC",serif;font-weight:900;
+  font-size:clamp(38px,9vw,76px);letter-spacing:.24em;
+  margin:12px 0 0;color:#fff;text-indent:.24em;
+}
+header.hero .tag{
+  color:var(--river-light);letter-spacing:.42em;font-size:12px;text-indent:.42em;
+}
+header.hero .lead{
+  max-width:640px;margin:26px auto 0;line-height:2.1;
+  color:rgba(233,223,199,.78);font-size:15px;
+}
+
+/* 橋導覽 */
+.photo-center{text-align:center;margin:34px 0 0}
+.bridge-photo{
+  position:relative;display:inline-block;max-width:100%;
+  border-radius:4px;overflow:hidden;
+  border:1px solid rgba(196,176,140,.28);background:#0F3835;line-height:0;
+}
+.bridge-photo img{
+  display:block;width:auto;max-width:100%;max-height:66vh;
+  filter:saturate(.94) contrast(1.03);
+}
+.bridge-photo::after{
+  content:'';position:absolute;inset:0;pointer-events:none;z-index:1;
+  background:linear-gradient(to bottom,rgba(12,28,26,.42) 0%,rgba(12,28,26,.04) 42%,rgba(12,28,26,.62) 100%);
+}
+.arch-row{position:absolute;inset:0;z-index:2}
+.arch-btn{
+  position:absolute;border:1px solid rgba(233,223,199,.42);
+  border-radius:999px 999px 3px 3px;background:rgba(12,28,26,.26);
+  cursor:pointer;transition:background .35s,border-color .35s,color .35s,transform .35s;
+  display:flex;align-items:center;justify-content:center;
+  font-family:"Noto Serif TC",serif;font-weight:900;
+  color:rgba(233,223,199,.9);font-size:clamp(14px,2.1vw,26px);
+  text-shadow:0 2px 8px rgba(0,0,0,.7);line-height:1;
+}
+.arch-btn:hover,.arch-btn:focus{
+  background:rgba(28,96,88,.52);border-color:var(--glow);color:#fff;
+  transform:translateY(-3px);outline:none;
+}
+.bridge-box{margin:34px 0 0;position:relative}
+.bridge-box svg{width:100%;height:auto;display:block;overflow:visible}
+.deck{fill:var(--stone)}
+.deck-top{fill:var(--stone-light)}
+.pier-shadow{fill:rgba(0,0,0,.22)}
+.arch-hit{fill:rgba(158,220,203,0);cursor:pointer;transition:fill .35s}
+.arch-hit:hover,.arch-hit:focus{fill:rgba(158,220,203,.16);outline:none}
+.arch-num{
+  fill:var(--stone-light);font-family:"Noto Serif TC",serif;font-weight:900;
+  font-size:52px;text-anchor:middle;pointer-events:none;
+  opacity:.55;transition:opacity .35s;
+}
+.arch-g:hover .arch-num{opacity:1;fill:#fff}
+.water-a{fill:rgba(46,131,119,.55)}
+.water-b{fill:rgba(28,96,88,.75)}
+@keyframes drift{from{transform:translateX(0)}to{transform:translateX(-200px)}}
+.wave{animation:drift 14s linear infinite}
+.wave.slow{animation-duration:24s;opacity:.7}
+
+.chips{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:26px 0 0}
+.chip{
+  border:1px solid rgba(196,176,140,.4);background:rgba(196,176,140,.06);
+  color:var(--stone-light);padding:9px 18px;border-radius:999px;
+  font-size:14px;letter-spacing:.08em;cursor:pointer;transition:.3s;
+  font-family:inherit;
+}
+.chip:hover{background:var(--river);border-color:var(--river-light);color:#fff}
+.chip b{font-family:"Noto Serif TC",serif;color:var(--gold);font-weight:600;margin-right:8px}
+.chip:hover b{color:var(--glow)}
+
+/* 區塊 */
+section{padding:76px 0}
+.panel{background:var(--paper);color:var(--ink)}
+.panel h2.sec{color:var(--river-deep)}
+.panel .eyebrow{color:var(--river)}
+
+/* 四大特色 */
+.feat-grid{display:grid;gap:18px;grid-template-columns:repeat(auto-fit,minmax(238px,1fr))}
+.feat{
+  border:1px solid rgba(196,176,140,.28);border-radius:4px;padding:26px 22px;
+  background:rgba(196,176,140,.05);transition:.35s;
+}
+.feat:hover{border-color:var(--river-light);background:rgba(46,131,119,.1);transform:translateY(-4px)}
+.feat i{color:var(--gold);font-size:22px}
+.feat h3{
+  font-family:"Noto Serif TC",serif;font-size:19px;letter-spacing:.1em;
+  margin:14px 0 10px;color:var(--stone-light);
+}
+.feat p{font-size:14px;line-height:1.95;color:rgba(233,223,199,.7);margin:0}
+
+/* 單元 */
+.unit{border-top:1px solid rgba(15,56,53,.18)}
+.unit:last-child{border-bottom:1px solid rgba(15,56,53,.18)}
+.unit-head{
+  width:100%;text-align:left;background:none;border:none;cursor:pointer;
+  padding:26px 8px;display:flex;align-items:center;gap:20px;font-family:inherit;
+  transition:background .3s;
+}
+.unit-head:hover{background:rgba(28,96,88,.06)}
+.u-arch{width:44px;height:34px;flex:none;position:relative}
+.u-arch svg{width:100%;height:100%}
+.u-no{
+  font-family:"Noto Serif TC",serif;font-weight:900;font-size:15px;
+  color:var(--river);letter-spacing:.1em;flex:none;width:52px;
+}
+.u-title{
+  font-family:"Noto Serif TC",serif;font-weight:600;
+  font-size:clamp(17px,3.2vw,23px);color:var(--river-deep);letter-spacing:.08em;flex:1;
+}
+.u-ses{
+  font-family:"Cormorant Garamond",serif;font-size:15px;color:#8A7C5E;
+  letter-spacing:.1em;flex:none;
+}
+.unit-head .caret{color:var(--river);transition:transform .35s;flex:none}
+.unit.open .caret{transform:rotate(180deg)}
+.unit-body{max-height:0;overflow:hidden;transition:max-height .55s cubic-bezier(.4,0,.2,1)}
+.unit-inner{padding:4px 8px 34px 8px}
+.lesson{
+  border-left:2px solid var(--stone);padding:0 0 0 22px;margin:0 0 26px;
+}
+.lesson:last-child{margin-bottom:0}
+.les-no{
+  font-family:"Noto Serif TC",serif;color:var(--hakka);font-size:13px;
+  letter-spacing:.2em;font-weight:600;
+}
+.les-t{
+  font-family:"Noto Serif TC",serif;font-size:18px;color:var(--river-deep);
+  margin:6px 0 12px;letter-spacing:.06em;font-weight:600;
+}
+.les-p{font-size:14.5px;line-height:2;color:#3B4744;margin:0 0 16px}
+.meta{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));margin-top:16px}
+.meta div{background:rgba(28,96,88,.06);border-radius:3px;padding:14px 16px}
+.meta h4{
+  font-size:11px;letter-spacing:.24em;color:var(--river);margin:0 0 8px;
+  font-weight:500;text-indent:.24em;
+}
+.meta ul{margin:0;padding-left:16px;font-size:13.5px;line-height:1.95;color:#3B4744}
+.meta p{margin:0;font-size:13.5px;line-height:1.95;color:#3B4744}
+.tag-hakka{
+  display:inline-block;background:rgba(168,69,47,.1);color:var(--hakka);
+  font-size:11px;letter-spacing:.16em;padding:3px 10px;border-radius:2px;
+  margin-bottom:8px;text-indent:.16em;
+}
+
+/* 客語卡 */
+.card-grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(210px,1fr))}
+.flip{perspective:1000px;height:172px;cursor:pointer}
+.flip-in{
+  position:relative;width:100%;height:100%;transition:transform .7s;
+  transform-style:preserve-3d;
+}
+.flip.on .flip-in{transform:rotateY(180deg)}
+.face{
+  position:absolute;inset:0;backface-visibility:hidden;border-radius:4px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:18px;text-align:center;
+}
+.face.front{background:linear-gradient(160deg,#1C6058,#0F3835);border:1px solid rgba(158,220,203,.25)}
+.face.back{
+  background:var(--stone-light);color:var(--ink);transform:rotateY(180deg);
+  border:1px solid var(--stone);
+}
+.face.front .w{font-family:"Noto Serif TC",serif;font-size:31px;letter-spacing:.14em;color:#fff;text-indent:.14em}
+.face.front .h{margin-top:12px;font-size:11px;letter-spacing:.24em;color:var(--glow);text-indent:.24em}
+.face.back .m{font-family:"Noto Serif TC",serif;font-size:19px;color:var(--river-deep);margin-bottom:12px}
+.face.back .e{font-size:13px;line-height:1.9;color:#4A5654}
+.flip-hint{font-size:12px;letter-spacing:.16em;color:rgba(233,223,199,.45);margin-top:18px}
+
+/* 詩箋 */
+.poem-wrap{display:grid;gap:26px;grid-template-columns:1fr;align-items:start}
+@media(min-width:860px){.poem-wrap{grid-template-columns:1.05fr .95fr}}
+.bank h4{font-size:11px;letter-spacing:.24em;color:var(--river);margin:0 0 12px;font-weight:500}
+.bank .row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px}
+.word{
+  border:1px solid rgba(15,56,53,.2);background:#fff;color:var(--river-deep);
+  padding:7px 14px;border-radius:2px;font-size:14px;cursor:pointer;
+  transition:.25s;font-family:"Noto Serif TC",serif;
+}
+.word:hover{background:var(--river);color:#fff;border-color:var(--river)}
+#poemPaper{
+  background:#fff;border:1px solid var(--stone);border-radius:3px;
+  min-height:230px;padding:28px 26px;font-family:"Noto Serif TC",serif;
+  font-size:19px;line-height:2.3;color:var(--river-deep);white-space:pre-wrap;
+  letter-spacing:.05em;
+}
+#poemPaper.empty{color:#A9A392;font-size:15px;font-family:"Noto Sans TC",sans-serif;letter-spacing:0}
+.tools{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+.tbtn{
+  border:1px solid var(--river);background:transparent;color:var(--river);
+  padding:9px 18px;font-size:13px;letter-spacing:.1em;border-radius:2px;
+  cursor:pointer;transition:.25s;font-family:inherit;
+}
+.tbtn:hover{background:var(--river);color:#fff}
+.tbtn.ghost{border-color:rgba(15,56,53,.25);color:#7A7362}
+.tbtn.ghost:hover{background:#7A7362;color:#fff;border-color:#7A7362}
+
+/* 測驗 */
+.q-bar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:18px;flex-wrap:wrap}
+.q-count{font-size:12.5px;letter-spacing:.18em;color:rgba(233,223,199,.55)}
+.q-count b{font-family:"Noto Serif TC",serif;color:var(--gold);font-size:17px;font-weight:900}
+.dots{display:flex;gap:9px}
+.dot{
+  width:10px;height:10px;border-radius:50%;cursor:pointer;
+  border:1px solid rgba(196,176,140,.45);background:transparent;transition:.3s;
+}
+.dot.done{background:rgba(158,220,203,.55);border-color:rgba(158,220,203,.55)}
+.dot.now{background:var(--gold);border-color:var(--gold);transform:scale(1.35)}
+#qStage{min-height:330px}
+.q-nav{display:flex;justify-content:space-between;gap:12px;margin-top:18px}
+.q-nav .tbtn{border-color:rgba(158,220,203,.5);color:var(--glow)}
+.q-nav .tbtn:hover:not(:disabled){background:var(--river);color:#fff;border-color:var(--glow)}
+.q-nav .tbtn.ghost{border-color:rgba(196,176,140,.3);color:rgba(233,223,199,.55)}
+.q-nav .tbtn.ghost:hover{background:rgba(196,176,140,.15);color:var(--stone-light);border-color:var(--stone)}
+@keyframes slideIn{from{opacity:0;transform:translateX(28px)}to{opacity:1;transform:none}}
+@keyframes slideBack{from{opacity:0;transform:translateX(-28px)}to{opacity:1;transform:none}}
+.q.slide-in{animation:slideIn .45s ease}
+.q.slide-back{animation:slideBack .45s ease}
+.q{border:1px solid rgba(196,176,140,.25);border-radius:4px;padding:24px;margin-bottom:0;background:rgba(196,176,140,.04)}
+.q .qt{font-family:"Noto Serif TC",serif;font-size:17px;color:var(--stone-light);margin:0 0 16px;line-height:1.8}
+.q .qt span{color:var(--gold);font-family:"Cormorant Garamond",serif;font-size:19px;margin-right:10px}
+.opt{
+  display:block;width:100%;text-align:left;background:rgba(255,255,255,.03);
+  border:1px solid rgba(196,176,140,.22);color:var(--stone-light);
+  padding:13px 18px;border-radius:3px;margin-bottom:9px;cursor:pointer;
+  font-size:14.5px;transition:.25s;font-family:inherit;
+}
+.opt:hover:not(:disabled){border-color:var(--river-light);background:rgba(46,131,119,.14)}
+.opt:disabled{cursor:default}
+.opt.right{background:rgba(46,131,119,.3);border-color:var(--glow);color:#fff}
+.opt.wrong{background:rgba(168,69,47,.22);border-color:#C9705C;color:#F0D9D2}
+.fb{font-size:13.5px;line-height:1.9;color:var(--glow);margin:12px 0 0;display:none}
+.fb.show{display:block}
+#score{
+  text-align:center;margin-top:28px;padding:26px;border-radius:4px;
+  background:rgba(46,131,119,.14);border:1px solid rgba(158,220,203,.3);display:none;
+}
+#score.show{display:block}
+#score .n{font-family:"Noto Serif TC",serif;font-size:42px;color:var(--glow);font-weight:900}
+#score p{margin:8px 0 0;font-size:14px;color:rgba(233,223,199,.8)}
+
+footer{padding:56px 0 44px;border-top:1px solid rgba(196,176,140,.15);text-align:center}
+footer p{margin:0 0 8px;font-size:12.5px;color:rgba(233,223,199,.45);line-height:1.9;letter-spacing:.06em}
+footer .note{font-size:11.5px;color:rgba(233,223,199,.3);max-width:600px;margin:18px auto 0}
+.replay{
+  background:none;border:1px solid rgba(196,176,140,.3);color:rgba(233,223,199,.55);
+  padding:8px 18px;font-size:12px;letter-spacing:.16em;border-radius:2px;
+  cursor:pointer;margin-top:22px;font-family:inherit;transition:.3s;
+}
+.replay:hover{border-color:var(--glow);color:var(--glow)}
+
+.reveal{opacity:0;transform:translateY(26px);transition:opacity .9s ease,transform .9s ease}
+.reveal.in{opacity:1;transform:none}
+
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition-duration:.01ms!important}
+  .reveal{opacity:1;transform:none}
+}
+</style>
+</head>
+<body>
+
+<!-- ===================== 片頭 ===================== -->
+<div id="intro">
+  <div id="startScreen">
+    <p class="latin" style="color:var(--gold);font-size:14px;margin:0 0 18px">GUANXI · NIULAN RIVER</p>
+    <h1>戀戀牛欄河</h1>
+    <p>關西國小　五年級校訂課程</p>
+    <button class="start-btn pulse" id="startBtn">點 擊 開 始</button>
+  </div>
+
+  <div id="introStage">
+    <div id="introPhoto"><img id="introImg" src="niulanhe.png" alt="牛欄河親水公園與東安古橋實景"></div>
+    <div id="introScrim"></div>
+    <div class="intro-line" id="l1">一條河，繞著關西走了幾百年</div>
+    <div class="intro-line" id="l2">一座石橋，從昭和二年站到現在</div>
+    <div id="introTitle">
+      <span class="big">戀戀牛欄河</span>
+      <span class="sub">五 年 級 校 訂 課 程</span>
+    </div>
+    <svg id="introBridge" viewBox="0 0 1000 300" class="draw" aria-hidden="true">
+      <line x1="20" y1="88" x2="980" y2="88"/>
+      <line x1="20" y1="118" x2="980" y2="118"/>
+      <path d="M70,250 L70,185 A70,70 0 0 1 210,185 L210,250"/>
+      <path d="M250,250 L250,185 A70,70 0 0 1 390,185 L390,250"/>
+      <path d="M430,250 L430,185 A70,70 0 0 1 570,185 L570,250"/>
+      <path d="M610,250 L610,185 A70,70 0 0 1 750,185 L750,250"/>
+      <path d="M790,250 L790,185 A70,70 0 0 1 930,185 L930,250"/>
+      <line x1="0" y1="252" x2="1000" y2="252"/>
+    </svg>
+    <button class="skip" id="skipBtn">跳過片頭 ›</button>
+  </div>
+</div>
+
+<!-- ===================== 首頁 ===================== -->
+<header class="hero">
+  <div class="wrap">
+    <p class="eyebrow">關西・牛欄河親水公園 × 縣定古蹟東安古橋</p>
+    <h1>戀戀牛欄河</h1>
+    <p class="tag" style="margin-top:18px">五年級校訂課程　六節課</p>
+    <p class="lead">
+      從校門口出發，走一段路就到牛欄河。<br>
+      在這裡，孩子用腳走過、用眼睛看過、用畫筆畫過，<br>
+      再用文字與客語，把家鄉的樣子留下來。
+    </p>
+
+    <div class="photo-center">
+      <div class="bridge-photo" id="bridgePhoto">
+        <img id="navImg" src="niulanhe.png" alt="牛欄河親水公園與東安古橋實景">
+        <div class="arch-row" id="archRow"></div>
+      </div>
+    </div>
+
+    <div class="bridge-box" id="bridgeFallback" style="display:none">
+      <svg viewBox="0 0 1000 330" role="img" aria-label="東安古橋五孔石拱橋課程導覽">
+        <defs>
+          <linearGradient id="stoneG" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#DCCDA8"/><stop offset="100%" stop-color="#9E8A64"/>
+          </linearGradient>
+        </defs>
+
+        <!-- 橋身（挖出五個拱） -->
+        <path fill="url(#stoneG)" fill-rule="evenodd" d="
+          M20,88 H980 V250 H20 Z
+          M70,250 L70,185 A70,70 0 0 1 210,185 L210,250 Z
+          M250,250 L250,185 A70,70 0 0 1 390,185 L390,250 Z
+          M430,250 L430,185 A70,70 0 0 1 570,185 L570,250 Z
+          M610,250 L610,185 A70,70 0 0 1 750,185 L750,250 Z
+          M790,250 L790,185 A70,70 0 0 1 930,185 L930,250 Z"/>
+        <!-- 欄杆 -->
+        <rect x="20" y="76" width="960" height="7" fill="#E9DFC7"/>
+        <rect x="20" y="112" width="960" height="4" fill="rgba(0,0,0,.16)"/>
+
+        <!-- 水 -->
+        <rect x="0" y="250" width="1000" height="80" fill="#0F3835"/>
+        <g class="wave slow">
+          <path class="water-b" d="M-200,262 q50,-9 100,0 t100,0 t100,0 t100,0 t100,0 t100,0 t100,0 t100,0 t100,0 t100,0 t100,0 t100,0 v70 H-200 Z"/>
+        </g>
+        <g class="wave">
+          <path class="water-a" d="M-200,274 q50,-8 100,0 t100,0 t100,0 t100,0 t100,0 t100,0 t100,0 t100,0 t100,0 t100,0 t100,0 t100,0 v60 H-200 Z"/>
+        </g>
+
+        <!-- 五個可點擊拱門 -->
+        <g class="arch-g"><path class="arch-hit" data-u="u1" tabindex="0" role="button" aria-label="單元一 漫遊牛欄河" d="M70,250 L70,185 A70,70 0 0 1 210,185 L210,250 Z"/><text class="arch-num" x="140" y="220">一</text></g>
+        <g class="arch-g"><path class="arch-hit" data-u="u2" tabindex="0" role="button" aria-label="單元二 閱讀歷史" d="M250,250 L250,185 A70,70 0 0 1 390,185 L390,250 Z"/><text class="arch-num" x="320" y="220">二</text></g>
+        <g class="arch-g"><path class="arch-hit" data-u="u3" tabindex="0" role="button" aria-label="單元三 河畔藝廊" d="M430,250 L430,185 A70,70 0 0 1 570,185 L570,250 Z"/><text class="arch-num" x="500" y="220">三</text></g>
+        <g class="arch-g"><path class="arch-hit" data-u="u4" tabindex="0" role="button" aria-label="單元四 閱讀文學" d="M610,250 L610,185 A70,70 0 0 1 750,185 L750,250 Z"/><text class="arch-num" x="680" y="220">四</text></g>
+        <g class="arch-g"><path class="arch-hit" data-u="u5" tabindex="0" role="button" aria-label="單元五 河畔風華" d="M790,250 L790,185 A70,70 0 0 1 930,185 L930,250 Z"/><text class="arch-num" x="860" y="220">五</text></g>
+      </svg>
+    </div>
+
+    <div class="chips">
+      <button class="chip" data-u="u1"><b>一</b>漫遊牛欄河</button>
+      <button class="chip" data-u="u2"><b>二</b>閱讀歷史</button>
+      <button class="chip" data-u="u3"><b>三</b>河畔藝廊</button>
+      <button class="chip" data-u="u4"><b>四</b>閱讀文學</button>
+      <button class="chip" data-u="u5"><b>五</b>河畔風華</button>
+    </div>
+    <p style="text-align:center;font-size:12px;letter-spacing:.16em;color:rgba(233,223,199,.4);margin-top:16px">
+      五道石拱，對應五個單元　·　點選拱門進入課程
+    </p>
+  </div>
+</header>
+
+<!-- ===================== 課程特色 ===================== -->
+<section>
+  <div class="wrap reveal">
+    <p class="eyebrow">Course Character</p>
+    <h2 class="sec">課程的四個支點</h2>
+    <div class="rule"></div>
+    <div class="feat-grid">
+      <div class="feat">
+        <i class="fa-solid fa-shoe-prints"></i>
+        <h3>實地感官體驗</h3>
+        <p>徒步走訪與水彩寫生並行，讓學生用身體記住牛欄河與東安古橋的古色古香與美感。</p>
+      </div>
+      <div class="feat">
+        <i class="fa-solid fa-book-open"></i>
+        <h3>文史與閱讀結合</h3>
+        <p>創作之前先讀懂：從東安古橋的興建歷史與建築特色，到文學作品裡的抒情手法。</p>
+      </div>
+      <div class="feat">
+        <i class="fa-solid fa-comments"></i>
+        <h3>客語在地連結</h3>
+        <p>景物詞彙、日常對話與情意表達，讓客語自然長在鄉土探索的過程裡。</p>
+      </div>
+      <div class="feat">
+        <i class="fa-solid fa-hands-holding-circle"></i>
+        <h3>社會參與與傳承</h3>
+        <p>把所見所聞轉化成導覽、畫作與文章，讓愛家鄉、惜文化成為可以帶著走的能力。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 單元 ===================== -->
+<section class="panel" id="units">
+  <div class="wrap">
+    <p class="eyebrow">Six Lessons</p>
+    <h2 class="sec">課程架構</h2>
+    <div class="rule"></div>
+    <p style="max-width:620px;color:#4A5654;font-size:14.5px;line-height:2;margin:-12px 0 34px">
+      五個單元、六節課。走訪與寫生之間，各安排一節閱讀課：先讀歷史，再讀文學，最後動筆。
+    </p>
+
+    <div id="unitList"></div>
+  </div>
+</section>
+
+<!-- ===================== 客語詞彙 ===================== -->
+<section>
+  <div class="wrap reveal">
+    <p class="eyebrow">Hakka Words by the River</p>
+    <h2 class="sec">河邊的客話</h2>
+    <div class="rule"></div>
+    <div class="card-grid" id="hakkaCards"></div>
+    <p class="flip-hint"><i class="fa-regular fa-hand-pointer"></i>　點卡片翻面看解釋與例句</p>
+  </div>
+</section>
+
+<!-- ===================== 河畔詩箋 ===================== -->
+<section class="panel">
+  <div class="wrap">
+    <p class="eyebrow">Lesson 6 · Writing Studio</p>
+    <h2 class="sec">河畔詩箋</h2>
+    <div class="rule"></div>
+    <p style="max-width:640px;color:#4A5654;font-size:14.5px;line-height:2;margin:-12px 0 34px">
+      單元五的暖身。點選下面的詞語堆疊成句子，先讓學生把畫面拼出來，再回頭改寫成自己的詩。
+    </p>
+    <div class="poem-wrap">
+      <div class="bank" id="bank"></div>
+      <div>
+        <div id="poemPaper" class="empty">點左邊的詞語，句子會出現在這張詩箋上。</div>
+        <div class="tools">
+          <button class="tbtn" id="brBtn"><i class="fa-solid fa-turn-down"></i>　換行</button>
+          <button class="tbtn" id="copyBtn"><i class="fa-regular fa-copy"></i>　複製詩句</button>
+          <button class="tbtn ghost" id="delBtn">刪除上一個</button>
+          <button class="tbtn ghost" id="clrBtn">全部清除</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 測驗 ===================== -->
+<section>
+  <div class="wrap reveal">
+    <p class="eyebrow">Check Point</p>
+    <h2 class="sec">走過石橋・小考驗</h2>
+    <div class="rule"></div>
+    <div id="quiz"></div>
+  <div id="score"><div class="n"></div><p></p><button class="tbtn" id="qRetry" style="margin-top:18px;border-color:var(--glow);color:var(--glow)"><i class="fa-solid fa-rotate-left"></i>　再測一次</button></div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p class="latin" style="color:var(--gold);font-size:14px">GUANXI ELEMENTARY SCHOOL</p>
+    <p>新竹縣關西國民小學　五年級校訂課程「戀戀牛欄河」</p>
+    <p>課程設計與網頁製作｜資訊組 Vincent Wang　·　本頁面由 Claude (Anthropic) 協助製作</p>
+    <button class="replay" id="replayBtn"><i class="fa-solid fa-rotate-left"></i>　重播片頭</button>
+    <p class="note">
+      實景照片請命名為 <b style="color:rgba(233,223,199,.55)">niulanhe.png</b>，與本 HTML 放在同一層資料夾，
+      首頁導覽與片頭結尾會共用同一張；若檔案不存在，兩處都會自動改用石拱線稿版本。<br><br>
+      本頁客語用字以在地習慣寫法呈現，腔調與拼音請依關西在地海陸腔教材及客語教師版本校訂；
+      東安古橋史料細節請以文化局古蹟公告與校內教材為準。
+    </p>
+  </div>
+</footer>
+
+<script>
+/* ---------------- 片頭 ---------------- */
+(function(){
+  var intro=document.getElementById('intro'),
+      start=document.getElementById('startScreen'),
+      stage=document.getElementById('introStage'),
+      timers=[];
+
+  function clearT(){timers.forEach(clearTimeout);timers=[];}
+  function T(fn,ms){timers.push(setTimeout(fn,ms));}
+
+  function anim(el,name,dur,delay){
+    el.style.animation=name+' '+dur+'ms ease forwards';
+    el.style.animationDelay=(delay||0)+'ms';
+  }
+
+  function run(){
+    start.style.display='none';
+    stage.classList.add('on');
+    var l1=document.getElementById('l1'),l2=document.getElementById('l2'),
+        t=document.getElementById('introTitle'),b=document.getElementById('introBridge'),
+        photo=document.getElementById('introPhoto'),img=document.getElementById('introImg'),
+        scrim=document.getElementById('introScrim'),
+        strokes=b.querySelectorAll('path,line');
+
+    /* 重置 */
+    [l1,l2,t].forEach(function(e){e.style.animation='';e.style.opacity=0;});
+    b.style.animation='';b.style.opacity=0;b.style.transition='';
+    photo.style.transition='none';photo.style.opacity=0;photo.style.display='';
+    img.style.transition='none';img.style.filter='brightness(.06) saturate(.35)';img.style.transform='scale(1.06)';
+    scrim.style.transition='none';scrim.style.opacity=0;
+    strokes.forEach(function(s){s.style.transition='none';s.style.strokeDashoffset=2600;});
+
+    anim(l1,'fadeIn',1200,300);
+    T(function(){anim(l1,'fadeOut',900,0);},2800);
+    T(function(){anim(l2,'fadeIn',1200,0);},3600);
+    T(function(){anim(l2,'fadeOut',900,0);},6200);
+
+    /* 石拱線稿逐筆描出 */
+    T(function(){
+      b.style.animation='fadeIn 900ms ease forwards';
+      strokes.forEach(function(s,i){
+        s.style.transition='stroke-dashoffset 2200ms ease '+(i*150)+'ms';
+        s.style.strokeDashoffset=0;
+      });
+    },5000);
+
+    /* 實景照片由暗轉亮，線稿退場（照片不存在時保留線稿） */
+    T(function(){
+      var ok=img.complete&&img.naturalWidth>0;
+      if(!ok){photo.style.display='none';return;}
+      photo.style.transition='opacity 1200ms ease';
+      photo.style.opacity=1;
+      img.style.transition='filter 1800ms ease, transform 2600ms cubic-bezier(.22,.61,.36,1)';
+      img.style.filter='brightness(1) saturate(1)';
+      img.style.transform='scale(1)';
+      anim(b,'fadeOut',1000,0);
+      scrim.style.transition='opacity 1600ms ease';
+      scrim.style.opacity=1;
+    },8000);
+
+    /* 標題疊上照片 */
+    T(function(){anim(t,'fadeIn',1400,0);},9600);
+
+    /* 標題與遮罩退場，留下照片全貌 */
+    T(function(){
+      anim(t,'fadeOut',1100,0);
+      scrim.style.transition='opacity 1100ms ease';
+      scrim.style.opacity=0;
+    },12600);
+
+    /* 照片全貌停留約 3.5 秒後結束 */
+    T(close,17200);
+  }
+
+  function close(){
+    clearT();
+    intro.classList.add('gone');
+    document.body.style.overflow='';
+  }
+
+  document.getElementById('startBtn').addEventListener('click',function(){
+    document.body.style.overflow='hidden';run();
+  });
+  document.getElementById('skipBtn').addEventListener('click',close);
+  document.getElementById('replayBtn').addEventListener('click',function(){
+    intro.classList.remove('gone');
+    stage.classList.remove('on');
+    start.style.display='block';
+    window.scrollTo({top:0,behavior:'smooth'});
+  });
+})();
+
+/* ---------------- 照片導覽：五個拱門熱區 ----------------
+   若拱門位置和您的照片對不齊，只要改下面這一組數字即可（單位為照片寬高的百分比）。
+   left = 距離左邊，width = 寬度，bottom = 距離底部，height = 高度            */
+var ARCH_POS=[
+ {left:4.5, width:21, bottom:20, height:17},
+ {left:27.5,width:18, bottom:20, height:17},
+ {left:46.0,width:19, bottom:20, height:17},
+ {left:66.0,width:18, bottom:20, height:17},
+ {left:85.0,width:13, bottom:20, height:17}
+];
+var ARCH_LABEL=['一','二','三','四','五'],
+    ARCH_NAME=['漫遊牛欄河','閱讀歷史','河畔藝廊','閱讀文學','河畔風華'];
+(function(){
+  var row=document.getElementById('archRow'),h='';
+  ARCH_POS.forEach(function(p,i){
+    h+='<button class="arch-btn" data-u="u'+(i+1)+'" aria-label="單元'+ARCH_LABEL[i]+' '+ARCH_NAME[i]+'" '+
+       'style="left:'+p.left+'%;width:'+p.width+'%;bottom:'+p.bottom+'%;height:'+p.height+'%">'+
+       ARCH_LABEL[i]+'</button>';
+  });
+  row.innerHTML=h;
+
+  /* 照片不存在時，改用石拱線稿版導覽 */
+  var img=document.getElementById('navImg');
+  function useFallback(){
+    document.getElementById('bridgePhoto').style.display='none';
+    document.getElementById('bridgeFallback').style.display='block';
+  }
+  img.addEventListener('error',useFallback);
+  if(img.complete&&img.naturalWidth===0)useFallback();
+})();
+
+/* ---------------- 單元資料 ---------------- */
+var UNITS=[
+ {id:'u1',no:'單元一',name:'漫遊牛欄河',ses:'第一節',lessons:[{
+   n:'第一節',t:'走訪牛欄河與古橋',
+   p:'徒步前往牛欄河親水公園，沿途介紹關西風光，並由在地導覽員解說東安古橋與河岸的文化故事。',
+   goal:['了解家鄉景點特色與古建築歷史','培養愛鄉惜文化的情感與美感素養'],
+   hk:{label:'客語教學',txt:'學習與景物有關的客語詞彙，以及與東安橋有關的客語句型。'},
+   out:'實際踏查、小組討論、國客語發表。'}]},
+
+ {id:'u2',no:'單元二',name:'閱讀歷史',ses:'第二節',lessons:[{
+   n:'第二節',t:'閱讀：東安橋的石造歲月',
+   p:'閱讀關於東安古橋建造歷史與「仿哥德式」建築特色的文獻或簡短介紹，理解石拱結構如何撐起一座橋、也撐起一段地方記憶。',
+   goal:['能透過閱讀理解縣定古蹟的歷史價值','能說出石拱橋的建築結構特點'],
+   hk:{label:'文化認同',txt:'探究東安橋在關西地方發展中所扮演的角色。'},
+   out:'閱讀筆記、口頭發表。'}]},
+
+ {id:'u3',no:'單元三',name:'河畔藝廊',ses:'第三・四節',lessons:[{
+   n:'第三節',t:'東安橋寫生',
+   p:'進行牛欄河構圖與水彩上色說明，觀察不同時段的光影變化並表現在畫面上。',
+   goal:['學會風景構圖並運用多元媒材與技法','透過創作察覺議題，表現人文關懷'],
+   hk:{label:'美感體驗',txt:'透過視覺元素、色彩辨識與畫面構成進行溝通。'},
+   out:'觀察、圖畫寫生、作品展出。'},{
+   n:'第四節',t:'藝廊展出與欣賞',
+   p:'五年級學生共同布展，分享並欣賞同學的畫作，說出自己喜歡某幅作品的理由。',
+   goal:['能透過作品欣賞，對在地鄉土文化有進一步認識'],
+   hk:{label:'心得交流',txt:'說出欣賞同學作品的原因，練習具體描述而非只說「很漂亮」。'},
+   out:'觀察、作品展出。'}]},
+
+ {id:'u4',no:'單元四',name:'閱讀文學',ses:'第五節',lessons:[{
+   n:'第五節',t:'閱讀：河畔的詩情畫意',
+   p:'閱讀關於牛欄河的詩集或寫景文章，看作者如何用敘事與寫景把情感藏進畫面裡。',
+   goal:['能掌握寫作步驟','理解如何藉由敘事與描寫景物間接抒情'],
+   hk:{label:'文學摹寫',txt:'摘錄優美的客語或國語詩句，讀出聲音與節奏。'},
+   out:'佳句紀錄、口語表達。'}]},
+
+ {id:'u5',no:'單元五',name:'河畔風華',ses:'第六節',lessons:[{
+   n:'第六節',t:'文章與詩集創作',
+   p:'寫出走訪牛欄河的心得文章，並分組共同創作一首詩，搭配插圖集結成冊。',
+   goal:['寫出表達清楚、段落分明、符合主題的作品','傳遞對家鄉的情感與文化感悟'],
+   hk:{label:'客語情意表達',txt:'練習用客語分享自己對自然與景物的感悟。'},
+   out:'寫作、詩集欣賞與朗誦。'}]}
+];
+
+var archMini='<svg viewBox="0 0 44 34" aria-hidden="true"><path fill="none" stroke="#C4B08C" stroke-width="2.4" d="M4,33 L4,17 A18,18 0 0 1 40,17 L40,33"/></svg>';
+
+var html='';
+UNITS.forEach(function(u){
+  var body='';
+  u.lessons.forEach(function(l){
+    var goals='';
+    l.goal.forEach(function(g){goals+='<li>'+g+'</li>';});
+    body+='<div class="lesson">'+
+      '<div class="les-no">'+l.n+'</div>'+
+      '<div class="les-t">'+l.t+'</div>'+
+      '<p class="les-p">'+l.p+'</p>'+
+      '<div class="meta">'+
+        '<div><h4>學習目標</h4><ul>'+goals+'</ul></div>'+
+        '<div><span class="tag-hakka">'+l.hk.label+'</span><h4>強化元素與實施</h4><p>'+l.hk.txt+'</p></div>'+
+        '<div><h4>學生成果・教學檢核</h4><p>'+l.out+'</p></div>'+
+      '</div></div>';
+  });
+  html+='<div class="unit" id="'+u.id+'">'+
+    '<button class="unit-head" aria-expanded="false">'+
+      '<span class="u-arch">'+archMini+'</span>'+
+      '<span class="u-no">'+u.no+'</span>'+
+      '<span class="u-title">'+u.name+'</span>'+
+      '<span class="u-ses">'+u.ses+'</span>'+
+      '<i class="fa-solid fa-chevron-down caret"></i>'+
+    '</button>'+
+    '<div class="unit-body"><div class="unit-inner">'+body+'</div></div>'+
+  '</div>';
+});
+document.getElementById('unitList').innerHTML=html;
+
+function toggleUnit(unit,force){
+  var body=unit.querySelector('.unit-body'),
+      head=unit.querySelector('.unit-head'),
+      open=unit.classList.contains('open');
+  if(force===true&&open)return;
+  if(open&&force!==true){
+    unit.classList.remove('open');body.style.maxHeight=0;head.setAttribute('aria-expanded','false');
+  }else{
+    unit.classList.add('open');body.style.maxHeight=body.scrollHeight+'px';head.setAttribute('aria-expanded','true');
+  }
+}
+document.querySelectorAll('.unit-head').forEach(function(h){
+  h.addEventListener('click',function(){toggleUnit(h.parentNode);});
+});
+
+function goUnit(id){
+  var unit=document.getElementById(id);
+  if(!unit)return;
+  toggleUnit(unit,true);
+  setTimeout(function(){
+    var y=unit.getBoundingClientRect().top+window.pageYOffset-24;
+    window.scrollTo({top:y,behavior:'smooth'});
+  },80);
+}
+document.querySelectorAll('[data-u]').forEach(function(el){
+  el.addEventListener('click',function(){goUnit(el.getAttribute('data-u'));});
+  el.addEventListener('keydown',function(e){
+    if(e.key==='Enter'||e.key===' '){e.preventDefault();goUnit(el.getAttribute('data-u'));}
+  });
+});
+
+/* ---------------- 客語卡 ---------------- */
+var HAKKA=[
+ {w:'河壩',m:'河流、溪邊',e:'這條河壩流過關西，養大咧當多人。'},
+ {w:'石牯',m:'石頭',e:'東安橋係用石牯砌起來个。'},
+ {w:'日頭',m:'太陽',e:'日頭照到橋頂，影仔跌落水肚。'},
+ {w:'靚',m:'漂亮、美',e:'東安橋當靚，畫幾多擺都畫毋盡。'},
+ {w:'來尞',m:'來玩、來走走',e:'歡迎大家來關西尞。'},
+ {w:'行',m:'走路',e:'𠊎兜行過石橋，去河壩堘看水。'}
+];
+var hc='';
+HAKKA.forEach(function(k){
+  hc+='<div class="flip" tabindex="0" role="button" aria-label="客語詞彙 '+k.w+'"><div class="flip-in">'+
+    '<div class="face front"><span class="w">'+k.w+'</span><span class="h">HAKKA</span></div>'+
+    '<div class="face back"><div class="m">'+k.m+'</div><div class="e">'+k.e+'</div></div>'+
+  '</div></div>';
+});
+document.getElementById('hakkaCards').innerHTML=hc;
+document.querySelectorAll('.flip').forEach(function(f){
+  function t(){f.classList.toggle('on');}
+  f.addEventListener('click',t);
+  f.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();t();}});
+});
+
+/* ---------------- 河畔詩箋 ---------------- */
+var BANK=[
+ {h:'景物',words:['石拱橋','河壩水','老樹影','青苔','天光','河風','蟬聲','白鷺鷥','石階','橋影','水花','夕陽']},
+ {h:'動作與感覺',words:['流過','停下來','記得','輕輕地','慢慢地','想起','看見','聽見','藏著','走過','等待','洗過']},
+ {h:'句尾',words:['一百年了','還在這裡','是我的家鄉','阿婆講个故事','像一首歌','就在橋下','沒有說話','。','，']}
+];
+var bh='';
+BANK.forEach(function(g){
+  bh+='<h4>'+g.h+'</h4><div class="row">';
+  g.words.forEach(function(w){bh+='<button class="word">'+w+'</button>';});
+  bh+='</div>';
+});
+document.getElementById('bank').innerHTML=bh;
+
+var poem=[],paper=document.getElementById('poemPaper');
+function render(){
+  if(!poem.length){paper.className='empty';paper.textContent='點左邊的詞語，句子會出現在這張詩箋上。';return;}
+  paper.className='';
+  paper.textContent=poem.join('');
+}
+document.querySelectorAll('.word').forEach(function(b){
+  b.addEventListener('click',function(){poem.push(b.textContent);render();});
+});
+document.getElementById('brBtn').addEventListener('click',function(){poem.push('\n');render();});
+document.getElementById('delBtn').addEventListener('click',function(){poem.pop();render();});
+document.getElementById('clrBtn').addEventListener('click',function(){poem=[];render();});
+document.getElementById('copyBtn').addEventListener('click',function(){
+  var txt=poem.join('');
+  if(!txt){return;}
+  var btn=this,old=btn.innerHTML;
+  function done(){btn.innerHTML='<i class="fa-solid fa-check"></i>　已複製';setTimeout(function(){btn.innerHTML=old;},1600);}
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(txt).then(done,fallback);
+  }else{fallback();}
+  function fallback(){
+    var ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);
+    ta.select();try{document.execCommand('copy');done();}catch(e){}document.body.removeChild(ta);
+  }
+});
+
+/* ---------------- 測驗 ---------------- */
+var QUIZ=[
+ {q:'東安古橋興建於哪一個年代？',o:['清朝光緒年間','日治昭和二年（西元1927年）','民國五十年代','戰後民國八十年代'],a:1,
+  f:'東安古橋建於日治昭和二年，是關西地區重要的日治時期橋樑，後來又經過拓寬工程。'},
+ {q:'東安古橋目前的文化資產身分是？',o:['國定古蹟','縣定古蹟','歷史建築','尚未指定'],a:1,
+  f:'東安古橋為新竹縣的縣定古蹟，屬於受法律保護的文化資產。'},
+ {q:'東安古橋最明顯的建築結構特色是？',o:['木造吊橋','鋼筋混凝土平橋','五孔石造拱橋','單孔紅磚橋'],a:2,
+  f:'一道道半圓形石拱撐起橋面，是石拱橋把重量往兩側傳遞的結構智慧。'},
+ {q:'本課程教材描述東安橋的建築風格接近哪一種？',o:['仿哥德式','巴洛克式','和洋折衷式','現代主義'],a:0,
+  f:'課程教材以「仿哥德式」描述其石造拱形的西洋建築特色。實際導覽時可再與文化局古蹟說明對照。'},
+ {q:'牛欄河親水公園同時具備哪兩種功能？',o:['發電與灌溉','防洪整治與親水休憩','養殖與運輸','儲水與淨水'],a:1,
+  f:'河道整治讓水患減少，也整理出可以散步、親近水邊的公園空間。'},
+ {q:'寫生時要表現「光影變化」，最需要仔細觀察什麼？',o:['畫紙的厚度','陽光照射的方向與明暗深淺','顏料的品牌','畫筆的長度'],a:1,
+  f:'先找到光從哪裡來，橋身的亮面、暗面與投在水上的影子就會自己浮現。'},
+ {q:'客語的「河壩」是指什麼？',o:['水壩','河流、溪邊','池塘','水井'],a:1,
+  f:'客語的「河壩」就是河流、河邊，牛欄河在客語裡就是孩子口中的河壩。'}
+];
+var qWrap=document.getElementById('quiz'),
+    answers=new Array(QUIZ.length),
+    qIdx=0;
+
+qWrap.innerHTML=
+  '<div class="q-bar">'+
+    '<span class="q-count">第 <b id="qNow">1</b> 題　/　'+QUIZ.length+'</span>'+
+    '<div class="dots" id="qDots"></div>'+
+  '</div>'+
+  '<div id="qStage"></div>'+
+  '<div class="q-nav">'+
+    '<button class="tbtn ghost" id="qPrev"><i class="fa-solid fa-chevron-left"></i>　上一題</button>'+
+    '<button class="tbtn" id="qNext">下一題　<i class="fa-solid fa-chevron-right"></i></button>'+
+  '</div>';
+
+var dots='';
+QUIZ.forEach(function(_,i){dots+='<span class="dot" data-i="'+i+'"></span>';});
+document.getElementById('qDots').innerHTML=dots;
+
+function renderQ(dir){
+  var item=QUIZ[qIdx],stage=document.getElementById('qStage'),
+      picked=answers[qIdx],ops='';
+  item.o.forEach(function(o,j){
+    var cls='opt';
+    if(picked!==undefined){
+      if(j===item.a)cls+=' right';
+      else if(j===picked)cls+=' wrong';
+    }
+    ops+='<button class="'+cls+'" data-o="'+j+'"'+(picked!==undefined?' disabled':'')+'>'+o+'</button>';
+  });
+  stage.innerHTML='<div class="q '+(dir==='back'?'slide-back':'slide-in')+'">'+
+    '<p class="qt"><span>'+('0'+(qIdx+1)).slice(-2)+'</span>'+item.q+'</p>'+ops+
+    '<p class="fb'+(picked!==undefined?' show':'')+'"><i class="fa-solid fa-water"></i>　'+item.f+'</p></div>';
+
+  stage.querySelectorAll('.opt').forEach(function(b){
+    b.addEventListener('click',function(){
+      if(answers[qIdx]!==undefined)return;
+      answers[qIdx]=+b.getAttribute('data-o');
+      renderQ('same');
+      updateNav();
+    });
+  });
+
+  document.getElementById('qNow').textContent=qIdx+1;
+  document.querySelectorAll('.dot').forEach(function(d,i){
+    d.className='dot'+(i===qIdx?' now':'')+(answers[i]!==undefined?' done':'');
+  });
+  updateNav();
+}
+
+function updateNav(){
+  var prev=document.getElementById('qPrev'),next=document.getElementById('qNext'),
+      last=qIdx===QUIZ.length-1,
+      allDone=answers.filter(function(a){return a!==undefined;}).length===QUIZ.length;
+  prev.style.visibility=qIdx===0?'hidden':'visible';
+  if(last){
+    next.innerHTML='看成績　<i class="fa-solid fa-flag-checkered"></i>';
+    next.disabled=!allDone;
+  }else{
+    next.innerHTML='下一題　<i class="fa-solid fa-chevron-right"></i>';
+    next.disabled=answers[qIdx]===undefined;
+  }
+  next.style.opacity=next.disabled?.35:1;
+  next.style.cursor=next.disabled?'default':'pointer';
+}
+
+document.getElementById('qPrev').addEventListener('click',function(){
+  if(qIdx>0){qIdx--;renderQ('back');}
+});
+document.getElementById('qNext').addEventListener('click',function(){
+  if(this.disabled)return;
+  if(qIdx<QUIZ.length-1){qIdx++;renderQ();}
+  else showScore();
+});
+document.querySelectorAll('.dot').forEach(function(d){
+  d.addEventListener('click',function(){
+    var i=+d.getAttribute('data-i');
+    if(i===qIdx)return;
+    if(i>qIdx&&answers[qIdx]===undefined)return;
+    var dir=i<qIdx?'back':'fwd';qIdx=i;renderQ(dir);
+  });
+});
+
+function showScore(){
+  var correct=0;
+  QUIZ.forEach(function(item,i){if(answers[i]===item.a)correct++;});
+  var s=document.getElementById('score');
+  s.querySelector('.n').textContent=correct+' / '+QUIZ.length;
+  s.querySelector('p').textContent=
+    correct===QUIZ.length?'全部答對！你已經是牛欄河的小小導覽員了。':
+    correct>=5?'很不錯！再回頭看看單元二的閱讀資料，就更完整了。':
+    '沒關係，回到上面的五道拱門，再走一次課程吧。';
+  s.classList.add('show');
+  document.getElementById('qRetry').onclick=function(){
+    answers=new Array(QUIZ.length);qIdx=0;
+    s.classList.remove('show');renderQ();
+    qWrap.scrollIntoView({behavior:'smooth',block:'center'});
+  };
+  s.scrollIntoView({behavior:'smooth',block:'center'});
+}
+
+renderQ();
+
+/* ---------------- 進場動畫 ---------------- */
+(function(){
+  if(!('IntersectionObserver' in window)){
+    document.querySelectorAll('.reveal').forEach(function(e){e.classList.add('in');});return;
+  }
+  var io=new IntersectionObserver(function(es){
+    es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});
+  },{threshold:.12});
+  document.querySelectorAll('.reveal').forEach(function(e){io.observe(e);});
+})();
+
+window.addEventListener('resize',function(){
+  document.querySelectorAll('.unit.open').forEach(function(u){
+    var b=u.querySelector('.unit-body');b.style.maxHeight=b.scrollHeight+'px';
+  });
+});
+</script>
+</body>
+</html>
