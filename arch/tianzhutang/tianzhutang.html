@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>建築傳說～關西天主堂｜關西國小六年級校訂課程</title>
+<meta name="description" content="新竹縣關西國小六年級校訂課程「建築傳說～關西天主堂」互動教學網">
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Noto+Sans+TC:wght@300;400;500;700&family=Noto+Serif+TC:wght@500;700;900&display=swap" rel="stylesheet">
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        night:   '#0B0E1E',
+        indigo1: '#131A3A',
+        indigo2: '#23306B',
+        ruby:    '#B4322F',
+        amber1:  '#E0A526',
+        stone1:  '#EDE6D8',
+        stone2:  '#CFC4AC',
+        leaf:    '#2E6B5E'
+      },
+      fontFamily: {
+        serifz: ['"Noto Serif TC"', 'serif'],
+        sansz:  ['"Noto Sans TC"', 'sans-serif'],
+        cinzel: ['Cinzel', 'serif']
+      }
+    }
+  }
+}
+</script>
+<style>
+  html { scroll-behavior: smooth; }
+  body { background:#0B0E1E; color:#EDE6D8; font-family:'Noto Sans TC',sans-serif; }
+
+  /* 洗石子牆面質感 */
+  .washed-wall{
+    background-color:#151C3D;
+    background-image:
+      radial-gradient(circle at 12% 18%, rgba(237,230,216,.055) 0 1.4px, transparent 1.6px),
+      radial-gradient(circle at 63% 42%, rgba(237,230,216,.045) 0 1.7px, transparent 1.9px),
+      radial-gradient(circle at 28% 78%, rgba(224,165,38,.05) 0 1.2px, transparent 1.4px),
+      radial-gradient(circle at 84% 88%, rgba(237,230,216,.04) 0 1.6px, transparent 1.8px);
+    background-size: 46px 46px, 62px 62px, 38px 38px, 74px 74px;
+  }
+
+  /* 尖拱外框 */
+  .lancet{
+    border-top-left-radius: 50% 22%;
+    border-top-right-radius: 50% 22%;
+  }
+  .lancet-deep{
+    border-top-left-radius: 50% 40%;
+    border-top-right-radius: 50% 40%;
+  }
+
+  .glasslead{ box-shadow: inset 0 0 0 1px rgba(224,165,38,.28), 0 18px 46px -22px rgba(0,0,0,.9); }
+
+  .eyebrow{ font-family:'Cinzel',serif; letter-spacing:.34em; text-transform:uppercase; }
+
+  /* ---- 片頭動畫 ---- */
+  #intro{ position:fixed; inset:0; z-index:90; background:#05060F; display:flex; align-items:center; justify-content:center; }
+  #intro.done{ opacity:0; pointer-events:none; transition:opacity 1.1s ease; }
+  .draw{ stroke-dasharray: 1400; stroke-dashoffset: 1400; }
+  .draw.go{ animation: drawline 3s ease forwards; }
+  @keyframes drawline{ to{ stroke-dashoffset:0; } }
+  .pane{ opacity:0; }
+  .pane.lit{ animation: litup 1.5s ease forwards; }
+  @keyframes litup{ 0%{opacity:0; filter:brightness(2.6)} 60%{opacity:1; filter:brightness(1.6)} 100%{opacity:.92; filter:brightness(1)} }
+  .fadein{ opacity:0; transform:translateY(14px); }
+  .fadein.on{ animation: fi 1.6s ease forwards; }
+  @keyframes fi{ to{ opacity:1; transform:none; } }
+  #introPhoto{ opacity:0; transition: opacity 2s ease; }
+  #introPhoto.on{ opacity:1; }
+
+  /* 玫瑰窗 */
+  .petal{ cursor:pointer; transition: fill .45s ease, opacity .3s ease; }
+  .petal:hover{ opacity:.85; }
+  .petal.active{ filter: drop-shadow(0 0 14px currentColor); }
+
+  /* 客語翻卡 */
+  .flip{ perspective:1000px; }
+  .flip-in{ position:relative; transition: transform .6s cubic-bezier(.4,.2,.2,1); transform-style: preserve-3d; }
+  .flip.open .flip-in{ transform: rotateY(180deg); }
+  .face{ position:absolute; inset:0; backface-visibility:hidden; -webkit-backface-visibility:hidden; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+  .face.back{ transform: rotateY(180deg); }
+
+  /* 進場淡入 */
+  .reveal{ opacity:0; transform:translateY(24px); transition: opacity .8s ease, transform .8s ease; }
+  .reveal.shown{ opacity:1; transform:none; }
+
+  .tabbtn.on{ background:#E0A526; color:#0B0E1E; }
+  .tabbtn.on .tabnum{ color:#0B0E1E; opacity:.65 }
+
+  /* 詩箋 */
+  #poem{
+    background: repeating-linear-gradient(to bottom, transparent 0 37px, rgba(11,14,30,.12) 37px 38px);
+    line-height: 38px;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration:.01ms !important; transition-duration:.01ms !important; }
+    html{ scroll-behavior:auto; }
+  }
+  ::selection{ background:#E0A526; color:#0B0E1E; }
+</style>
+</head>
+<body class="font-sansz">
+
+<!-- ═══════════ 片頭動畫 ═══════════ -->
+<div id="intro">
+  <button id="skip" class="absolute top-5 right-5 text-[12px] tracking-[.25em] text-stone2/60 hover:text-amber1 border border-stone2/25 hover:border-amber1/60 px-4 py-2 rounded-full transition">跳過片頭</button>
+
+  <div class="relative w-full max-w-[560px] px-6 text-center">
+
+    <!-- 實景照片（若同層有 church.jpg 會顯示，否則保留線稿） -->
+    <img id="introPhoto" src="church.png" alt="關西天主堂實景"
+         class="absolute inset-0 m-auto w-full h-full object-contain rounded-lg"
+         onerror="this.dataset.missing='1'; this.remove();">
+
+    <svg id="introSvg" viewBox="0 0 400 420" class="w-full mx-auto" style="max-height:62vh">
+      <!-- 彩繪玻璃色塊（先隱藏，逐一點亮） -->
+      <g>
+        <path class="pane" data-i="1" d="M200 176 L176 214 L176 300 L200 300 Z" fill="#B4322F"/>
+        <path class="pane" data-i="2" d="M200 176 L224 214 L224 300 L200 300 Z" fill="#23306B"/>
+        <circle class="pane" data-i="3" cx="200" cy="120" r="22" fill="#E0A526"/>
+        <path class="pane" data-i="4" d="M108 250 L138 250 L138 320 L108 320 Z" fill="#2E6B5E"/>
+        <path class="pane" data-i="5" d="M262 250 L292 250 L292 320 L262 320 Z" fill="#B4322F"/>
+      </g>
+      <!-- 尖塔線稿 -->
+      <g class="draw" id="line1" fill="none" stroke="#EDE6D8" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round">
+        <path d="M200 18 L200 52"/>
+        <path d="M186 34 L214 34"/>
+        <path d="M200 52 L246 148 L246 384 L154 384 L154 148 Z"/>
+        <path d="M154 148 L246 148"/>
+        <path d="M200 168 q-28 22 -28 52 v82 h56 v-82 q0 -30 -28 -52"/>
+        <circle cx="200" cy="120" r="22"/>
+        <path d="M100 384 L100 236 q30 -34 60 0"/>
+        <path d="M300 384 L300 236 q-30 -34 -60 0"/>
+        <path d="M100 240 L154 240 M246 240 L300 240"/>
+        <path d="M124 384 L124 260 q0 -20 16 -20 M276 384 L276 260 q0 -20 -16 -20"/>
+        <path d="M64 384 L336 384"/>
+      </g>
+    </svg>
+
+    <div id="introText" class="mt-6">
+      <p class="eyebrow fadein text-[11px] text-amber1/80" id="it1">Guanxi Catholic Church</p>
+      <h1 class="fadein font-serifz text-3xl sm:text-4xl font-black tracking-[.12em] text-stone1 mt-3" id="it2">建築傳說</h1>
+      <p class="fadein text-stone2/70 text-sm tracking-[.3em] mt-3" id="it3">關西天主堂・逾一甲子的地標</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ 主頁 ═══════════ -->
+<main id="site" class="opacity-0 transition-opacity duration-1000">
+
+<!-- Hero -->
+<header class="washed-wall relative overflow-hidden">
+  <div class="absolute inset-0 bg-gradient-to-b from-night/70 via-transparent to-night"></div>
+
+  <div class="relative max-w-6xl mx-auto px-6 pt-14 pb-20 sm:pt-20 sm:pb-28 grid lg:grid-cols-[1.05fr_.95fr] gap-12 items-center">
+    <div>
+      <p class="eyebrow text-[11px] text-amber1">Guanxi Elementary · Grade 6</p>
+      <h1 class="font-serifz font-black text-stone1 leading-[1.15] mt-5
+                 text-[2.6rem] sm:text-[3.6rem]">
+        建築傳說<br>
+        <span class="text-amber1">關西天主堂</span>
+      </h1>
+      <p class="mt-6 text-stone2/85 leading-8 max-w-lg">
+        矗立在關西超過一甲子的哥德式地標。這學期，我們用歷史探究、建築賞析、實地踏查與專題發表，
+        走進尖塔底下那些關於奉獻的人民故事。
+      </p>
+
+      <div class="mt-8 flex flex-wrap gap-3 text-[13px]">
+        <span class="px-4 py-2 rounded-full border border-amber1/40 text-amber1">六大單元</span>
+        <span class="px-4 py-2 rounded-full border border-stone2/25 text-stone2">新增 2 節閱讀課</span>
+        <span class="px-4 py-2 rounded-full border border-stone2/25 text-stone2">國客雙語導覽</span>
+      </div>
+
+      <div class="mt-9 flex flex-wrap gap-4">
+        <a href="#window" class="bg-amber1 text-night font-bold px-7 py-3.5 rounded-full hover:bg-stone1 transition">
+          <i class="fa-solid fa-place-of-worship mr-2"></i>開始探索
+        </a>
+        <a href="#units" class="border border-stone2/35 text-stone1 px-7 py-3.5 rounded-full hover:border-amber1 hover:text-amber1 transition">
+          課程架構
+        </a>
+      </div>
+    </div>
+
+    <!-- 尖拱窗中的實景照片 -->
+    <figure class="relative">
+      <div class="lancet-deep overflow-hidden glasslead bg-indigo1 aspect-[3/4] max-w-[380px] mx-auto">
+        <img src="church2.png" alt="關西天主堂實景照片" class="w-full h-full object-cover"
+             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+        <div class="w-full h-full hidden items-center justify-center flex-col gap-4 text-stone2/45 px-8 text-center">
+          <i class="fa-solid fa-church text-6xl text-amber1/40"></i>
+          <p class="text-sm leading-6">將實景照片命名為 <code class="text-amber1">church2.png</code><br>放在與本網頁同一層資料夾</p>
+        </div>
+      </div>
+      <figcaption class="text-center text-[12px] text-stone2/50 mt-4 tracking-[.2em]">新竹縣關西鎮・醒目的地標</figcaption>
+    </figure>
+  </div>
+</header>
+
+<!-- 課程核心特色 -->
+<section class="max-w-6xl mx-auto px-6 py-20">
+  <div class="reveal">
+    <p class="eyebrow text-[11px] text-amber1">Course Pillars</p>
+    <h2 class="font-serifz text-3xl sm:text-4xl font-black mt-3">課程的四根支柱</h2>
+    <div class="w-16 h-px bg-amber1 mt-6"></div>
+  </div>
+
+  <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 mt-12">
+    <article class="reveal washed-wall lancet p-7 pt-10 border border-stone2/10 hover:border-amber1/45 transition">
+      <i class="fa-solid fa-map-location-dot text-2xl text-amber1"></i>
+      <h3 class="font-serifz font-bold text-xl mt-5">空間與地圖連結</h3>
+      <p class="text-stone2/75 text-[15px] leading-7 mt-3">結合關西鎮地圖意象，標示天主堂作為鎮上「醒目地標」的空間意義。</p>
+    </article>
+    <article class="reveal washed-wall lancet p-7 pt-10 border border-stone2/10 hover:border-amber1/45 transition">
+      <i class="fa-solid fa-comments text-2xl text-amber1"></i>
+      <h3 class="font-serifz font-bold text-xl mt-5">客語常用語融入</h3>
+      <p class="text-stone2/75 text-[15px] leading-7 mt-3">從社交禮儀到宗教專業詞彙，讓客語真正走進生活情境的口說應用。</p>
+    </article>
+    <article class="reveal washed-wall lancet p-7 pt-10 border border-stone2/10 hover:border-amber1/45 transition">
+      <i class="fa-solid fa-code-branch text-2xl text-amber1"></i>
+      <h3 class="font-serifz font-bold text-xl mt-5">跨學科整合</h3>
+      <p class="text-stone2/75 text-[15px] leading-7 mt-3">社會的歷史源流、資訊的搜尋與簡報、藝術的建築賞析、語文的閱讀與新詩。</p>
+    </article>
+    <article class="reveal washed-wall lancet p-7 pt-10 border border-amber1/40 hover:border-amber1 transition">
+      <i class="fa-solid fa-book-open-reader text-2xl text-amber1"></i>
+      <h3 class="font-serifz font-bold text-xl mt-5">新增閱讀之重要性</h3>
+      <p class="text-stone2/75 text-[15px] leading-7 mt-3">踏查前先建立知識背景，不只看見尖塔的壯麗，更讀懂背後奉獻的故事。</p>
+    </article>
+  </div>
+</section>
+
+<!-- ═══ 訊號元素：可點亮的玫瑰窗 ═══ -->
+<section id="window" class="washed-wall border-y border-stone2/10">
+  <div class="max-w-6xl mx-auto px-6 py-20">
+    <div class="reveal text-center">
+      <p class="eyebrow text-[11px] text-amber1">Rose Window</p>
+      <h2 class="font-serifz text-3xl sm:text-4xl font-black mt-3">點亮玫瑰窗</h2>
+      <p class="text-stone2/70 mt-4">點選任一片花瓣玻璃，認識哥德式建築的一個構件。</p>
+    </div>
+
+    <div class="grid lg:grid-cols-2 gap-12 items-center mt-14">
+      <div class="reveal flex justify-center">
+        <svg id="rose" viewBox="0 0 400 400" class="w-full max-w-[400px]" role="group" aria-label="互動玫瑰窗">
+          <circle cx="200" cy="200" r="176" fill="#0E1330" stroke="#E0A526" stroke-opacity=".35" stroke-width="2"/>
+          <circle cx="200" cy="200" r="158" fill="none" stroke="#E0A526" stroke-opacity=".2" stroke-width="1"/>
+          <g id="petals" stroke="#0B0E1E" stroke-width="4"></g>
+          <circle cx="200" cy="200" r="34" fill="#0E1330" stroke="#E0A526" stroke-opacity=".55" stroke-width="2"/>
+          <text x="200" y="207" text-anchor="middle" font-family="Cinzel, serif" font-size="19" fill="#E0A526" letter-spacing="2">GX</text>
+        </svg>
+      </div>
+
+      <div class="reveal">
+        <div id="roseCard" class="lancet washed-wall border border-amber1/30 p-8 pt-11 min-h-[300px] glasslead">
+          <p id="rcTag" class="eyebrow text-[10px] text-amber1/70">Select a pane</p>
+          <h3 id="rcTitle" class="font-serifz text-2xl font-bold mt-4">等待你點亮第一片玻璃</h3>
+          <p id="rcBody" class="text-stone2/80 leading-8 mt-5">
+            哥德式建築的每個構件都在做同一件事——把人的視線和心思往上帶。
+            右側的窗有六片花瓣，每一片藏著一個關西天主堂身上找得到的線索。
+          </p>
+          <p id="rcHint" class="text-[13px] text-amber1/70 mt-6 hidden"><i class="fa-regular fa-eye mr-2"></i><span id="rcHintText"></span></p>
+        </div>
+        <p class="text-[12px] text-stone2/45 mt-4 text-center lg:text-left">已點亮 <span id="litCount" class="text-amber1 font-bold">0</span> / 6</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 六大單元 ═══ -->
+<section id="units" class="max-w-6xl mx-auto px-6 py-20">
+  <div class="reveal">
+    <p class="eyebrow text-[11px] text-amber1">Curriculum</p>
+    <h2 class="font-serifz text-3xl sm:text-4xl font-black mt-3">六大單元</h2>
+    <p class="text-stone2/70 mt-4">單元三為新增的 2 節閱讀課程，安排在實地踏查之前。</p>
+    <div class="w-16 h-px bg-amber1 mt-6"></div>
+  </div>
+
+  <div id="tabs" class="flex flex-wrap gap-2.5 mt-10"></div>
+  <div id="panel" class="mt-8"></div>
+</section>
+
+<!-- ═══ 客語卡 ═══ -->
+<section class="washed-wall border-y border-stone2/10">
+  <div class="max-w-6xl mx-auto px-6 py-20">
+    <div class="reveal">
+      <p class="eyebrow text-[11px] text-amber1">Hakka</p>
+      <h2 class="font-serifz text-3xl sm:text-4xl font-black mt-3">客語詞彙卡</h2>
+      <p class="text-stone2/70 mt-4">點卡片翻面看意思。上台導覽前先練熟這幾句。</p>
+    </div>
+    <div id="hakka" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 mt-12"></div>
+    <button id="flipAll" class="mt-8 text-[13px] border border-stone2/30 px-6 py-3 rounded-full hover:border-amber1 hover:text-amber1 transition">
+      <i class="fa-solid fa-rotate mr-2"></i>全部翻回正面
+    </button>
+  </div>
+</section>
+
+<!-- ═══ 新詩詩箋 ═══ -->
+<section class="max-w-6xl mx-auto px-6 py-20">
+  <div class="grid lg:grid-cols-[.9fr_1.1fr] gap-12 items-start">
+    <div class="reveal">
+      <p class="eyebrow text-[11px] text-amber1">Unit 5</p>
+      <h2 class="font-serifz text-3xl sm:text-4xl font-black mt-3">天主堂詩箋</h2>
+      <p class="text-stone2/75 leading-8 mt-5">
+        踏查回來，把看見的、聽見的、想到的寫下來。寫完存成圖文作品，配上你在現場拍的照片。
+      </p>
+      <div class="mt-7 space-y-3">
+        <p class="text-[13px] text-stone2/55">卡住的話，從這些詞開始：</p>
+        <div id="seeds" class="flex flex-wrap gap-2"></div>
+      </div>
+      <div class="mt-8 flex flex-wrap gap-3">
+        <button id="copyPoem" class="bg-amber1 text-night font-bold px-6 py-3 rounded-full hover:bg-stone1 transition text-[14px]">
+          <i class="fa-regular fa-copy mr-2"></i>複製新詩
+        </button>
+        <button id="clearPoem" class="border border-stone2/30 px-6 py-3 rounded-full hover:border-ruby hover:text-ruby transition text-[14px]">清空重寫</button>
+      </div>
+      <p id="poemMsg" class="text-[13px] text-amber1 mt-4 h-5"></p>
+    </div>
+
+    <div class="reveal">
+      <div class="lancet-deep bg-stone1 text-night p-8 pt-14 glasslead">
+        <input id="poemTitle" placeholder="詩名" maxlength="20"
+               class="w-full bg-transparent text-center font-serifz text-2xl font-bold border-b border-night/20 pb-3 focus:outline-none focus:border-ruby placeholder-night/30">
+        <textarea id="poem" rows="9" placeholder="尖塔把天空戳出一個洞&#10;光就從那裡漏下來……"
+               class="w-full bg-transparent mt-6 font-serifz text-[17px] resize-none focus:outline-none placeholder-night/25"></textarea>
+        <p class="text-right text-[12px] text-night/40 mt-4 font-cinzel tracking-widest">GUANXI · GRADE 6</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 隨堂測驗 ═══ -->
+<section class="washed-wall border-t border-stone2/10">
+  <div class="max-w-3xl mx-auto px-6 py-20">
+    <div class="reveal text-center">
+      <p class="eyebrow text-[11px] text-amber1">Quiz</p>
+      <h2 class="font-serifz text-3xl sm:text-4xl font-black mt-3">學習檢核</h2>
+      <p class="text-stone2/70 mt-4">七題，看看你把天主堂讀懂了多少。</p>
+    </div>
+    <div id="quiz" class="mt-12 space-y-5"></div>
+    <div class="text-center mt-10">
+      <button id="grade" class="bg-amber1 text-night font-bold px-9 py-4 rounded-full hover:bg-stone1 transition">
+        看結果
+      </button>
+      <button id="retry" class="hidden ml-3 border border-stone2/30 px-8 py-4 rounded-full hover:border-amber1 hover:text-amber1 transition">再做一次</button>
+      <div id="result" class="hidden mt-8 lancet washed-wall border border-amber1/35 p-8 pt-11">
+        <p class="font-cinzel text-5xl font-bold text-amber1" id="score">0/7</p>
+        <p class="text-stone2/80 mt-4" id="verdict"></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="border-t border-stone2/10 py-12 text-center">
+  <p class="font-serifz text-lg text-stone1">建築傳說～關西天主堂</p>
+  <p class="text-[13px] text-stone2/50 mt-3">新竹縣關西國小・六年級校訂課程</p>
+  <p class="text-[12px] text-stone2/35 mt-6 tracking-wider">網頁製作：Vincent Wang｜由 Claude (Anthropic) 協作開發</p>
+</footer>
+
+</main>
+
+<script>
+/* ══════════ 片頭動畫 ══════════ */
+(function(){
+  const intro = document.getElementById('intro');
+  const site  = document.getElementById('site');
+  const timers = [];
+  const T = (fn, ms) => timers.push(setTimeout(fn, ms));
+
+  function finish(){
+    timers.forEach(clearTimeout);
+    intro.classList.add('done');
+    site.classList.remove('opacity-0');
+    setTimeout(()=> intro.remove(), 1200);
+  }
+  document.getElementById('skip').addEventListener('click', finish);
+
+  T(()=> document.getElementById('line1').classList.add('go'), 500);
+  document.querySelectorAll('#intro .pane').forEach((p, i) => {
+    T(()=> p.classList.add('lit'), 3600 + i * 420);
+  });
+  T(()=> document.getElementById('it1').classList.add('on'), 6000);
+  T(()=> document.getElementById('it2').classList.add('on'), 6500);
+  T(()=> document.getElementById('it3').classList.add('on'), 7100);
+
+  // 最後淡入實景照片全貌
+  T(()=>{
+    const photo = document.getElementById('introPhoto');
+    const svg   = document.getElementById('introSvg');
+    if (photo && photo.isConnected){
+      svg.style.transition = 'opacity 1.4s ease';
+      svg.style.opacity = '0';
+      photo.classList.add('on');
+    }
+  }, 9200);
+
+  T(finish, 12800);
+})();
+
+/* ══════════ 玫瑰窗 ══════════ */
+const PANES = [
+  { t:'哥德式尖塔', tag:'Spire', c:'#E0A526',
+    b:'尖塔把整棟建築的重量化成向上的線條。關西天主堂最遠就是靠這根尖塔被認出來——站在鎮上任何一條街，抬頭都找得到它。',
+    h:'踏查時，找出尖塔頂端的十字架有幾層階梯狀收分。' },
+  { t:'拱型彩繪玻璃窗', tag:'Stained Glass', c:'#B4322F',
+    b:'尖拱的窗形加上彩色玻璃，光穿過來就變成顏色。在還沒有人人識字的年代，這些玻璃就是給信徒讀的圖畫書，一格一格說著故事。',
+    h:'記錄下堂內哪扇窗的紅色最深，猜猜那個時段的太陽在哪個方向。' },
+  { t:'洗石子牆面', tag:'Washed Granolithic', c:'#CFC4AC',
+    b:'把小石子拌進水泥，等半乾再用水沖出石子的顆粒。這是台灣戰後最常見的外牆工法，摸起來粗粗的，是那個年代的手感。',
+    h:'用手輕輕摸牆面，跟教室的磁磚比比看差在哪裡。' },
+  { t:'玫瑰窗', tag:'Rose Window', c:'#23306B',
+    b:'圓形的花瓣狀大窗，是哥德式教堂的招牌。花瓣從中心往外展開，光線也跟著散開，像一朵永遠開著的花。',
+    h:'數數看窗上的花瓣是幾片，記在你的踏查筆記上。' },
+  { t:'鐘樓', tag:'Bell Tower', c:'#2E6B5E',
+    b:'鐘聲曾經是整個社區的時鐘。鐘一響，大家知道該做禮拜了、該收工了。聲音傳得多遠，教堂的影響就走得多遠。',
+    h:'訪問修女或神父：這口鐘現在還會響嗎？什麼時候響？' },
+  { t:'入堂禮儀', tag:'Etiquette', c:'#8B5E83',
+    b:'進到教堂要脫帽、輕聲、關掉手機。這不是規定嚴格，而是因為這裡對很多人來說是安放心事的地方——尊重別人的信仰，是這門課最重要的一課。',
+    h:'進堂前先在門口站三秒，安靜下來再走進去。' }
+];
+
+(function(){
+  const g = document.getElementById('petals');
+  const path = 'M200 200 L156 108 Q200 62 244 108 Z';
+  PANES.forEach((p, i) => {
+    const el = document.createElementNS('http://www.w3.org/2000/svg','path');
+    el.setAttribute('d', path);
+    el.setAttribute('transform', `rotate(${i*60} 200 200)`);
+    el.setAttribute('fill', '#1A2149');
+    el.setAttribute('class', 'petal');
+    el.setAttribute('tabindex', '0');
+    el.setAttribute('role', 'button');
+    el.setAttribute('aria-label', p.t);
+    el.dataset.i = i;
+    const act = () => light(i, el, p);
+    el.addEventListener('click', act);
+    el.addEventListener('keydown', e => { if(e.key==='Enter'||e.key===' '){ e.preventDefault(); act(); } });
+    g.appendChild(el);
+
+    // 花瓣之間的小圓飾
+    const ang = (i*60 + 30) * Math.PI/180;
+    const dot = document.createElementNS('http://www.w3.org/2000/svg','circle');
+    dot.setAttribute('cx', 200 + Math.sin(ang)*128);
+    dot.setAttribute('cy', 200 - Math.cos(ang)*128);
+    dot.setAttribute('r', 9);
+    dot.setAttribute('fill', '#0E1330');
+    dot.setAttribute('stroke', '#E0A526');
+    dot.setAttribute('stroke-opacity', '.4');
+    dot.setAttribute('stroke-width', '1.5');
+    g.appendChild(dot);
+  });
+
+  const lit = new Set();
+  function light(i, el, p){
+    el.setAttribute('fill', p.c);
+    el.style.color = p.c;
+    document.querySelectorAll('.petal').forEach(x => x.classList.remove('active'));
+    el.classList.add('active');
+    lit.add(i);
+    document.getElementById('litCount').textContent = lit.size;
+
+    const card = document.getElementById('roseCard');
+    card.style.opacity = 0;
+    setTimeout(()=>{
+      document.getElementById('rcTag').textContent = p.tag;
+      document.getElementById('rcTitle').textContent = p.t;
+      document.getElementById('rcBody').textContent = p.b;
+      document.getElementById('rcHintText').textContent = p.h;
+      document.getElementById('rcHint').classList.remove('hidden');
+      card.style.borderColor = p.c + '80';
+      card.style.opacity = 1;
+    }, 220);
+    card.style.transition = 'opacity .22s ease, border-color .5s ease';
+  }
+})();
+
+/* ══════════ 六大單元 ══════════ */
+const UNITS = [
+  { n:'單元一', t:'天主堂大事記', icon:'fa-clock-rotate-left', lessons:'',
+    goal:'了解關西天主堂的由來及其在地方發展中的歷史定位。',
+    acts:[
+      '<b>地圖搜尋</b>：用地圖意象找到關西天主堂的位置，並觀看關西十大景點影片。',
+      '<b>客語學習</b>：學習「信教」、「修女」、「神父」、「耶穌」、「做禮拜」等相關客語用語。'
+    ],
+    check:['專心聆聽','口頭發表','善用 iPad 查資料'] },
+
+  { n:'單元二', t:'建築藝術之美', icon:'fa-compass-drafting', lessons:'',
+    goal:'認識天主堂的哥德式建築特色，增加藝術內涵與美感素養。',
+    acts:[
+      '<b>建築特色探究</b>：用 iPad 查詢哥德式尖塔、洗石子牆面及拱型彩繪玻璃窗的特色。',
+      '<b>數位分享</b>：透過 HiTeach 平台與同學分享搜尋到的建築細節。'
+    ],
+    check:['專心聆聽','口語發表','態度檢核'] },
+
+  { n:'單元三', t:'閱讀探究', icon:'fa-book-open-reader', lessons:'新增 2 節',
+    goal:'閱讀一：傳教士的奉獻之路——理解教會在地方教育與醫療的貢獻。<br>閱讀二：尖塔下的象徵語言——探究彩繪玻璃與尖塔所代表的神聖意涵。',
+    acts:[
+      '<b>文本共讀</b>：閱讀關於「聖母瑪利亞」與「耶穌」事蹟的簡化文本，理解尊重女性與表揚母愛的教義。',
+      '<b>閱讀筆記</b>：摘要天主堂從清領、日治到戰後時期的發展脈絡。'
+    ],
+    check:['閱讀摘要','小組討論心得'] },
+
+  { n:'單元四', t:'天主堂巡禮', icon:'fa-person-walking', lessons:'',
+    goal:'透過實地踏查與社會服務，了解個人與社區環境的密不可分。',
+    acts:[
+      '<b>實地走訪</b>：由修女親自接待，以<b>國客雙語</b>解說歷史、建築特色及入堂禮儀。',
+      '<b>小記者訪問</b>：分組進行專訪，錄音或記錄修女、神父的口述故事。',
+      '<b>社區服務</b>：進行教堂周邊環境清潔打掃。'
+    ],
+    check:['實作表現','分組合作','態度檢核'] },
+
+  { n:'單元五', t:'天主堂新詩創作', icon:'fa-feather-pointed', lessons:'',
+    goal:'將觀察與體會以文學形式呈現，達成文化感悟。',
+    acts:[
+      '<b>新詩產出</b>：分享參訪照片與心得，腦力激盪集思廣益寫出新詩。',
+      '<b>圖文編輯</b>：利用平板將新詩搭配現場拍攝的照片，製作成圖文並茂的作品。'
+    ],
+    check:['口語發表','實作表現'] },
+
+  { n:'單元六', t:'天主堂專題報告', icon:'fa-chalkboard-user', lessons:'',
+    goal:'整合資訊科技與客語表達，進行完整的學習成果產出。',
+    acts:[
+      '<b>簡報製作</b>：製作 5 至 10 頁的專題簡報，包含歷史、建築、心得與分工表。',
+      '<b>成果發表</b>：上台進行專題報告與客語導覽分享。'
+    ],
+    check:['專心聆聽','實作表現','分組合作'] }
+];
+
+(function(){
+  const tabs = document.getElementById('tabs');
+  const panel = document.getElementById('panel');
+
+  UNITS.forEach((u, i) => {
+    const b = document.createElement('button');
+    b.className = 'tabbtn border border-stone2/20 px-5 py-3 rounded-full text-[14px] hover:border-amber1 transition flex items-center gap-2.5';
+    b.innerHTML = `<span class="tabnum font-cinzel text-amber1 text-[12px]">${i+1}</span> ${u.t}`;
+    b.addEventListener('click', ()=> show(i));
+    tabs.appendChild(b);
+  });
+
+  function show(i){
+    const u = UNITS[i];
+    [...tabs.children].forEach((b,k)=> b.classList.toggle('on', k===i));
+    panel.style.opacity = 0;
+    setTimeout(()=>{
+      panel.innerHTML = `
+        <div class="washed-wall lancet border border-amber1/25 p-8 sm:p-11 pt-12 sm:pt-14 glasslead">
+          <div class="flex items-start gap-5 flex-wrap">
+            <div class="w-14 h-14 rounded-full bg-amber1/12 flex items-center justify-center shrink-0">
+              <i class="fa-solid ${u.icon} text-amber1 text-xl"></i>
+            </div>
+            <div class="flex-1 min-w-[200px]">
+              <p class="eyebrow text-[10px] text-amber1/70">${u.n}</p>
+              <h3 class="font-serifz text-2xl sm:text-3xl font-black mt-2">${u.t}
+                ${u.lessons ? `<span class="align-middle ml-3 text-[12px] font-sansz font-normal bg-ruby/85 text-stone1 px-3 py-1 rounded-full">${u.lessons}</span>` : ''}
+              </h3>
+            </div>
+          </div>
+
+          <div class="mt-9 grid lg:grid-cols-[1fr_1.2fr] gap-9">
+            <div>
+              <p class="eyebrow text-[10px] text-stone2/45">學習目標</p>
+              <p class="text-stone1/90 leading-8 mt-3">${u.goal}</p>
+              <p class="eyebrow text-[10px] text-stone2/45 mt-8">教學檢核</p>
+              <div class="flex flex-wrap gap-2 mt-3">
+                ${u.check.map(c=>`<span class="text-[13px] border border-leaf/60 text-stone1/80 px-3.5 py-1.5 rounded-full">${c}</span>`).join('')}
+              </div>
+            </div>
+            <div>
+              <p class="eyebrow text-[10px] text-stone2/45">教學內容與活動</p>
+              <ul class="mt-4 space-y-4">
+                ${u.acts.map(a=>`
+                  <li class="flex gap-4">
+                    <span class="text-amber1 mt-1.5 shrink-0"><i class="fa-solid fa-diamond text-[7px]"></i></span>
+                    <span class="text-stone2/85 leading-8">${a}</span>
+                  </li>`).join('')}
+              </ul>
+            </div>
+          </div>
+        </div>`;
+      panel.style.opacity = 1;
+    }, 160);
+    panel.style.transition = 'opacity .18s ease';
+  }
+  show(0);
+})();
+
+/* ══════════ 客語卡 ══════════ */
+const HAKKA = [
+  { w:'天主堂', m:'教堂建築的名稱',        s:'導覽開場：「這位所在就係天主堂。」' },
+  { w:'信教',   m:'信仰宗教',              s:'介紹信徒背景時使用。' },
+  { w:'修女',   m:'教會中奉獻服務的女性',  s:'訪問時的稱呼，要有禮貌。' },
+  { w:'神父',   m:'主持彌撒的神職人員',    s:'請教歷史故事時的對象。' },
+  { w:'耶穌',   m:'天主教信仰的中心人物',  s:'閱讀文本時會反覆出現。' },
+  { w:'做禮拜', m:'參加宗教聚會',          s:'說明教堂的日常活動。' },
+  { w:'拜神',   m:'祭拜、敬拜',            s:'比較不同信仰的敬拜方式。' },
+  { w:'𠊎兜今晡日當暢', m:'我們今天很開心', s:'踏查結束向修女道謝時可以說。' }
+];
+
+(function(){
+  const box = document.getElementById('hakka');
+  HAKKA.forEach(h=>{
+    const d = document.createElement('div');
+    d.className = 'flip cursor-pointer h-44';
+    d.setAttribute('tabindex','0');
+    d.setAttribute('role','button');
+    d.innerHTML = `
+      <div class="flip-in w-full h-full">
+        <div class="face front lancet washed-wall border border-stone2/15 px-3 text-center">
+          <p class="font-serifz font-bold text-stone1 ${h.w.length>5?'text-lg':'text-2xl'} leading-8">${h.w}</p>
+          <p class="text-[11px] text-amber1/60 mt-3 tracking-[.2em]">點我翻面</p>
+        </div>
+        <div class="face back lancet bg-amber1 text-night px-4 text-center">
+          <p class="font-serifz font-black text-lg leading-7">${h.m}</p>
+          <p class="text-[12px] leading-6 mt-3 text-night/70">${h.s}</p>
+        </div>
+      </div>`;
+    const t = ()=> d.classList.toggle('open');
+    d.addEventListener('click', t);
+    d.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); t(); }});
+    box.appendChild(d);
+  });
+  document.getElementById('flipAll').addEventListener('click', ()=>{
+    box.querySelectorAll('.flip').forEach(f=> f.classList.remove('open'));
+  });
+})();
+
+/* ══════════ 詩箋 ══════════ */
+(function(){
+  const seeds = ['尖塔','彩繪玻璃','洗石子','鐘聲','修女的手','一甲子','光','沉默','石子的顆粒','六十年前的雨'];
+  const box = document.getElementById('seeds');
+  const ta  = document.getElementById('poem');
+  const msg = document.getElementById('poemMsg');
+
+  seeds.forEach(s=>{
+    const b = document.createElement('button');
+    b.className = 'text-[13px] border border-stone2/25 px-3.5 py-1.5 rounded-full hover:bg-amber1 hover:text-night hover:border-amber1 transition';
+    b.textContent = s;
+    b.addEventListener('click', ()=>{
+      const p = ta.selectionStart;
+      ta.value = ta.value.slice(0,p) + s + ta.value.slice(p);
+      ta.focus();
+      ta.selectionStart = ta.selectionEnd = p + s.length;
+    });
+    box.appendChild(b);
+  });
+
+  function flash(t){ msg.textContent = t; setTimeout(()=> msg.textContent='', 2600); }
+
+  document.getElementById('copyPoem').addEventListener('click', ()=>{
+    const title = document.getElementById('poemTitle').value.trim();
+    const body  = ta.value.trim();
+    if(!body){ flash('詩箋還是空的，先寫幾行再複製。'); return; }
+    const text = (title ? title + '\n\n' : '') + body + '\n\n—— 關西國小六年級';
+    navigator.clipboard.writeText(text)
+      .then(()=> flash('已複製，可以貼到簡報或作品裡了。'))
+      .catch(()=> flash('複製失敗，請手動選取文字。'));
+  });
+
+  document.getElementById('clearPoem').addEventListener('click', ()=>{
+    if(!ta.value && !document.getElementById('poemTitle').value){ flash('本來就是空的。'); return; }
+    ta.value = ''; document.getElementById('poemTitle').value = '';
+    flash('清空了，重新開始。');
+  });
+})();
+
+/* ══════════ 測驗 ══════════ */
+const QUIZ = [
+  { q:'關西天主堂的建築屬於哪一種風格？',
+    o:['巴洛克式','哥德式','閩南三合院','日式木造'], a:1 },
+  { q:'課程中提到天主堂的外牆使用哪一種工法？',
+    o:['清水模','洗石子','紅磚砌','鐵皮包覆'], a:1 },
+  { q:'下列哪一個「不是」單元一要學的客語詞彙？',
+    o:['信教','修女','神父','醬缸'], a:3 },
+  { q:'實地踏查時，由誰接待並以國客雙語解說？',
+    o:['校長','修女','導遊','村長'], a:1 },
+  { q:'這次課程新增的閱讀課共有幾節？',
+    o:['1 節','2 節','3 節','4 節'], a:1 },
+  { q:'單元六的專題簡報，規定要製作幾頁？',
+    o:['3 至 5 頁','5 至 10 頁','10 至 15 頁','20 頁以上'], a:1 },
+  { q:'拱型彩繪玻璃窗在教堂中最主要的作用是什麼？',
+    o:['隔絕噪音','引入光線並用圖像講述故事','支撐屋頂重量','防止鳥類飛入'], a:1 }
+];
+
+(function(){
+  const box = document.getElementById('quiz');
+  const picked = {};
+
+  QUIZ.forEach((item, qi)=>{
+    const d = document.createElement('div');
+    d.className = 'lancet washed-wall border border-stone2/15 p-7 pt-9';
+    d.innerHTML = `
+      <p class="font-serifz text-lg font-bold leading-8">
+        <span class="font-cinzel text-amber1 text-sm mr-3">${String(qi+1).padStart(2,'0')}</span>${item.q}
+      </p>
+      <div class="grid sm:grid-cols-2 gap-2.5 mt-5" data-opts></div>`;
+    const wrap = d.querySelector('[data-opts]');
+    item.o.forEach((o, oi)=>{
+      const b = document.createElement('button');
+      b.className = 'opt text-left text-[15px] border border-stone2/20 px-4 py-3 rounded-xl hover:border-amber1 transition';
+      b.textContent = o;
+      b.addEventListener('click', ()=>{
+        if(box.dataset.locked) return;
+        picked[qi] = oi;
+        [...wrap.children].forEach(x=>{ x.classList.remove('border-amber1','bg-amber1/12'); });
+        b.classList.add('border-amber1','bg-amber1/12');
+      });
+      wrap.appendChild(b);
+    });
+    box.appendChild(d);
+  });
+
+  const gradeBtn = document.getElementById('grade');
+  const retryBtn = document.getElementById('retry');
+
+  gradeBtn.addEventListener('click', ()=>{
+    if(Object.keys(picked).length < QUIZ.length){
+      document.getElementById('verdict').textContent = '還有題目沒作答，全部選完再看結果。';
+      document.getElementById('score').textContent = '—';
+      document.getElementById('result').classList.remove('hidden');
+      return;
+    }
+    box.dataset.locked = '1';
+    let s = 0;
+    QUIZ.forEach((item, qi)=>{
+      const opts = box.children[qi].querySelectorAll('.opt');
+      opts.forEach((b, oi)=>{
+        b.classList.remove('border-amber1','bg-amber1/12');
+        if(oi === item.a) b.classList.add('border-leaf','bg-leaf/25');
+        else if(oi === picked[qi]) b.classList.add('border-ruby','bg-ruby/20');
+      });
+      if(picked[qi] === item.a) s++;
+    });
+    document.getElementById('score').textContent = s + '/7';
+    document.getElementById('verdict').textContent =
+      s === 7 ? '全對。你已經準備好上台做客語導覽了。' :
+      s >= 5  ? '不錯，再回頭看看答錯那題所屬的單元。' :
+      s >= 3  ? '基礎有了，建議重讀單元二與單元三的閱讀重點。' :
+                '別急，先把六大單元的內容再走一遍。';
+    document.getElementById('result').classList.remove('hidden');
+    gradeBtn.classList.add('hidden');
+    retryBtn.classList.remove('hidden');
+    document.getElementById('result').scrollIntoView({behavior:'smooth', block:'center'});
+  });
+
+  retryBtn.addEventListener('click', ()=>{
+    delete box.dataset.locked;
+    Object.keys(picked).forEach(k=> delete picked[k]);
+    box.querySelectorAll('.opt').forEach(b=>{
+      b.className = 'opt text-left text-[15px] border border-stone2/20 px-4 py-3 rounded-xl hover:border-amber1 transition';
+    });
+    document.getElementById('result').classList.add('hidden');
+    retryBtn.classList.add('hidden');
+    gradeBtn.classList.remove('hidden');
+    box.scrollIntoView({behavior:'smooth', block:'start'});
+  });
+})();
+
+/* ══════════ 捲動淡入 ══════════ */
+(function(){
+  const io = new IntersectionObserver(es=>{
+    es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('shown'); io.unobserve(e.target); } });
+  }, { threshold:.15 });
+  document.querySelectorAll('.reveal').forEach(el=> io.observe(el));
+})();
+</script>
+</body>
+</html>
