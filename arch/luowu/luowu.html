@@ -1,0 +1,1233 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>羅屋築蹟～書院足跡｜關西國小四年級校訂課程</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700;900&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        ink:   '#241F1C',
+        brick: '#A4432E',
+        lime2: '#EFE7D6',
+        paper: '#F8F3E7',
+        wood:  '#B8813C',
+        moss:  '#4A6650'
+      },
+      fontFamily: {
+        serif2: ['"Noto Serif TC"', 'serif'],
+        sans2:  ['"Noto Sans TC"', 'sans-serif']
+      }
+    }
+  }
+}
+</script>
+<style>
+  :root{
+    --ink:#241F1C; --brick:#A4432E; --lime:#EFE7D6;
+    --paper:#F8F3E7; --wood:#B8813C; --moss:#4A6650;
+  }
+  html{scroll-behavior:smooth;}
+  body{
+    background-color:var(--lime);
+    color:var(--ink);
+    font-family:'Noto Sans TC',sans-serif;
+    background-image:
+      radial-gradient(circle at 12% 8%, rgba(184,129,60,.10) 0, transparent 42%),
+      radial-gradient(circle at 88% 92%, rgba(74,102,80,.10) 0, transparent 45%);
+    background-attachment:fixed;
+  }
+  .disp{font-family:'Noto Serif TC',serif;}
+
+  /* ── 紙感卡片 ───────────────────────── */
+  .card{
+    background:var(--paper);
+    border:1px solid rgba(36,31,28,.12);
+    box-shadow:0 1px 0 rgba(255,255,255,.7) inset, 0 6px 20px -12px rgba(36,31,28,.5);
+    border-radius:2px;
+  }
+  .card-hd{
+    border-bottom:1px solid rgba(36,31,28,.12);
+    background:linear-gradient(180deg, rgba(184,129,60,.10), transparent);
+  }
+  /* 磚紋標題底 */
+  .brickline{
+    background-image:repeating-linear-gradient(90deg,
+      rgba(164,67,46,.22) 0 26px, transparent 26px 28px);
+    height:6px;
+  }
+
+  /* ── 片頭動畫 ───────────────────────── */
+  #intro{
+    position:fixed; inset:0; z-index:90;
+    background:#100D0B; color:#EFE7D6;
+    display:flex; align-items:center; justify-content:center;
+    transition:opacity .9s ease;
+  }
+  #intro.done{opacity:0; pointer-events:none;}
+  .introLine{
+    opacity:0; transform:translateY(14px);
+    animation:riseIn 2.6s ease forwards;
+  }
+  @keyframes riseIn{
+    0%{opacity:0; transform:translateY(14px); filter:blur(6px);}
+    22%{opacity:1; transform:translateY(0); filter:blur(0);}
+    78%{opacity:1;}
+    100%{opacity:0; transform:translateY(-8px);}
+  }
+  .introFinal{opacity:0; animation:finalIn 4.6s ease forwards;}
+  @keyframes finalIn{
+    0%{opacity:0;} 30%{opacity:1;} 100%{opacity:1;}
+  }
+  #introPhotoWrap{
+    filter:brightness(.05) saturate(.4);
+    animation:lightUp 4.6s ease forwards;
+  }
+  @keyframes lightUp{
+    0%{filter:brightness(.05) saturate(.3); transform:scale(1.12);}
+    100%{filter:brightness(1) saturate(1); transform:scale(1);}
+  }
+  .lamp{
+    width:6px;height:6px;border-radius:50%;background:#F3D9A4;
+    box-shadow:0 0 40px 18px rgba(243,217,164,.35);
+    animation:lampGrow 1.6s ease forwards;
+  }
+  @keyframes lampGrow{
+    0%{transform:scale(.2);opacity:0;}
+    60%{transform:scale(1);opacity:1;}
+    100%{transform:scale(9);opacity:0;}
+  }
+
+  /* ── 分頁 ───────────────────────── */
+  .tabbtn{
+    white-space:nowrap; border:1px solid transparent;
+    transition:all .18s ease;
+  }
+  .tabbtn:hover{background:rgba(164,67,46,.10);}
+  .tabbtn.on{
+    background:var(--ink); color:var(--paper);
+    box-shadow:0 4px 14px -8px var(--ink);
+  }
+  .page{display:none; animation:fadeUp .45s ease;}
+  .page.on{display:block;}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+
+  /* ── 平面圖 ───────────────────────── */
+  .plan-zone{cursor:pointer; transition:all .2s ease;}
+  .plan-zone:hover .zbox{fill:#C9A46A;}
+  .plan-zone.sel .zbox{fill:var(--brick); }
+  .plan-zone.sel .zlab{fill:#F8F3E7;}
+
+  /* ── 翻卡 ───────────────────────── */
+  .flip{perspective:900px; height:190px;}
+  .flip-in{position:relative;width:100%;height:100%;transition:transform .6s;transform-style:preserve-3d;cursor:pointer;}
+  .flip.on .flip-in{transform:rotateY(180deg);}
+  .flip-f,.flip-b{
+    position:absolute;inset:0;backface-visibility:hidden;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    padding:14px;text-align:center;border-radius:2px;
+  }
+  .flip-f{background:var(--paper);border:1px solid rgba(36,31,28,.15);}
+  .flip-b{background:var(--ink);color:var(--paper);transform:rotateY(180deg);}
+
+  /* ── 窗花 ───────────────────────── */
+  #papercut{
+    display:grid;grid-template-columns:repeat(16,1fr);
+    gap:1px;background:rgba(36,31,28,.10);
+    width:min(100%,420px);aspect-ratio:1/1;padding:1px;
+  }
+  #papercut div{background:var(--paper);transition:background .12s;cursor:pointer;}
+  #papercut div.f{background:var(--brick);}
+
+  .shake{animation:shk .4s;}
+  @keyframes shk{0%,100%{transform:translateX(0);}25%{transform:translateX(-6px);}75%{transform:translateX(6px);}}
+
+  .chip{border:1px solid rgba(36,31,28,.25);transition:all .16s;}
+  .chip:hover{background:rgba(184,129,60,.18);}
+  .chip.sel{background:var(--moss);color:#fff;border-color:var(--moss);}
+  .chip.ok{background:var(--moss);color:#fff;border-color:var(--moss);pointer-events:none;opacity:.65;}
+
+  .qopt{border:1px solid rgba(36,31,28,.2);background:var(--paper);transition:all .16s;text-align:left;}
+  .qopt:hover{border-color:var(--brick);}
+  .qopt.right{background:var(--moss);color:#fff;border-color:var(--moss);}
+  .qopt.wrong{background:var(--brick);color:#fff;border-color:var(--brick);}
+
+  .vline{writing-mode:vertical-rl; letter-spacing:.32em;}
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:.01ms !important; transition-duration:.01ms !important;}
+  }
+</style>
+</head>
+<body class="antialiased">
+
+<!-- ══════════ 片頭動畫 ══════════ -->
+<div id="intro">
+  <button id="skip" class="absolute top-5 right-5 text-xs tracking-widest text-lime2/60 hover:text-lime2 border border-lime2/30 px-3 py-1">跳過片頭 <i class="fa-solid fa-forward-step ml-1"></i></button>
+  <div class="w-full max-w-3xl px-6 text-center">
+    <div id="lampBox" class="flex justify-center mb-10"><span class="lamp"></span></div>
+    <div id="introStage" class="min-h-[240px] flex items-center justify-center"></div>
+  </div>
+</div>
+
+<!-- ══════════ 頁首 ══════════ -->
+<header class="relative overflow-hidden border-b border-ink/15">
+  <div class="brickline"></div>
+  <div class="max-w-6xl mx-auto px-6 py-12 md:py-16 flex flex-col md:flex-row md:items-end gap-8">
+    <div class="flex-1">
+      <p class="text-xs tracking-[.45em] text-brick mb-4">新竹縣關西國小 ‧ 四年級校訂課程</p>
+      <h1 class="disp font-black text-4xl md:text-6xl leading-tight">羅屋築蹟<span class="text-brick">～</span>書院足跡</h1>
+      <p class="mt-5 text-ink/70 leading-relaxed max-w-xl">
+        上南片的老屋還在。一堂四橫的格局裡，有雕在木頭上的故事、寫在門楣上的堂號，
+        還有阿公阿婆講了一輩子的話。這學期，我們走進去讀它。
+      </p>
+      <div class="mt-6 flex flex-wrap gap-2 text-xs">
+        <span class="px-3 py-1 bg-ink text-paper">8 單元</span>
+        <span class="px-3 py-1 border border-ink/25">13 節課</span>
+        <span class="px-3 py-1 border border-brick text-brick">含新增閱讀 2 節</span>
+      </div>
+    </div>
+    <div class="hidden md:flex gap-6 disp text-ink/45 text-lg pb-2">
+      <span class="vline">築蹟猶存　磚瓦有字</span>
+      <span class="vline">書聲不斷　足跡有痕</span>
+    </div>
+  </div>
+</header>
+
+<!-- ══════════ 分頁列 ══════════ -->
+<nav class="sticky top-0 z-40 bg-lime2/95 backdrop-blur border-b border-ink/15">
+  <div class="max-w-6xl mx-auto px-3">
+    <div id="tabs" class="flex gap-1 overflow-x-auto py-2 text-sm"></div>
+  </div>
+</nav>
+
+<main class="max-w-6xl mx-auto px-6 py-10">
+
+<!-- ══════════ 首頁 ══════════ -->
+<section class="page on" data-p="home">
+
+  <h2 class="disp text-2xl font-bold mb-1">課程四大特色</h2>
+  <p class="text-ink/60 text-sm mb-6">這門課要學生做四件事：看懂、讀懂、講得出來、做得出來。</p>
+  <div class="grid md:grid-cols-4 gap-4 mb-14">
+    <div class="card p-5"><i class="fa-solid fa-drafting-compass text-brick text-2xl"></i>
+      <h3 class="disp font-bold mt-3 mb-2">讀建築</h3>
+      <p class="text-sm text-ink/70 leading-relaxed">從一堂四橫的格局、得月樓的洋樓立面，看出客家人怎麼安排一個家。</p></div>
+    <div class="card p-5"><i class="fa-solid fa-book-open text-brick text-2xl"></i>
+      <h3 class="disp font-bold mt-3 mb-2">讀故事</h3>
+      <p class="text-sm text-ink/70 leading-relaxed">新增兩節閱讀課，從木雕上的三顧茅廬，讀到豫章堂一千八百年的遷徙。</p></div>
+    <div class="card p-5"><i class="fa-solid fa-comments text-brick text-2xl"></i>
+      <h3 class="disp font-bold mt-3 mb-2">講客語</h3>
+      <p class="text-sm text-ink/70 leading-relaxed">詞彙、諺語、導覽用語逐單元累積，最後用國客雙語錄一段自己的導覽。</p></div>
+    <div class="card p-5"><i class="fa-solid fa-scissors text-brick text-2xl"></i>
+      <h3 class="disp font-bold mt-3 mb-2">動手做</h3>
+      <p class="text-sm text-ink/70 leading-relaxed">走一趟上南片，做一支客家望遠鏡、剪一張對稱窗花，把課帶回家。</p></div>
+  </div>
+
+  <!-- 平面圖：本站的核心互動 -->
+  <h2 class="disp text-2xl font-bold mb-1">一堂四橫：點點看，這間屋子怎麼長的</h2>
+  <p class="text-ink/60 text-sm mb-5">客家三合院的基本格局。中間一座「堂」，左右各接兩排「橫屋」，就是一堂四橫。點選任一區塊看說明。</p>
+  <div class="card p-5 md:p-8 mb-14">
+    <div class="grid lg:grid-cols-[1.5fr,1fr] gap-8 items-start">
+      <svg viewBox="0 0 780 520" class="w-full" role="img" aria-label="羅屋書院一堂四橫平面示意圖">
+        <rect x="0" y="0" width="780" height="520" fill="#F8F3E7"/>
+        <!-- 禾埕 -->
+        <g class="plan-zone" data-z="hoting">
+          <rect class="zbox" x="170" y="330" width="440" height="130" fill="#E4D8BE" stroke="#241F1C" stroke-width="2"/>
+          <text class="zlab disp" x="390" y="400" text-anchor="middle" font-size="26" fill="#241F1C">禾　埕</text>
+        </g>
+        <!-- 正堂 -->
+        <g class="plan-zone" data-z="hall">
+          <rect class="zbox" x="290" y="120" width="200" height="200" fill="#D9C49B" stroke="#241F1C" stroke-width="3"/>
+          <text class="zlab disp" x="390" y="205" text-anchor="middle" font-size="30" fill="#241F1C">公　廳</text>
+          <text class="zlab" x="390" y="240" text-anchor="middle" font-size="15" fill="#241F1C">（正堂・一堂）</text>
+        </g>
+        <!-- 左橫屋 -->
+        <g class="plan-zone" data-z="wing1">
+          <rect class="zbox" x="200" y="120" width="80" height="200" fill="#E4D8BE" stroke="#241F1C" stroke-width="2"/>
+          <text class="zlab disp" x="240" y="230" text-anchor="middle" font-size="19" fill="#241F1C" writing-mode="tb">左橫一</text>
+        </g>
+        <g class="plan-zone" data-z="wing2">
+          <rect class="zbox" x="110" y="120" width="80" height="200" fill="#EBE1CB" stroke="#241F1C" stroke-width="2"/>
+          <text class="zlab disp" x="150" y="230" text-anchor="middle" font-size="19" fill="#241F1C" writing-mode="tb">左橫二</text>
+        </g>
+        <!-- 右橫屋 -->
+        <g class="plan-zone" data-z="wing1">
+          <rect class="zbox" x="500" y="120" width="80" height="200" fill="#E4D8BE" stroke="#241F1C" stroke-width="2"/>
+          <text class="zlab disp" x="540" y="230" text-anchor="middle" font-size="19" fill="#241F1C" writing-mode="tb">右橫一</text>
+        </g>
+        <g class="plan-zone" data-z="wing2">
+          <rect class="zbox" x="590" y="120" width="80" height="200" fill="#EBE1CB" stroke="#241F1C" stroke-width="2"/>
+          <text class="zlab disp" x="630" y="230" text-anchor="middle" font-size="19" fill="#241F1C" writing-mode="tb">右橫二</text>
+        </g>
+        <!-- 得月樓 -->
+        <g class="plan-zone" data-z="tower">
+          <rect class="zbox" x="590" y="20" width="130" height="80" fill="#C9A46A" stroke="#241F1C" stroke-width="2"/>
+          <text class="zlab disp" x="655" y="68" text-anchor="middle" font-size="22" fill="#241F1C">得月樓</text>
+        </g>
+        <!-- 堂號位置 -->
+        <g class="plan-zone" data-z="tanghao">
+          <rect class="zbox" x="330" y="72" width="120" height="38" fill="#A4432E" stroke="#241F1C" stroke-width="2"/>
+          <text class="zlab disp" x="390" y="99" text-anchor="middle" font-size="20" fill="#F8F3E7">豫章堂</text>
+        </g>
+        <!-- 門樓 -->
+        <g class="plan-zone" data-z="gate">
+          <rect class="zbox" x="330" y="462" width="120" height="42" fill="#E4D8BE" stroke="#241F1C" stroke-width="2"/>
+          <text class="zlab disp" x="390" y="491" text-anchor="middle" font-size="20" fill="#241F1C">門　樓</text>
+        </g>
+        <text x="30" y="500" font-size="13" fill="#241F1C" opacity=".5">＊示意圖，實際配置以現場導覽為準</text>
+      </svg>
+
+      <div id="planInfo" class="border-l-2 border-brick pl-5 py-1">
+        <p class="text-xs tracking-widest text-brick mb-2">點選圖上任一區塊</p>
+        <h3 class="disp text-xl font-bold mb-2">屋子會說話</h3>
+        <p class="text-sm text-ink/70 leading-relaxed">
+          三合院不是隨便蓋的。誰住中間、誰住兩側、祖先牌位擺哪裡、客人從哪裡進來——
+          每個位置都在講一件事。先點「公廳」試試看。
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 課程總覽 -->
+  <h2 class="disp text-2xl font-bold mb-5">課程地圖　13 節</h2>
+  <div id="overview" class="grid md:grid-cols-2 gap-3"></div>
+</section>
+
+<!-- ══════════ 單元一 ══════════ -->
+<section class="page" data-p="u1">
+  <div class="mb-6"><p class="text-xs tracking-[.4em] text-brick">單元一 ‧ 2 節</p>
+  <h2 class="disp text-3xl font-bold mt-2">話說頭擺與古今書院</h2>
+  <p class="text-ink/70 mt-3 max-w-2xl">「頭擺」是客語的「從前」。從前的孩子怎麼讀書？和你現在坐的教室差在哪裡？</p></div>
+
+  <div class="grid md:grid-cols-2 gap-4 mb-10">
+    <div class="card p-6">
+      <h3 class="disp font-bold text-lg mb-3"><i class="fa-solid fa-scroll text-brick mr-2"></i>羅屋書院是誰蓋的</h3>
+      <ul class="text-sm text-ink/75 space-y-2 leading-relaxed">
+        <li>‧ 位置：新竹縣關西鎮上南片，屬羅氏家族的祖屋。</li>
+        <li>‧ 倡建者：羅碧玉（家族中經營有成的長輩，出資興建）。</li>
+        <li>‧ 年代：約二十世紀初落成，距今一百多年。</li>
+        <li>‧ 格局：一堂四橫的客家三合院，另有洋樓「得月樓」。</li>
+        <li>‧ 名稱：因曾作為家族子弟讀書之所，被稱作「書院」、「羅屋書房」。</li>
+      </ul>
+      <p class="text-xs text-ink/45 mt-4 border-t border-ink/10 pt-3">確切年代與人物請以現場導覽及校內教材為準。</p>
+    </div>
+    <div class="card p-6">
+      <h3 class="disp font-bold text-lg mb-4">古代私塾 vs 現代學校</h3>
+      <div id="cmpTable" class="space-y-2 text-sm"></div>
+    </div>
+  </div>
+
+  <div class="card p-6">
+    <h3 class="disp font-bold text-lg mb-1">六藝配對挑戰</h3>
+    <p class="text-sm text-ink/60 mb-5">古人要學「六藝」。先點左邊一個，再點右邊你覺得對應的現代課程。</p>
+    <div class="grid md:grid-cols-2 gap-6">
+      <div><p class="text-xs tracking-widest text-brick mb-3">古代六藝</p><div id="liuA" class="grid grid-cols-2 gap-2"></div></div>
+      <div><p class="text-xs tracking-widest text-brick mb-3">現代課程</p><div id="liuB" class="grid grid-cols-2 gap-2"></div></div>
+    </div>
+    <p id="liuMsg" class="mt-5 text-sm font-medium text-moss"></p>
+  </div>
+</section>
+
+<!-- ══════════ 單元二 ══════════ -->
+<section class="page" data-p="u2">
+  <div class="mb-6"><p class="text-xs tracking-[.4em] text-brick">單元二 ‧ 1 節</p>
+  <h2 class="disp text-3xl font-bold mt-2">書院建築與堂號</h2>
+  <p class="text-ink/70 mt-3 max-w-2xl">一邊是三合院，一邊是西洋樓，兩種完全不同的房子並肩站著。門楣上那三個字，則是一個家族的來歷。</p></div>
+
+  <div class="grid md:grid-cols-2 gap-4 mb-10">
+    <div class="card p-6">
+      <h3 class="disp font-bold text-lg mb-3"><i class="fa-solid fa-building-columns text-brick mr-2"></i>得月樓：老屋旁的洋樓</h3>
+      <p class="text-sm text-ink/75 leading-relaxed mb-4">
+        日治時期，有能力的家族開始把西洋建築語彙帶進傳統聚落。得月樓就是這樣的產物：
+        拱圈、洗石子、幾何裝飾，和旁邊燕尾脊、紅磚牆的三合院站在一起。
+      </p>
+      <p class="text-sm text-ink/75 leading-relaxed">
+        <strong class="text-brick">觀察任務：</strong>找出洋樓和三合院各有哪三個不一樣的地方——屋頂、窗戶、牆面材料。
+      </p>
+    </div>
+    <div class="card p-6">
+      <h3 class="disp font-bold text-lg mb-3"><i class="fa-solid fa-torii-gate text-brick mr-2"></i>堂號是什麼</h3>
+      <p class="text-sm text-ink/75 leading-relaxed">
+        堂號寫在門楣、燈籠、神位上，代表這個姓氏「祖先從哪裡來」。
+        羅家的堂號是<strong class="text-brick">「豫章堂」</strong>，豫章是古代地名，在今天的江西南昌一帶。
+      </p>
+      <p class="text-sm text-ink/75 leading-relaxed mt-3">
+        對客家人來說，堂號是走再遠都不能忘的門牌號碼。
+      </p>
+    </div>
+  </div>
+
+  <div class="card p-6">
+    <h3 class="disp font-bold text-lg mb-1">查查你家的堂號</h3>
+    <p class="text-sm text-ink/60 mb-4">輸入你的姓氏，看看常見的對應堂號。</p>
+    <div class="flex gap-2 max-w-sm mb-5">
+      <input id="surname" type="text" maxlength="2" placeholder="例：羅" class="flex-1 border border-ink/25 bg-paper px-4 py-2 outline-none focus:border-brick">
+      <button id="surBtn" class="bg-ink text-paper px-5 py-2 text-sm hover:bg-brick transition">查詢</button>
+    </div>
+    <div id="surResult" class="text-sm"></div>
+    <div class="mt-6 border-t border-ink/10 pt-4">
+      <p class="text-sm text-ink/70"><i class="fa-solid fa-lightbulb text-wood mr-2"></i>
+        查不到也沒關係。<strong>回家作業：</strong>問阿公阿婆，或看看家裡神明廳、門樓上寫的是哪三個字，記下來帶回學校。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ 單元三 ══════════ -->
+<section class="page" data-p="u3">
+  <div class="mb-6"><p class="text-xs tracking-[.4em] text-brick">單元三 ‧ 1 節</p>
+  <h2 class="disp text-3xl font-bold mt-2">建築藝術之美</h2>
+  <p class="text-ink/70 mt-3 max-w-2xl">石頭、木頭、瓷片、紙——四種材料，四種工法。點卡片翻到背面，看它們各自躲在屋子的哪裡。</p></div>
+
+  <div id="craftGrid" class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10"></div>
+
+  <div class="card p-6">
+    <h3 class="disp font-bold text-lg mb-4">觀察紀錄表（課堂使用）</h3>
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm border-collapse">
+        <thead><tr class="bg-ink text-paper">
+          <th class="p-3 text-left font-medium">我看到的工藝</th>
+          <th class="p-3 text-left font-medium">材質</th>
+          <th class="p-3 text-left font-medium">位置</th>
+          <th class="p-3 text-left font-medium">圖案是什麼</th>
+        </tr></thead>
+        <tbody>
+          <tr class="border-b border-ink/10"><td class="p-3">石雕</td><td class="p-3 text-ink/50">砂岩／青斗石</td><td class="p-3 text-ink/50">門柱、牆堵下方</td><td class="p-3 text-ink/30">＿＿＿＿＿</td></tr>
+          <tr class="border-b border-ink/10"><td class="p-3">木雕</td><td class="p-3 text-ink/50">樟木、檜木</td><td class="p-3 text-ink/50">樑、斗拱、門窗</td><td class="p-3 text-ink/30">＿＿＿＿＿</td></tr>
+          <tr class="border-b border-ink/10"><td class="p-3">剪黏</td><td class="p-3 text-ink/50">碗片、瓷片</td><td class="p-3 text-ink/50">屋脊、山牆</td><td class="p-3 text-ink/30">＿＿＿＿＿</td></tr>
+          <tr><td class="p-3">窗花</td><td class="p-3 text-ink/50">木格／磚砌</td><td class="p-3 text-ink/50">牆面開窗</td><td class="p-3 text-ink/30">＿＿＿＿＿</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ 單元四 ══════════ -->
+<section class="page" data-p="u4">
+  <div class="mb-6">
+    <p class="text-xs tracking-[.4em] text-brick">單元四 ‧ 2 節 ‧ 新增閱讀課程</p>
+    <h2 class="disp text-3xl font-bold mt-2">閱讀與文化探究</h2>
+    <p class="text-ink/70 mt-3 max-w-2xl">前面三個單元看的是「外美」。這兩節課，我們讀它的「內涵」。</p>
+  </div>
+
+  <div class="card mb-8">
+    <div class="card-hd px-6 py-4 flex items-center gap-3">
+      <span class="bg-brick text-paper text-xs px-2 py-1">第 1 節</span>
+      <h3 class="disp font-bold text-lg">閱讀：建築裡的故事書</h3>
+    </div>
+    <div class="p-6">
+      <p class="text-sm text-ink/75 leading-relaxed mb-5">
+        木雕上刻的不是裝飾。那些人物、那些場景，是老一輩想讓後代天天看見的做人道理——
+        像是貼在牆上的四格漫畫。點下面的故事看內容。
+      </p>
+      <div id="storyTabs" class="flex flex-wrap gap-2 mb-5"></div>
+      <div id="storyBox" class="bg-lime2/70 border-l-2 border-wood p-5"></div>
+      <div class="mt-5 border-t border-ink/10 pt-4 text-sm">
+        <p class="mb-2"><strong class="text-brick">建議讀本：</strong>《建築裡的四格漫畫》——收錄書院木雕題材的民間故事集。</p>
+        <p class="text-ink/70"><strong class="text-moss">客語練習：</strong>用客語簡單複述故事中的角色名，例如孔明、關公。</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-hd px-6 py-4 flex items-center gap-3">
+      <span class="bg-brick text-paper text-xs px-2 py-1">第 2 節</span>
+      <h3 class="disp font-bold text-lg">閱讀：豫章堂的前世今生</h3>
+    </div>
+    <div class="p-6">
+      <p class="text-sm text-ink/75 leading-relaxed mb-6">
+        為什麼關西的一戶人家，門上寫著一千八百公里外的地名？點時間軸讀下去。
+      </p>
+      <div id="timeline" class="space-y-1"></div>
+      <div class="mt-6 border-t border-ink/10 pt-4 text-sm">
+        <p class="mb-2"><strong class="text-brick">建議讀本：</strong>《豫章堂羅屋書房》——節錄羅珠在南昌築城、栽種豫章樹的段落。</p>
+        <p class="text-ink/70"><strong class="text-moss">閱讀提問：</strong>「飲水思源」這四個字，和堂號有什麼關係？寫下你的看法。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ 單元五 ══════════ -->
+<section class="page" data-p="u5">
+  <div class="mb-6"><p class="text-xs tracking-[.4em] text-brick">單元五 ‧ 2 節</p>
+  <h2 class="disp text-3xl font-bold mt-2">書院輕旅行與實作</h2>
+  <p class="text-ink/70 mt-3 max-w-2xl">實地走訪上南片，由羅家傳人羅仕龍老師導覽。點下面的站點，先做功課再出發。</p></div>
+
+  <div class="card p-6 mb-8">
+    <div id="routeDots" class="flex items-center justify-between mb-8 relative"></div>
+    <div id="routeBox" class="border-l-2 border-moss pl-5"></div>
+  </div>
+
+  <div class="grid md:grid-cols-2 gap-4">
+    <div class="card p-6">
+      <h3 class="disp font-bold text-lg mb-4"><i class="fa-solid fa-clipboard-check text-brick mr-2"></i>參訪禮儀，出發前先讀</h3>
+      <ul class="text-sm text-ink/75 space-y-2 leading-relaxed">
+        <li>‧ 這是「有人住的家」，不是空的古蹟。進門先問好，離開說謝謝。</li>
+        <li>‧ 不觸摸木雕、石雕，不攀爬牆面與門檻。</li>
+        <li>‧ 導覽時安靜聆聽，問題先記下來，導覽段落結束再舉手發問。</li>
+        <li>‧ 拍照前先問可不可以拍，不進入私人生活空間。</li>
+        <li>‧ 垃圾帶走，走原路，不踩踏農田作物。</li>
+      </ul>
+    </div>
+    <div class="card p-6">
+      <h3 class="disp font-bold text-lg mb-4"><i class="fa-solid fa-comment-dots text-moss mr-2"></i>客語導覽用語</h3>
+      <ul class="text-sm text-ink/75 space-y-3 leading-relaxed">
+        <li><strong class="disp text-base">恁早／食飽吂</strong>　—　問候長輩的開場</li>
+        <li><strong class="disp text-base">這係羅屋書院</strong>　—　這是羅屋書院</li>
+        <li><strong class="disp text-base">頭擺个屋</strong>　—　從前的房子</li>
+        <li><strong class="disp text-base">恁靚</strong>　—　很漂亮</li>
+        <li><strong class="disp text-base">承蒙你</strong>　—　謝謝你</li>
+      </ul>
+      <p class="text-xs text-ink/45 mt-4 border-t border-ink/10 pt-3">讀音請跟著老師或客語薪傳師念，注意四縣腔的聲調。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ 單元六 ══════════ -->
+<section class="page" data-p="u6">
+  <div class="mb-6"><p class="text-xs tracking-[.4em] text-brick">單元六 ‧ 2 節</p>
+  <h2 class="disp text-3xl font-bold mt-2">客家手作體驗</h2>
+  <p class="text-ink/70 mt-3 max-w-2xl">把花布、油桐花、窗花的對稱，變成自己手上的東西。</p></div>
+
+  <div class="grid lg:grid-cols-[1fr,1fr] gap-6">
+    <div class="card p-6">
+      <h3 class="disp font-bold text-lg mb-1">對稱窗花剪紙　試剪台</h3>
+      <p class="text-sm text-ink/60 mb-5">
+        剪紙的祕密是「摺」。摺成四分之一再下刀，攤開就是完整對稱的圖案。
+        在下面畫畫看——你點一格，另外三格會自己跟著出現。
+      </p>
+      <div class="flex justify-center mb-5"><div id="papercut"></div></div>
+      <div class="flex flex-wrap gap-2 justify-center">
+        <button data-cut="clear" class="chip px-4 py-2 text-sm">清空</button>
+        <button data-cut="flower" class="chip px-4 py-2 text-sm">範例：油桐花</button>
+        <button data-cut="xi" class="chip px-4 py-2 text-sm">範例：十字錦</button>
+        <button data-cut="rand" class="chip px-4 py-2 text-sm">隨機生成</button>
+      </div>
+      <p class="text-sm text-ink/70 mt-5 border-t border-ink/10 pt-4">
+        <strong class="text-brick">象徵意義：</strong>窗花常見蝙蝠（福）、魚（餘）、桃（壽）、花草（吉祥如意）。
+        圖案不只好看，是把祝福貼在窗上。
+      </p>
+    </div>
+
+    <div class="card p-6">
+      <h3 class="disp font-bold text-lg mb-4">客家望遠鏡　製作步驟</h3>
+      <ol id="scopeSteps" class="space-y-3 text-sm"></ol>
+      <div class="mt-6 border-t border-ink/10 pt-4">
+        <p class="text-sm text-ink/70 mb-3"><strong class="text-moss">創作理念發表：</strong>完成後，試著用客語說一句你的作品特色。</p>
+        <div class="bg-lime2/70 p-4 text-sm">
+          <p class="disp text-base mb-1">「𠊎个望遠鏡貼油桐花，恁靚。」</p>
+          <p class="text-ink/60 text-xs">我的望遠鏡貼了油桐花，很漂亮。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ 單元七 ══════════ -->
+<section class="page" data-p="u7">
+  <div class="mb-6"><p class="text-xs tracking-[.4em] text-brick">單元七 ‧ 2 節</p>
+  <h2 class="disp text-3xl font-bold mt-2">客家諺語與智慧</h2>
+  <p class="text-ink/70 mt-3 max-w-2xl">諺語是把一整套道理，壓縮成一句好記的話。</p></div>
+
+  <div class="card p-8 mb-8 text-center">
+    <p class="text-xs tracking-[.4em] text-brick mb-6">本單元核心諺語</p>
+    <p class="disp text-3xl md:text-4xl font-bold leading-relaxed">子弟不讀書<span class="text-brick">，</span>好比無目珠</p>
+    <p class="text-ink/60 mt-5 text-sm">「目珠」＝眼睛。孩子不讀書，就像沒有眼睛一樣，看不清路。</p>
+  </div>
+
+  <div class="grid md:grid-cols-2 gap-4 mb-8">
+    <div class="card p-6">
+      <h3 class="disp font-bold text-lg mb-4">諺語填空</h3>
+      <div id="proverbGame"></div>
+    </div>
+    <div class="card p-6">
+      <h3 class="disp font-bold text-lg mb-4">生活情境對應</h3>
+      <p class="text-sm text-ink/60 mb-4">哪句諺語適合這個情況？想一想再看答案。</p>
+      <div id="situGame" class="space-y-3"></div>
+    </div>
+  </div>
+
+  <div class="card p-6">
+    <h3 class="disp font-bold text-lg mb-4">延伸：另一句要記住的話</h3>
+    <p class="disp text-2xl mb-3">食果子，拜樹頭</p>
+    <p class="text-sm text-ink/75 leading-relaxed">
+      吃水果的時候，要記得拜謝那棵樹。這就是「飲水思源」——
+      和單元四讀到的豫章堂由來，講的是同一件事。
+      羅家人走了一千多年、一千多公里，還是把「豫章」兩個字掛在門上。
+    </p>
+  </div>
+</section>
+
+<!-- ══════════ 單元八 ══════════ -->
+<section class="page" data-p="u8">
+  <div class="mb-6"><p class="text-xs tracking-[.4em] text-brick">單元八 ‧ 1 節</p>
+  <h2 class="disp text-3xl font-bold mt-2">成果整合發表</h2>
+  <p class="text-ink/70 mt-3 max-w-2xl">用 Google Map 規劃路線，合作繪製「書院輕旅地圖」，然後用國客雙語導覽給大家聽。</p></div>
+
+  <div class="grid lg:grid-cols-[1.2fr,1fr] gap-6">
+    <div class="card p-6">
+      <h3 class="disp font-bold text-lg mb-1">我的書院輕旅地圖</h3>
+      <p class="text-sm text-ink/60 mb-5">勾選你想放進地圖的景點，至少選 4 個，並排出順序。</p>
+      <div id="spotPick" class="grid sm:grid-cols-2 gap-2 mb-6"></div>
+      <div class="border-t border-ink/10 pt-5">
+        <p class="text-xs tracking-widest text-brick mb-3">已選路線</p>
+        <p id="routeOut" class="disp text-lg leading-relaxed text-ink/40">還沒選景點</p>
+      </div>
+    </div>
+
+    <div class="card p-6">
+      <h3 class="disp font-bold text-lg mb-1">發表檢核表</h3>
+      <p class="text-sm text-ink/60 mb-5">上台前逐項確認。</p>
+      <div id="checklist" class="space-y-2 mb-5"></div>
+      <div class="h-2 bg-ink/10 overflow-hidden"><div id="ckBar" class="h-full bg-moss transition-all" style="width:0%"></div></div>
+      <p id="ckMsg" class="text-sm mt-3 text-ink/60">完成 0 / 8</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ 客語卡 ══════════ -->
+<section class="page" data-p="hakka">
+  <div class="mb-6"><p class="text-xs tracking-[.4em] text-brick">全課程累積</p>
+  <h2 class="disp text-3xl font-bold mt-2">客語詞彙卡</h2>
+  <p class="text-ink/70 mt-3 max-w-2xl">點卡片看華語意思。讀音請跟著老師念——字認得，聲調要靠耳朵。</p></div>
+  <div id="hakkaGrid" class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4"></div>
+</section>
+
+<!-- ══════════ 測驗 ══════════ -->
+<section class="page" data-p="quiz">
+  <div class="mb-6"><p class="text-xs tracking-[.4em] text-brick">總複習</p>
+  <h2 class="disp text-3xl font-bold mt-2">書院足跡　隨堂測驗</h2>
+  <p class="text-ink/70 mt-3">10 題，選完立刻知道對不對。</p></div>
+  <div id="quizBox" class="space-y-4"></div>
+  <div class="card p-6 mt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+    <p id="score" class="disp text-xl">得分　<span class="text-brick font-bold">0</span> / 10</p>
+    <button id="resetQuiz" class="border border-ink/30 px-5 py-2 text-sm hover:bg-ink hover:text-paper transition">重新作答</button>
+  </div>
+</section>
+
+</main>
+
+<footer class="border-t border-ink/15 mt-16">
+  <div class="brickline"></div>
+  <div class="max-w-6xl mx-auto px-6 py-10 text-sm text-ink/55 flex flex-col md:flex-row gap-3 md:justify-between">
+    <p>新竹縣關西國小　四年級校訂課程「羅屋築蹟～書院足跡」教學網</p>
+    <p>製作：Vincent Wang　‧　本網頁由 Claude (Anthropic) 協助開發</p>
+  </div>
+</footer>
+
+<script>
+/* ══════════ 片頭動畫 ══════════ */
+(function(){
+  var stage = document.getElementById('introStage');
+  var lines = [
+    ['讀建築','一堂四橫，是一個家族的骨架'],
+    ['讀故事','木雕上的人物，講了一百年的話'],
+    ['講客語','頭擺个話，愛講正會記得'],
+    ['動手做','走一趟上南片，剪一張窗花']
+  ];
+  var i = 0, LINE_MS = 2200;
+
+  function showLine(){
+    if(i >= lines.length){ finale(); return; }
+    var d = document.createElement('div');
+    d.className = 'introLine';
+    d.innerHTML =
+      '<p class="text-xs tracking-[.6em] text-[#C9A46A] mb-5">'+lines[i][0]+'</p>'+
+      '<p class="disp text-2xl md:text-4xl font-semibold leading-relaxed">'+lines[i][1]+'</p>';
+    stage.innerHTML = '';
+    stage.appendChild(d);
+    i++;
+    setTimeout(showLine, LINE_MS);
+  }
+
+  function finale(){
+    stage.innerHTML =
+      '<div class="introFinal w-full">'+
+        '<div id="introPhotoWrap" class="mx-auto mb-7 w-full max-w-xl overflow-hidden border border-[#C9A46A]/40">'+
+          '<img src="luowu.png" alt="羅屋書院實景" class="w-full h-56 md:h-72 object-cover" '+
+          'onerror="this.style.display=\'none\';document.getElementById(\'introFallback\').style.display=\'flex\';">'+
+          '<div id="introFallback" style="display:none" class="h-56 md:h-72 items-center justify-center bg-[#1B1613] text-[#C9A46A]">'+
+            '<i class="fa-solid fa-torii-gate text-6xl opacity-60"></i></div>'+
+        '</div>'+
+        '<p class="text-xs tracking-[.5em] text-[#C9A46A] mb-3">關西國小 四年級校訂課程</p>'+
+        '<h1 class="disp text-4xl md:text-6xl font-black">羅屋築蹟～書院足跡</h1>'+
+      '</div>';
+    setTimeout(close, 4400);
+  }
+
+  function close(){
+    var el = document.getElementById('intro');
+    if(!el) return;
+    el.classList.add('done');
+    setTimeout(function(){ if(el.parentNode) el.parentNode.removeChild(el); }, 950);
+  }
+
+  document.getElementById('skip').addEventListener('click', close);
+  setTimeout(showLine, 1500);
+})();
+
+/* ══════════ 分頁 ══════════ */
+var TABS = [
+  ['home','首頁'],['u1','一 古今書院'],['u2','二 建築與堂號'],['u3','三 建築藝術'],
+  ['u4','四 閱讀探究'],['u5','五 書院輕旅'],['u6','六 客家手作'],['u7','七 客家諺語'],
+  ['u8','八 成果發表'],['hakka','客語卡'],['quiz','測驗']
+];
+(function(){
+  var bar = document.getElementById('tabs');
+  TABS.forEach(function(t, idx){
+    var b = document.createElement('button');
+    b.className = 'tabbtn px-4 py-2' + (idx===0 ? ' on' : '');
+    b.textContent = t[1];
+    b.dataset.go = t[0];
+    bar.appendChild(b);
+  });
+  bar.addEventListener('click', function(e){
+    var b = e.target.closest('[data-go]'); if(!b) return;
+    document.querySelectorAll('.tabbtn').forEach(function(x){x.classList.remove('on');});
+    b.classList.add('on');
+    document.querySelectorAll('.page').forEach(function(p){
+      p.classList.toggle('on', p.dataset.p === b.dataset.go);
+    });
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+})();
+
+/* ══════════ 首頁：平面圖 ══════════ */
+var PLAN = {
+  hall:{t:'公廳（正堂）', d:'三合院的中心，供奉祖先牌位的地方。最重要的儀式在這裡舉行：祭祖、婚喪、家族會議。所謂「一堂四橫」的「堂」，指的就是它。客語稱「公廳」。'},
+  wing1:{t:'內橫屋（第一排）', d:'緊鄰正堂的兩排廂房，通常由輩分較高、關係較親的房支居住。愈靠近公廳，家族地位愈核心。'},
+  wing2:{t:'外橫屋（第二排）', d:'再往外擴一層。家族人口增加時，就再接一排橫屋出去——房子是「長」出來的，不是一次蓋完的。加上正堂，合起來就是「一堂四橫」。'},
+  hoting:{t:'禾埕', d:'屋前的大廣場。曬穀、曬菜乾、辦桌、小孩玩耍都在這裡。它不是空地，是客家農家最忙的工作空間。'},
+  tanghao:{t:'堂號：豫章堂', d:'掛在正堂門楣上方，宣告這家人的祖先來自「豫章」（今江西南昌一帶）。走再遠，門上這三個字不會改。詳見單元四第 2 節。'},
+  tower:{t:'得月樓', d:'日治時期增建的洋樓，有拱圈與西式裝飾。傳統三合院旁站著一棟西洋樓，正好記錄了那個年代的變化。'},
+  gate:{t:'門樓', d:'進出的門面，也是整座屋子給外人的第一印象。裝飾最講究的地方之一，石雕、彩繪常集中在這裡。'}
+};
+(function(){
+  var box = document.getElementById('planInfo');
+  document.querySelectorAll('.plan-zone').forEach(function(g){
+    g.addEventListener('click', function(){
+      document.querySelectorAll('.plan-zone').forEach(function(x){x.classList.remove('sel');});
+      document.querySelectorAll('.plan-zone[data-z="'+g.dataset.z+'"]').forEach(function(x){x.classList.add('sel');});
+      var info = PLAN[g.dataset.z];
+      box.innerHTML =
+        '<p class="text-xs tracking-widest text-brick mb-2">建築部位</p>'+
+        '<h3 class="disp text-xl font-bold mb-3">'+info.t+'</h3>'+
+        '<p class="text-sm text-ink/75 leading-relaxed">'+info.d+'</p>';
+    });
+  });
+})();
+
+/* ══════════ 首頁：課程總覽 ══════════ */
+var UNITS = [
+  ['一','話說頭擺與古今書院','2 節','認識羅屋書院歷史與一堂四橫；比較古代私塾與現代學校','u1'],
+  ['二','書院建築與堂號','1 節','得月樓洋樓與豫章堂堂號來源；查找自家堂號','u2'],
+  ['三','建築藝術之美','1 節','觀察石雕、木雕、剪黏等傳統工藝的材質與位置','u3'],
+  ['四','閱讀與文化探究','2 節','【新增】讀建築中的民間故事；讀堂號的遷徙史','u4'],
+  ['五','書院輕旅行與實作','2 節','實地走訪上南片，由羅仕龍老師導覽','u5'],
+  ['六','客家手作體驗','2 節','客家望遠鏡與對稱窗花剪紙','u6'],
+  ['七','客家諺語與智慧','2 節','讀書與品德的客家諺語','u7'],
+  ['八','成果整合發表','1 節','Google Map 路線規劃與書院輕旅地圖報告','u8']
+];
+(function(){
+  var g = document.getElementById('overview');
+  UNITS.forEach(function(u){
+    var isNew = u[3].indexOf('【新增】') === 0;
+    var d = document.createElement('button');
+    d.className = 'card p-5 text-left hover:-translate-y-0.5 transition';
+    d.dataset.jump = u[4];
+    d.innerHTML =
+      '<div class="flex items-start gap-4">'+
+        '<span class="disp text-3xl font-black '+(isNew?'text-brick':'text-ink/25')+' leading-none">'+u[0]+'</span>'+
+        '<div class="flex-1">'+
+          '<div class="flex items-center gap-2 flex-wrap">'+
+            '<h3 class="disp font-bold">'+u[1]+'</h3>'+
+            '<span class="text-xs border border-ink/25 px-2 py-0.5">'+u[2]+'</span>'+
+            (isNew ? '<span class="text-xs bg-brick text-paper px-2 py-0.5">新增閱讀</span>' : '')+
+          '</div>'+
+          '<p class="text-sm text-ink/65 mt-2 leading-relaxed">'+u[3].replace('【新增】','')+'</p>'+
+        '</div>'+
+      '</div>';
+    g.appendChild(d);
+  });
+  g.addEventListener('click', function(e){
+    var b = e.target.closest('[data-jump]'); if(!b) return;
+    var target = document.querySelector('.tabbtn[data-go="'+b.dataset.jump+'"]');
+    if(target) target.click();
+  });
+})();
+
+/* ══════════ 單元一：古今對照 ══════════ */
+(function(){
+  var rows = [
+    ['讀書的地方','私塾、書房、宗祠廳堂','學校教室'],
+    ['老師','一位先生教全部','各科老師分科教學'],
+    ['同學','同族子弟，年齡不同班','同齡編班'],
+    ['課本','三字經、四書五經','國語、數學、社會、自然……'],
+    ['學什麼','六藝：禮樂射御書數','領域課程＋校訂課程'],
+    ['誰能讀','多半是男孩，家境要許可','人人都要上學']
+  ];
+  var box = document.getElementById('cmpTable');
+  rows.forEach(function(r){
+    var d = document.createElement('div');
+    d.className = 'grid grid-cols-[70px,1fr,1fr] gap-2 items-center py-2 border-b border-ink/10';
+    d.innerHTML =
+      '<span class="text-xs text-brick font-medium">'+r[0]+'</span>'+
+      '<span class="text-ink/70">'+r[1]+'</span>'+
+      '<span class="text-ink/70">'+r[2]+'</span>';
+    box.appendChild(d);
+  });
+  var hd = document.createElement('div');
+  hd.className = 'grid grid-cols-[70px,1fr,1fr] gap-2 pb-2 text-xs tracking-wider';
+  hd.innerHTML = '<span></span><span class="text-brick">頭擺（私塾）</span><span class="text-moss">現在（學校）</span>';
+  box.prepend(hd);
+})();
+
+/* ══════════ 單元一：六藝配對 ══════════ */
+(function(){
+  var PAIR = [
+    ['禮','品德與生活禮儀'],
+    ['樂','音樂與藝術'],
+    ['射','體育（射箭、運動）'],
+    ['御','交通安全與駕駛'],
+    ['書','國語文與書法'],
+    ['數','數學']
+  ];
+  var A = document.getElementById('liuA'), B = document.getElementById('liuB'), msg = document.getElementById('liuMsg');
+  var pick = null, done = 0;
+  function shuffle(a){return a.slice().sort(function(){return Math.random()-.5;});}
+
+  PAIR.forEach(function(p, i){
+    var b = document.createElement('button');
+    b.className = 'chip px-3 py-3 disp text-xl'; b.textContent = p[0]; b.dataset.k = i;
+    A.appendChild(b);
+  });
+  shuffle(PAIR.map(function(p,i){return [p[1],i];})).forEach(function(p){
+    var b = document.createElement('button');
+    b.className = 'chip px-3 py-3 text-sm'; b.textContent = p[0]; b.dataset.k = p[1];
+    B.appendChild(b);
+  });
+
+  A.addEventListener('click', function(e){
+    var b = e.target.closest('.chip'); if(!b || b.classList.contains('ok')) return;
+    A.querySelectorAll('.chip').forEach(function(x){x.classList.remove('sel');});
+    b.classList.add('sel'); pick = b; msg.textContent = '';
+  });
+  B.addEventListener('click', function(e){
+    var b = e.target.closest('.chip'); if(!b || b.classList.contains('ok')) return;
+    if(!pick){ msg.className='mt-5 text-sm font-medium text-brick'; msg.textContent='先點左邊的六藝，再點右邊。'; return; }
+    if(b.dataset.k === pick.dataset.k){
+      b.classList.add('ok'); pick.classList.remove('sel'); pick.classList.add('ok');
+      pick = null; done++;
+      msg.className = 'mt-5 text-sm font-medium text-moss';
+      msg.textContent = done === 6 ? '六藝全數配對完成。古人學的和你現在學的，其實沒差那麼遠。' : '對了。剩下 ' + (6-done) + ' 組。';
+    } else {
+      b.classList.add('shake');
+      setTimeout(function(){b.classList.remove('shake');},400);
+      msg.className='mt-5 text-sm font-medium text-brick'; msg.textContent='再想想看。';
+    }
+  });
+})();
+
+/* ══════════ 單元二：堂號查詢 ══════════ */
+(function(){
+  var TH = {'羅':'豫章堂','涂':'豫章堂','陳':'潁川堂','賴':'潁川堂','林':'西河堂','黃':'江夏堂',
+    '張':'清河堂','傅':'清河堂','李':'隴西堂','彭':'隴西堂','王':'太原堂','溫':'太原堂',
+    '劉':'彭城堂','吳':'延陵堂','徐':'東海堂','邱':'河南堂','丘':'河南堂','曾':'魯國堂',
+    '江':'濟陽堂','蔡':'濟陽堂','葉':'南陽堂','呂':'河東堂','鄭':'滎陽堂','楊':'弘農堂',
+    '廖':'武威堂','何':'廬江堂','謝':'陳留堂','郭':'汾陽堂','范':'高平堂','古':'新安堂',
+    '詹':'河間堂','宋':'京兆堂','杜':'京兆堂','鍾':'潁川堂','曹':'譙國堂','許':'高陽堂'};
+  var inp = document.getElementById('surname'), out = document.getElementById('surResult');
+  function go(){
+    var s = (inp.value || '').trim().charAt(0);
+    if(!s){ out.innerHTML = '<p class="text-brick">請先輸入一個姓氏。</p>'; return; }
+    if(TH[s]){
+      out.innerHTML =
+        '<div class="bg-lime2/70 border-l-2 border-brick p-5">'+
+          '<p class="text-xs tracking-widest text-brick mb-2">'+s+' 姓　常見堂號</p>'+
+          '<p class="disp text-3xl font-bold mb-3">'+TH[s]+'</p>'+
+          '<p class="text-ink/65">同一個姓氏可能有不只一個堂號，各房各支不一定相同。以自家門樓上寫的為準。</p>'+
+        '</div>';
+    } else {
+      out.innerHTML =
+        '<div class="bg-lime2/70 border-l-2 border-ink/30 p-5">'+
+          '<p class="disp text-lg mb-2">資料裡沒有「'+s+'」姓</p>'+
+          '<p class="text-ink/65">這份清單只收了關西一帶常見的姓氏。回家問阿公阿婆，把答案帶回課堂補上。</p>'+
+        '</div>';
+    }
+  }
+  document.getElementById('surBtn').addEventListener('click', go);
+  inp.addEventListener('keydown', function(e){ if(e.key === 'Enter') go(); });
+})();
+
+/* ══════════ 單元三：工藝翻卡 ══════════ */
+(function(){
+  var C = [
+    ['石雕','fa-gem','砂岩、青斗石','門柱、牆堵下方、石鼓','石頭耐風雨，所以放在最容易被碰到、被雨淋到的下半部。刻的常是龍柱、麒麟、花鳥。'],
+    ['木雕','fa-tree','樟木、檜木','樑架、斗拱、門窗隔扇','抬頭往上看。屋頂底下的木結構是雕工最密集的地方，人物故事多半在這裡。'],
+    ['剪黏','fa-shapes','碗片、瓷片、灰泥','屋脊、山牆頂端','把彩色碗片剪成小塊，黏成龍鳳花鳥。站遠一點看，屋頂上那些會反光的就是。'],
+    ['窗花','fa-border-all','木格、磚砌、灰泥','牆面開窗處','既通風採光，又是圖案。對稱的線條裡藏著吉祥的寓意，單元六會親手剪一張。']
+  ];
+  var g = document.getElementById('craftGrid');
+  C.forEach(function(c){
+    var d = document.createElement('div');
+    d.className = 'flip';
+    d.innerHTML =
+      '<div class="flip-in">'+
+        '<div class="flip-f">'+
+          '<i class="fa-solid '+c[1]+' text-brick text-3xl mb-4"></i>'+
+          '<h3 class="disp text-2xl font-bold">'+c[0]+'</h3>'+
+          '<p class="text-xs text-ink/50 mt-3">材質：'+c[2]+'</p>'+
+          '<p class="text-xs text-ink/35 mt-4">點卡片翻面</p>'+
+        '</div>'+
+        '<div class="flip-b">'+
+          '<p class="text-xs tracking-widest text-wood mb-2">在屋子的哪裡</p>'+
+          '<p class="disp font-bold mb-3">'+c[3]+'</p>'+
+          '<p class="text-xs leading-relaxed opacity-80">'+c[4]+'</p>'+
+        '</div>'+
+      '</div>';
+    d.addEventListener('click', function(){ d.classList.toggle('on'); });
+    g.appendChild(d);
+  });
+})();
+
+/* ══════════ 單元四：故事 ══════════ */
+(function(){
+  var S = [
+    ['三顧茅廬','劉備為了請諸葛亮出來幫忙，連續三次親自到他的草廬拜訪。前兩次都撲空，第三次才等到人。','禮賢下士——有本事的人值得你放下身段去請。這也是為什麼它會被刻在讀書人的屋子裡。'],
+    ['渭水聘賢','周文王在渭水邊遇見正在釣魚的姜太公，一談之下發現他是奇才，親自請他上車回朝輔政。','識人與被識——姜太公等了大半輩子，才等到懂他的人。刻在門樑上，是給後代的期許。'],
+    ['八仙過海','八位神仙要渡海，各自拿出自己的法寶，用不同的方法過去，不靠別人的船。','各顯神通——每個人本事不一樣，發揮自己的長處就好。屋脊剪黏最常見的題材之一。'],
+    ['孔明夜讀','諸葛亮在燈下讀書的形象，常被刻在書房或書院相關的建築構件上。','勤學——放在天天走過的地方，就是要人天天看見。呼應單元七的「子弟不讀書，好比無目珠」。']
+  ];
+  var tabs = document.getElementById('storyTabs'), box = document.getElementById('storyBox');
+  function show(i){
+    tabs.querySelectorAll('button').forEach(function(b,k){ b.classList.toggle('sel', k===i); });
+    box.innerHTML =
+      '<h4 class="disp text-xl font-bold mb-3">'+S[i][0]+'</h4>'+
+      '<p class="text-sm text-ink/75 leading-relaxed mb-4">'+S[i][1]+'</p>'+
+      '<p class="text-sm"><strong class="text-brick">它想教的事：</strong><span class="text-ink/75">'+S[i][2]+'</span></p>';
+  }
+  S.forEach(function(s,i){
+    var b = document.createElement('button');
+    b.className = 'chip px-4 py-2 text-sm'; b.textContent = s[0];
+    b.addEventListener('click', function(){ show(i); });
+    tabs.appendChild(b);
+  });
+  show(0);
+})();
+
+/* ══════════ 單元四：時間軸 ══════════ */
+(function(){
+  var T = [
+    ['漢代','羅珠公在豫章','相傳羅氏先祖羅珠曾任官於豫章郡（今江西南昌一帶），參與築城，並在城中栽種豫章樹（樟樹）。'],
+    ['後世','以「豫章」為堂號','子孫感念祖先功業與發跡之地，把「豫章堂」訂為堂號，掛在正廳門楣上。'],
+    ['唐宋以後','一路南遷','戰亂與人口壓力，羅氏一族陸續往南遷徙，經過江西、福建、廣東等地。'],
+    ['明清','渡海來台','部分族人從閩粵渡海來到台灣，在丘陵與河谷地帶落腳，開墾種茶。'],
+    ['關西','定居上南片','羅氏在關西上南片建立聚落，蓋起一堂四橫的祖屋，也就是今天的羅屋書院。'],
+    ['現在','門上還是那三個字','走了一千多年、一千多公里，門楣上寫的仍然是「豫章堂」。這就是飲水思源。']
+  ];
+  var box = document.getElementById('timeline');
+  T.forEach(function(t,i){
+    var d = document.createElement('div');
+    d.className = 'border-l-2 border-wood/50 pl-6 pb-6 relative cursor-pointer group';
+    d.innerHTML =
+      '<span class="absolute -left-[7px] top-1 w-3 h-3 rounded-full bg-wood group-hover:bg-brick transition"></span>'+
+      '<p class="text-xs tracking-widest text-brick">'+t[0]+'</p>'+
+      '<h4 class="disp font-bold text-lg mt-1">'+t[1]+'</h4>'+
+      '<p class="text-sm text-ink/70 leading-relaxed mt-2 hidden">'+t[2]+'</p>'+
+      '<p class="text-xs text-ink/35 mt-1 tap">點開看說明</p>';
+    d.addEventListener('click', function(){
+      var p = d.querySelector('p.text-sm'), tip = d.querySelector('.tap');
+      p.classList.toggle('hidden');
+      tip.style.display = p.classList.contains('hidden') ? '' : 'none';
+    });
+    box.appendChild(d);
+  });
+})();
+
+/* ══════════ 單元五：路線 ══════════ */
+(function(){
+  var R = [
+    ['羅屋書院','課程主場。從門樓開始看起：堂號、石雕、木雕、一堂四橫的格局，全部在這裡對照課本驗證。'],
+    ['得月樓','就在旁邊。比較一下：同一戶人家，為什麼蓋了兩種完全不同風格的房子？'],
+    ['上南片聚落','沿著小路走。看看老屋群怎麼依著地形排列，門口朝哪個方向，田在哪裡。'],
+    ['金城武樹','田中央的一棵樹，因為廣告畫面成名。停下來想一想：一棵樹為什麼會變成地標？'],
+    ['水車','農村的動力來源。轉動的木輪把水引進田裡，是還沒有電之前的技術。'],
+    ['田園景觀','記錄你看到的作物、地形、水圳。這些就是單元八地圖上要標的東西。']
+  ];
+  var dots = document.getElementById('routeDots'), box = document.getElementById('routeBox');
+  function show(i){
+    dots.querySelectorAll('button').forEach(function(b,k){
+      b.querySelector('span').className = 'w-4 h-4 rounded-full block mx-auto mb-2 ' + (k===i ? 'bg-brick' : 'bg-ink/25');
+      b.className = 'flex-1 text-center text-xs ' + (k===i ? 'text-brick font-bold' : 'text-ink/50');
+    });
+    box.innerHTML =
+      '<p class="text-xs tracking-widest text-moss mb-2">第 '+(i+1)+' 站</p>'+
+      '<h3 class="disp text-xl font-bold mb-3">'+R[i][0]+'</h3>'+
+      '<p class="text-sm text-ink/75 leading-relaxed">'+R[i][1]+'</p>';
+  }
+  var line = document.createElement('div');
+  line.className = 'absolute left-0 right-0 top-2 h-px bg-ink/20 -z-10';
+  dots.appendChild(line);
+  R.forEach(function(r,i){
+    var b = document.createElement('button');
+    b.innerHTML = '<span></span>'+r[0];
+    b.addEventListener('click', function(){ show(i); });
+    dots.appendChild(b);
+  });
+  show(0);
+})();
+
+/* ══════════ 單元六：窗花 ══════════ */
+(function(){
+  var N = 8, state = [];
+  for(var r=0;r<N;r++){ state.push(new Array(N).fill(0)); }
+  var grid = document.getElementById('papercut'), cells = [];
+
+  for(var i=0;i<16;i++){
+    for(var j=0;j<16;j++){
+      var d = document.createElement('div');
+      d.dataset.r = i; d.dataset.c = j;
+      grid.appendChild(d); cells.push(d);
+    }
+  }
+  function q(i){ return i < N ? i : 15 - i; }
+  function draw(){
+    cells.forEach(function(d){
+      var r = q(+d.dataset.r), c = q(+d.dataset.c);
+      d.classList.toggle('f', !!state[r][c]);
+    });
+  }
+  grid.addEventListener('click', function(e){
+    if(e.target === grid) return;
+    var r = q(+e.target.dataset.r), c = q(+e.target.dataset.c);
+    state[r][c] = state[r][c] ? 0 : 1;
+    draw();
+  });
+
+  var PRESET = {
+    flower: [[0,0,0,0,0,1,1,0],[0,0,0,0,1,1,1,1],[0,0,0,1,1,1,1,0],[0,0,1,1,1,0,0,0],
+             [0,1,1,1,0,0,0,0],[1,1,1,0,0,0,1,1],[1,1,0,0,0,1,1,1],[0,1,0,0,1,1,1,0]],
+    xi:     [[0,0,0,1,1,1,1,1],[0,0,0,1,0,0,0,0],[0,0,0,1,0,1,1,1],[1,1,1,1,0,1,0,0],
+             [1,0,0,0,0,1,0,1],[1,0,1,1,1,1,0,1],[1,0,1,0,0,0,0,1],[1,0,1,0,1,1,1,1]]
+  };
+  document.querySelectorAll('[data-cut]').forEach(function(b){
+    b.addEventListener('click', function(){
+      var k = b.dataset.cut;
+      if(k === 'clear'){ state = state.map(function(row){return row.map(function(){return 0;});}); }
+      else if(k === 'rand'){ state = state.map(function(row){return row.map(function(){return Math.random()>.55?1:0;});}); }
+      else { state = PRESET[k].map(function(row){return row.slice();}); }
+      draw();
+    });
+  });
+  document.querySelector('[data-cut="flower"]').click();
+})();
+
+/* ══════════ 單元六：望遠鏡步驟 ══════════ */
+(function(){
+  var S = [
+    '準備一支用完的保鮮膜紙筒，或兩個衛生紙捲筒接起來。',
+    '量出紙筒的周長與長度，剪一張大小剛好的客家花布紙（或圖畫紙上色）。',
+    '在花布紙上加畫或黏貼油桐花——五瓣白花，中心點紅或黃。',
+    '把紙捲貼上紙筒，接縫壓在同一側，用膠帶收邊。',
+    '兩端貼上一圈深色紙做鏡框，讓筒身看起來更完整。',
+    '打洞穿繩，做成可以掛在脖子上的背帶。',
+    '走出教室試用：透過望遠鏡框住一個屋頂、一扇窗、一朵花。'
+  ];
+  var ol = document.getElementById('scopeSteps');
+  S.forEach(function(s,i){
+    var li = document.createElement('li');
+    li.className = 'flex gap-3';
+    li.innerHTML = '<span class="disp text-brick font-bold w-6 shrink-0">'+(i+1)+'</span><span class="text-ink/75 leading-relaxed">'+s+'</span>';
+    ol.appendChild(li);
+  });
+})();
+
+/* ══════════ 單元七：諺語 ══════════ */
+(function(){
+  var G = [
+    {q:'子弟不讀書，好比無＿＿', o:['目珠','嘴唇','手指'], a:0, e:'目珠＝眼睛。沒有眼睛就看不見路，比喻不讀書就看不清方向。'},
+    {q:'食果子，拜＿＿', o:['神明','樹頭','阿公'], a:1, e:'吃果子要拜謝結果的那棵樹，就是飲水思源。'},
+    {q:'「頭擺」的意思是＿＿', o:['第一次','從前','頭髮'], a:1, e:'頭擺＝從前、以前。單元一的課名就用了這個詞。'}
+  ];
+  var box = document.getElementById('proverbGame');
+  G.forEach(function(g, gi){
+    var d = document.createElement('div');
+    d.className = 'mb-5 pb-5 border-b border-ink/10 last:border-0 last:mb-0 last:pb-0';
+    var opts = g.o.map(function(o,i){
+      return '<button class="chip px-3 py-2 text-sm" data-g="'+gi+'" data-i="'+i+'">'+o+'</button>';
+    }).join('');
+    d.innerHTML = '<p class="disp text-lg mb-3">'+g.q+'</p><div class="flex flex-wrap gap-2">'+opts+'</div><p class="text-sm mt-3 hidden" data-fb="'+gi+'"></p>';
+    box.appendChild(d);
+  });
+  box.addEventListener('click', function(e){
+    var b = e.target.closest('[data-g]'); if(!b) return;
+    var gi = +b.dataset.g, i = +b.dataset.i, g = G[gi];
+    var fb = box.querySelector('[data-fb="'+gi+'"]');
+    if(i === g.a){
+      b.classList.add('ok');
+      fb.className = 'text-sm mt-3 text-moss'; fb.textContent = '答對了。'+g.e;
+    } else {
+      b.classList.add('shake');
+      setTimeout(function(){b.classList.remove('shake');},400);
+      fb.className = 'text-sm mt-3 text-brick'; fb.textContent = '不是這個，再試試看。';
+    }
+  });
+})();
+
+/* ══════════ 單元七：情境 ══════════ */
+(function(){
+  var S = [
+    ['同學說「反正我以後又不用讀書」，你想勸他。','子弟不讀書，好比無目珠。讀書是為了看得清楚自己的路。'],
+    ['參訪結束，你要謝謝羅老師的導覽。','承蒙你。食果子拜樹頭——是老師讓我們看見這些的。'],
+    ['爺爺問你為什麼要學堂號。','因為堂號記得我們從哪裡來，忘了就找不到根了。']
+  ];
+  var box = document.getElementById('situGame');
+  S.forEach(function(s){
+    var d = document.createElement('div');
+    d.className = 'border border-ink/15 p-4 cursor-pointer hover:border-brick transition';
+    d.innerHTML = '<p class="text-sm text-ink/80">'+s[0]+'</p><p class="text-sm text-moss mt-3 hidden"><i class="fa-solid fa-turn-up fa-rotate-90 mr-2"></i>'+s[1]+'</p><p class="text-xs text-ink/35 mt-2 tip">點開看參考說法</p>';
+    d.addEventListener('click', function(){
+      d.querySelector('.text-moss').classList.toggle('hidden');
+      var t = d.querySelector('.tip');
+      t.style.display = d.querySelector('.text-moss').classList.contains('hidden') ? '' : 'none';
+    });
+    box.appendChild(d);
+  });
+})();
+
+/* ══════════ 單元八：地圖與檢核 ══════════ */
+(function(){
+  var SPOTS = ['羅屋書院','得月樓','上南片聚落','金城武樹','水車','田園水圳','關西國小','牛欄河親水公園'];
+  var picked = [];
+  var g = document.getElementById('spotPick'), out = document.getElementById('routeOut');
+  SPOTS.forEach(function(s){
+    var b = document.createElement('button');
+    b.className = 'chip px-3 py-2 text-sm text-left'; b.textContent = s;
+    b.addEventListener('click', function(){
+      var i = picked.indexOf(s);
+      if(i >= 0){ picked.splice(i,1); b.classList.remove('sel'); }
+      else { picked.push(s); b.classList.add('sel'); }
+      if(picked.length === 0){ out.className='disp text-lg leading-relaxed text-ink/40'; out.textContent='還沒選景點'; }
+      else {
+        out.className = 'disp text-lg leading-relaxed';
+        out.innerHTML = picked.join(' <span class="text-brick">→</span> ') +
+          (picked.length < 4 ? '<span class="block text-sm text-brick mt-3 font-sans">再選 '+(4-picked.length)+' 個景點</span>'
+                             : '<span class="block text-sm text-moss mt-3 font-sans">路線完成，共 '+picked.length+' 站。可以畫地圖了。</span>');
+      }
+    });
+    g.appendChild(b);
+  });
+
+  var CK = ['地圖上標出至少 4 個景點','每個景點寫一句說明','標出建議的參觀順序',
+            '準備一段客語導覽（至少 3 句）','說明羅屋書院的建築格局','說出「豫章堂」的由來',
+            '分工明確，每個人都有發言','錄影完成並上傳'];
+  var box = document.getElementById('checklist'), bar = document.getElementById('ckBar'), msg = document.getElementById('ckMsg');
+  var done = 0;
+  CK.forEach(function(c){
+    var l = document.createElement('label');
+    l.className = 'flex items-start gap-3 text-sm cursor-pointer group';
+    l.innerHTML = '<input type="checkbox" class="mt-1 accent-[#4A6650]"><span class="text-ink/75 group-hover:text-ink">'+c+'</span>';
+    l.querySelector('input').addEventListener('change', function(e){
+      done += e.target.checked ? 1 : -1;
+      bar.style.width = (done/CK.length*100)+'%';
+      msg.textContent = done === CK.length ? '全部完成，可以上台了。' : '完成 '+done+' / '+CK.length;
+    });
+    box.appendChild(l);
+  });
+})();
+
+/* ══════════ 客語詞彙卡 ══════════ */
+(function(){
+  var W = [
+    ['頭擺','從前、以前','頭擺个屋，係用泥磚做个。'],
+    ['屋','房子、家','羅屋就係羅家个屋。'],
+    ['公廳','三合院正中央祭祖的廳堂','公廳擺祖先牌位。'],
+    ['橫屋','三合院兩側的廂房','一堂四橫，就係一个堂、四排橫屋。'],
+    ['堂號','刻在門楣上、代表祖先來處的名號','𠊎屋下个堂號係豫章堂。'],
+    ['石雕','石頭雕刻','門柱个石雕當精緻。'],
+    ['木雕','木頭雕刻','樑頂高个木雕有三顧茅廬。'],
+    ['窗花','窗上的鏤空圖案','窗花剪出來，貼等就當靚。'],
+    ['目珠','眼睛','子弟毋讀書，好比無目珠。'],
+    ['子弟','家族裡的晚輩、孩子','羅屋个子弟在這位讀書。'],
+    ['𠊎','我','𠊎係關西國小四年級个學生。'],
+    ['恁靚','很漂亮','這扇窗花恁靚。']
+  ];
+  var g = document.getElementById('hakkaGrid');
+  W.forEach(function(w){
+    var d = document.createElement('div');
+    d.className = 'flip';
+    d.innerHTML =
+      '<div class="flip-in">'+
+        '<div class="flip-f">'+
+          '<p class="text-xs tracking-widest text-brick mb-3">客語</p>'+
+          '<h3 class="disp text-3xl font-bold">'+w[0]+'</h3>'+
+          '<p class="text-xs text-ink/35 mt-5">點卡片看意思</p>'+
+        '</div>'+
+        '<div class="flip-b">'+
+          '<p class="text-xs tracking-widest text-wood mb-2">華語</p>'+
+          '<p class="disp text-xl font-bold mb-4">'+w[1]+'</p>'+
+          '<p class="text-xs leading-relaxed opacity-75">'+w[2]+'</p>'+
+        '</div>'+
+      '</div>';
+    d.addEventListener('click', function(){ d.classList.toggle('on'); });
+    g.appendChild(d);
+  });
+})();
+
+/* ══════════ 測驗 ══════════ */
+(function(){
+  var Q = [
+    ['「一堂四橫」的「堂」指的是什麼？',['公廳（正堂）','禾埕','得月樓','門樓'],0],
+    ['羅屋的堂號是什麼？',['潁川堂','豫章堂','西河堂','江夏堂'],1],
+    ['「豫章」是指今天哪個地方一帶？',['福建泉州','廣東梅州','江西南昌','浙江杭州'],2],
+    ['「得月樓」的建築風格屬於？',['傳統三合院','日式木造','西洋樓','閩南廟宇'],2],
+    ['「剪黏」使用的主要材料是？',['樟木','碗片、瓷片','砂岩','竹片'],1],
+    ['古代六藝中的「御」，最接近現代的哪一項？',['音樂','數學','駕駛與交通','書法'],2],
+    ['「頭擺」的客語意思是？',['第一次','從前','頭髮','開始'],1],
+    ['「子弟不讀書，好比無目珠」中的「目珠」是？',['耳朵','眼睛','嘴巴','手'],1],
+    ['禾埕最主要的用途是？',['祭祖','曬穀與工作','讀書','住人'],1],
+    ['「食果子，拜樹頭」講的道理是？',['要多吃水果','飲水思源','種樹護林','早睡早起'],1]
+  ];
+  var box = document.getElementById('quizBox'), sc = document.getElementById('score');
+  var answered = [], score = 0;
+
+  function render(){
+    box.innerHTML = ''; answered = []; score = 0;
+    sc.innerHTML = '得分　<span class="text-brick font-bold">0</span> / 10';
+    Q.forEach(function(q, qi){
+      var d = document.createElement('div');
+      d.className = 'card p-5';
+      d.innerHTML =
+        '<p class="font-medium mb-4"><span class="disp text-brick font-bold mr-2">'+(qi+1)+'.</span>'+q[0]+'</p>'+
+        '<div class="grid sm:grid-cols-2 gap-2">'+
+          q[1].map(function(o,oi){ return '<button class="qopt px-4 py-2 text-sm" data-q="'+qi+'" data-o="'+oi+'">'+o+'</button>'; }).join('')+
+        '</div>';
+      box.appendChild(d);
+    });
+  }
+  box.addEventListener('click', function(e){
+    var b = e.target.closest('[data-q]'); if(!b) return;
+    var qi = +b.dataset.q, oi = +b.dataset.o;
+    if(answered[qi]) return;
+    answered[qi] = true;
+    var wrap = b.parentNode;
+    wrap.querySelectorAll('button').forEach(function(x){ x.style.pointerEvents = 'none'; });
+    if(oi === Q[qi][2]){ b.classList.add('right'); score++; }
+    else {
+      b.classList.add('wrong');
+      wrap.querySelector('[data-o="'+Q[qi][2]+'"]').classList.add('right');
+    }
+    sc.innerHTML = '得分　<span class="text-brick font-bold">'+score+'</span> / 10';
+  });
+  document.getElementById('resetQuiz').addEventListener('click', render);
+  render();
+})();
+</script>
+</body>
+</html>
